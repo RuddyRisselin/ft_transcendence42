@@ -6,7 +6,7 @@ export const paddle1 = {
     y: canvasHeight / 2 - 50,
     width: 10,
     height: 100,
-    speed: 2,
+    speed: 4,
 };
 
 export const paddle2 = {
@@ -14,15 +14,15 @@ export const paddle2 = {
     y: canvasHeight / 2 - 50,
     width: 10,
     height: 100,
-    speed: 2,
+    speed: 4,
 };
 
 export const ball = {
     x: canvasWidth / 2,
     y: canvasHeight / 2,
     radius: 10,
-    speedX: 1.0,
-    speedY: 1.0,
+    speedX: 3.0,
+    speedY: 3.0,
 	acceleration: 1.05
 };
 
@@ -48,8 +48,8 @@ export function resetScores() {
 export function resetBall() {
     ball.x = canvasWidth / 2;
     ball.y = canvasHeight / 2;
-    ball.speedX = ball.speedX > 0 ? -1.0 : 1.0; // Alterne la direction de la balle
-    ball.speedY = (Math.random() * 2 - 1) * 1.0;
+    ball.speedX = ball.speedX > 0 ? -3.0 : 3.0; // Alterne la direction de la balle
+    ball.speedY = (Math.random() * 2 - 1) * 3.0;
 }
 
 export function increaseBallSpeed() {

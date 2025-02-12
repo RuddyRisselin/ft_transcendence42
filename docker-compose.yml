@@ -27,6 +27,7 @@ services:
       - PORT=3000
     volumes:
       - ./backend/srcs:/app/srcs
+      - ./backend/database:/app/database
       - /app/node_modules
 
   frontend:
