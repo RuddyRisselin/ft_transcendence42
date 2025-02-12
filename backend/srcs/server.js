@@ -1,27 +1,24 @@
-require('dotenv').config();
-const Fastify = require('fastify');
+const Fastify = require("fastify"); // ✅ Remplace `import` par `require`
+const cors = require("@fastify/cors");
 
 const fastify = Fastify({ logger: true });
 
-fastify.get('/', async (request, reply) => {
-  return { message: 'Bienvenue sur Fastify !' };
+fastify.register(cors, {
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST"],
+  credentials: true,
 });
 
-fastify.register(require('./routes/user'));
-fastify.register(require('./routes/matches'));
+// Route de test
+fastify.get("/test", async (request, reply) => {
+  return { message: "Connexion réussie avec le backend!" };
+});
 
-const PORT = process.env.PORT || 3000;
-const HOST = '0.0.0.0';
-
-const start = async () => {
-  try {
-    await fastify.listen({ port: PORT, host: HOST });
-    console.log(`🚀 Serveur Fastify démarré sur http://${HOST}:${PORT}`);
-  } catch (err) {
+// Démarrer le serveur
+fastify.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
+  if (err) {
     fastify.log.error(err);
     process.exit(1);
   }
-};
-
-start();
-
+  fastify.log.info(`Serveur backend en cours d'exécution sur ${address}`);
+});
