@@ -1,39 +1,51 @@
-import Layout from "../components/layout";
-import { getUser, setUser } from "../state";
+import { state } from "../state";
+import { updateUser } from "../services/userService";
 
-export default function Profile() {
-  const user = getUser();
+export default function Profile(): HTMLElement {
+    if (!state.user) {
+        window.location.href = "/login";
+        return document.createElement("div");
+    }
 
-  const container = document.createElement("div");
-  container.className = "flex flex-col items-center justify-center min-h-screen p-4";
+    const container = document.createElement("div");
+    container.className = "flex flex-col items-center p-6 bg-gray-900 text-white rounded-xl shadow-lg w-96 mx-auto mt-20 border border-gray-700";
 
-  const title = document.createElement("h1");
-  title.className = "text-3xl font-bold mb-4";
-  title.innerText = "Profil du Joueur";
+    const title = document.createElement("h2");
+    title.innerText = "Profil";
+    title.className = "text-3xl font-bold mb-4 text-center text-blue-400";
 
-  const form = document.createElement("form");
-  form.className = "bg-gray-800 p-6 rounded-lg shadow-lg text-white w-80";
+    // Avatar
+    const avatar = document.createElement("img");
+    avatar.src = state.user.avatar || "default-avatar.png";
+    avatar.className = "w-24 h-24 rounded-full border-2 border-blue-400 mb-3";
 
-  form.innerHTML = `
-    <label class="block mb-2">Pseudo:</label>
-    <input type="text" id="username" class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" value="${user.username}" />
+    // Nom d'utilisateur
+    const username = document.createElement("input");
+    username.type = "text";
+    username.value = state.user.username;
+    username.className = "input-style";
 
-    <label class="block mt-4 mb-2">Email:</label>
-    <input type="email" id="email" class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" value="${user.email}" />
+    // Email
+    const email = document.createElement("input");
+    email.type = "email";
+    email.value = state.user.email;
+    email.className = "input-style";
 
-    <button type="submit" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">Enregistrer</button>
-  `;
+    // Bouton sauvegarder
+    const saveBtn = document.createElement("button");
+    saveBtn.innerText = "Sauvegarder";
+    saveBtn.className = "btn-primary";
+    saveBtn.onclick = async () => {
+        const success = await updateUser(username.value, email.value);
+        if (success) {
+            state.user.username = username.value;
+            state.user.email = email.value;
+            alert("Profil mis à jour !");
+        } else {
+            alert("Erreur lors de la mise à jour");
+        }
+    };
 
-  form.onsubmit = (event) => {
-    event.preventDefault();
-    const newUsername = (document.getElementById("username") as HTMLInputElement).value;
-    const newEmail = (document.getElementById("email") as HTMLInputElement).value;
-    setUser({ username: newUsername, email: newEmail });
-    alert("Profil mis à jour !");
-  };
-
-  container.appendChild(title);
-  container.appendChild(form);
-
-  return Layout(container);
+    container.append(title, avatar, username, email, saveBtn);
+    return container;
 }

@@ -1,27 +1,21 @@
 const Fastify = require("fastify");
-const cors = require("@fastify/cors");
-require("dotenv").config();
-const db = require("./database/db");
+const configureServer = require("./config");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/users");
+const matchRoutes = require("./routes/matches");
+
 
 const fastify = Fastify({ logger: true });
 
-// Configuration de CORS pour permettre la connexion avec le frontend
-fastify.register(cors, {
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST"],
-  credentials: true,
-});
+// Configuration CORS, JWT, Bcrypt
+configureServer(fastify);
 
-// Route de test pour vérifier la connexion avec le frontend
-fastify.get("/test", async (request, reply) => {
-  return { message: "Connexion réussie avec le backend!" };
-});
+// Routes
+fastify.register(authRoutes);
+fastify.register(userRoutes);
+fastify.register(matchRoutes);
 
-// Enregistrement des routes pour les utilisateurs et les matchs
-fastify.register(require("./routes/users"));
-fastify.register(require("./routes/matches"));
-
-// Démarrer le serveur
+// ✅ Démarrer le serveur
 fastify.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
   if (err) {
     fastify.log.error(err);

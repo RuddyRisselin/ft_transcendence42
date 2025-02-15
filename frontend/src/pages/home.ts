@@ -1,40 +1,41 @@
-import Layout from "../components/layout";
 import { navigateTo } from "../router";
 
 export default function Home() {
-  const container = document.createElement("div");
-  container.className = "flex flex-col items-center justify-center min-h-screen p-4 text-center";
+    const container = document.createElement("div");
+    container.className = "flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black text-white text-center p-6";
 
-  const title = document.createElement("h1");
-  title.className = "text-4xl font-bold mb-4";
-  title.innerText = "Bienvenue sur Ft Transcendence !";
+    // Titre
+    const title = document.createElement("h1");
+    title.className = "text-5xl font-bold mb-4";
+    title.innerText = "Bienvenue sur Ft Transcendence !";
 
-  const description = document.createElement("p");
-description.className = "text-lg text-gray-300 mb-4 text-center";
+    // Description
+    const description = document.createElement("p");
+    description.className = "text-lg text-gray-300 mb-6 max-w-2xl";
+    description.innerText = "Rejoignez une aventure épique où vous affrontez vos amis dans des tournois de Pong compétitifs ! Inscrivez-vous dès maintenant pour commencer.";
 
-const apiResponse = document.createElement("p");
-apiResponse.className = "text-md text-green-300 mt-4";
-apiResponse.innerText = "Chargement de la connexion...";
+    // Boutons
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "flex space-x-4";
 
-fetch("/api/test")
-    .then(response => response.json())
-    .then(data => {
-        apiResponse.innerText = `Réponse du backend : ${data.message}`;
-    })
-    .catch(error => {
-        apiResponse.innerText = "Erreur de connexion au backend !";
-        console.error("Erreur API :", error);
-    });
+    // Bouton Connexion
+    const loginButton = document.createElement("button");
+    loginButton.className = "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded";
+    loginButton.innerText = "Se Connecter";
+    loginButton.onclick = (e) => navigateTo(e, "/login");
 
-  const playButton = document.createElement("button");
-  playButton.className = "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300";
-  playButton.innerText = "Jouer Maintenant";
-  playButton.onclick = (event) => navigateTo(event, "/game");
+    // Bouton Inscription
+    const registerButton = document.createElement("button");
+    registerButton.className = "bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded";
+    registerButton.innerText = "S'inscrire";
+    registerButton.onclick = (e) => navigateTo(e, "/register");
 
-  container.appendChild(title);
-  container.appendChild(description);
-  container.appendChild(playButton);
-  container.appendChild(apiResponse);
+    // Ajout des éléments au DOM
+    buttonContainer.appendChild(loginButton);
+    buttonContainer.appendChild(registerButton);
+    container.appendChild(title);
+    container.appendChild(description);
+    container.appendChild(buttonContainer);
 
-  return Layout(container);
+    return container;
 }

@@ -1,5 +1,7 @@
-import { render } from "./router";
+import { setupRouter } from "./router";
+import { loadAuthData } from "./services/auth";
 
 document.addEventListener("DOMContentLoaded", () => {
-  render();
+  loadAuthData(); // Assure que les données utilisateur sont bien chargées
+  setupRouter();
 });

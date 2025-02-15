@@ -1,15 +1,4 @@
-const state = {
-	user: {
-	  username: "Invité",
-	  email: "",
-	},
-  };
-  
-  export function getUser() {
-	return state.user;
-  }
-  
-  export function setUser(newUser: { username: string; email: string }) {
-	state.user = newUser;
-  }
-  
+export const state = {
+    user: JSON.parse(localStorage.getItem("user") || "null"),
+    token: localStorage.getItem("token") || null,
+};
