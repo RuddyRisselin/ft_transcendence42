@@ -41,6 +41,28 @@ async function matchesRoutes(fastify, options) {
     }
   });
 
+  fastify.get('/leaderboard', async (request, reply) => {
+    try {
+        const leaderboard = db.prepare(`
+            SELECT 
+                users.id, 
+                users.username, 
+                users.avatar, 
+                COUNT(matches.winner_id) AS wins
+            FROM users
+            LEFT JOIN matches ON users.id = matches.winner_id
+            GROUP BY users.id
+            ORDER BY wins DESC
+        `).all();
+
+        console.log("Leaderboard data:", leaderboard); // Debugging
+        reply.send(leaderboard);
+    } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+        reply.status(500).send({ error: "Internal server error" });
+    }
+});
+
   // Ajouter un match
   fastify.post('/matches', async (request, reply) => {
     const { player1_id, player2_id, winner_id } = request.body;

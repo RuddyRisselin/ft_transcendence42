@@ -1,6 +1,6 @@
 import Home from "./pages/home";
 import Game from "./pages/game";
-import Profile from "./pages/profile";
+import Profile from "./pages/profile/Profile";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Dashboard from "./pages/dashboard";
