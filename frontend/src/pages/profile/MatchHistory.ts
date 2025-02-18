@@ -16,14 +16,12 @@ export default function MatchHistory(): HTMLElement {
             const response = await fetch(`/api/matches?userId=${state.user.id}`);
             const matches = await response.json();
             
-            console.log("Matches received:", matches); // Debugging
-
             if (!Array.isArray(matches) || matches.length === 0) {
                 historyList.innerHTML = "<p class='text-white'>No matches found.</p>";
                 return;
             }
 
-            historyList.innerHTML = ""; // Clear old content
+            historyList.innerHTML = "";
 
             matches.forEach(match => {
                 const matchItem = document.createElement("div");

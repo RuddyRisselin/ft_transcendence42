@@ -17,7 +17,8 @@ export default function Profile(): HTMLElement {
     profileWrapper.className = "relative w-full h-screen flex flex-col";
 
     // Stars background
-    const starsContainer = StarsBackground();
+    profileWrapper.appendChild(StarsBackground());
+    
 
     // Layout principal
     const layoutWrapper = document.createElement("div");
@@ -45,7 +46,7 @@ export default function Profile(): HTMLElement {
     layoutWrapper.append(profileSection, leaderboard, history, stats);
 
     // Ajout au wrapper principal
-    profileWrapper.append(starsContainer, BackButton(), layoutWrapper);
+    profileWrapper.append(BackButton(), layoutWrapper);
 
     return profileWrapper;
 }
