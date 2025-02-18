@@ -25,18 +25,6 @@
     from { background-position: 0 0; }
     to { background-position: -1000px 1000px; }
 }
-<<<<<<< HEAD
-=======
-
-.bg-stars {
-    background-image: url('https://opengameart.org/sites/default/files/bg_space_seamless_1.png'); /* Ajoute une image d'étoiles */
-    background-size: cover;
-    opacity: 0.3;
-    animation: twinkling 50s infinite linear;
-}
-
->>>>>>> refs/remotes/origin/master
-
 .bg-stars {
     background-image: url('https://opengameart.org/sites/default/files/bg_space_seamless_1.png'); /* Ajoute une image d'étoiles */
     background-size: cover;
