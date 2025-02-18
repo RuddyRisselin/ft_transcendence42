@@ -3,8 +3,7 @@ const db = require('../database/db');
 async function matchesRoutes(fastify, options) {
     // Récupérer les matchs d'un utilisateur avec les noms des joueurs
     fastify.get('/matches', async (request, reply) => {
-        const { userId } = request.query;
-    
+        const { userId } = request.query;    
         if (!userId) {
             return reply.status(400).send({ error: "Missing userId parameter" });
         }

@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copier les fichiers package.json et installer les dépendances
 COPY ./frontend/package.json ./frontend/package-lock.json ./
-RUN npm install
+RUN npm install && npm install chart.js
 
 # Copier tout le projet
 COPY ./frontend ./

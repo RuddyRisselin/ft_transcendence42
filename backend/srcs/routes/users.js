@@ -63,6 +63,38 @@ async function userRoutes(fastify) {
     }
   });
 
+<<<<<<< HEAD
+=======
+  // Récupérer les statistiques d'un utilisateur
+fastify.get("/user/stats", async (request, reply) => {
+  const { userId } = request.query;
+
+  if (!userId) {
+      return reply.status(400).send({ error: "Missing userId parameter" });
+  }
+
+  try {
+      const stats = db.prepare(`
+          SELECT 
+              (SELECT COUNT(*) FROM matches WHERE player1_id = ? OR player2_id = ?) AS totalGames,
+              (SELECT COUNT(*) FROM matches WHERE winner_id = ?) AS wins,
+              ((SELECT COUNT(*) FROM matches WHERE player1_id = ? OR player2_id = ?) - 
+              (SELECT COUNT(*) FROM matches WHERE winner_id = ?)) AS losses
+      `).get(userId, userId, userId, userId, userId, userId);
+
+      if (!stats) {
+          return reply.status(404).send({ error: "No stats found for this user" });
+      }
+
+      reply.send(stats);
+  } catch (error) {
+      console.error("Error fetching user stats:", error);
+      reply.status(500).send({ error: "Internal server error" });
+  }
+
+});
+
+>>>>>>> refs/remotes/origin/master
 }
 
 module.exports = userRoutes;

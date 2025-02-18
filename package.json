@@ -1,5 +1,9 @@
 {
   "dependencies": {
+<<<<<<< HEAD
     "@fastify/websocket": "^11.0.2"
+=======
+    "chart.js": "^4.4.7"
+>>>>>>> refs/remotes/origin/master
   }
 }
