@@ -21,4 +21,14 @@
     @apply bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 w-full;
 }
 
+@keyframes twinkling {
+    from { background-position: 0 0; }
+    to { background-position: -1000px 1000px; }
+}
 
+.bg-stars {
+    background-image: url('https://opengameart.org/sites/default/files/bg_space_seamless_1.png'); /* Ajoute une image d'étoiles */
+    background-size: cover;
+    opacity: 0.3;
+    animation: twinkling 50s infinite linear;
+}

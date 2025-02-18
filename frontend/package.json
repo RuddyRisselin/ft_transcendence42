@@ -19,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/websocket": "^11.0.2",
     "bcrypt": "^5.1.1",
     "socket.io-client": "^4.8.1"
   }

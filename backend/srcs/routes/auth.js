@@ -54,6 +54,23 @@ async function authRoutes(fastify) {
 
     return reply.send({ message: "Connexion réussie!", token, user });
   });
+
+  fastify.post("/logout", async (request, reply) => {
+      try {
+          const { userId } = request.body;
+
+          if (!userId) {
+              return reply.status(400).send({ error: "L'ID utilisateur est requis." });
+          }
+
+          // ✅ Mettre à jour la base de données pour signaler que l'utilisateur est hors ligne
+          db.prepare("UPDATE users SET status = 'offline' WHERE id = ?").run(userId);
+
+          return reply.send({ message: "Utilisateur déconnecté avec succès." });
+      } catch (error) {
+          return reply.status(500).send({ error: "Erreur lors de la déconnexion." });
+      }
+  });
 }
 
 module.exports = authRoutes;

@@ -1,13 +1,14 @@
 import { ball, paddle1, paddle2, canvasWidth, canvasHeight, getScores, incrementScore, resetBall } from "./objects";
 import { increaseBallSpeed } from "./objects";
 
+let socket: WebSocket | null = null;
 
-export function startGame(canvas: HTMLCanvasElement) {
+export function startGame(canvas: HTMLCanvasElement, ws: WebSocket) {
+    socket = ws; // Associer le WebSocket à la connexion
     const ctx = canvas.getContext("2d");
 
     function updateGame() {
         if (!ctx) return;
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // 🎯 Récupérer les scores actuels
@@ -28,49 +29,30 @@ export function startGame(canvas: HTMLCanvasElement) {
         ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // ✅ Déplacer la balle
-        ball.x += ball.speedX;
-        ball.y += ball.speedY;
-
-        // ✅ Collision avec le haut et bas du canvas
-        if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height) {
-            ball.speedY *= -1;
-        }
-
-        // ✅ Collision avec les raquettes
-        if (
-            ball.x - ball.radius <= paddle1.x + paddle1.width &&
-            ball.y >= paddle1.y &&
-            ball.y <= paddle1.y + paddle1.height
-        ) {
-            ball.speedX *= -1;
-            ball.x = paddle1.x + paddle1.width + ball.radius;
-			increaseBallSpeed();
-        }
-
-        if (
-            ball.x + ball.radius >= paddle2.x &&
-            ball.y >= paddle2.y &&
-            ball.y <= paddle2.y + paddle2.height
-        ) {
-            ball.speedX *= -1;
-            ball.x = paddle2.x - ball.radius;
-			increaseBallSpeed();
-        }
-
-        // ✅ Vérifier si un joueur marque un point
-        if (ball.x + ball.radius <= 0) {
-            incrementScore(2); // Joueur 2 marque
-            resetBall();
-        }
-
-        if (ball.x - ball.radius >= canvas.width) {
-            incrementScore(1); // Joueur 1 marque
-            resetBall();
-        }
-
         requestAnimationFrame(updateGame);
     }
 
     updateGame();
 }
+
+export function setupWebSocket(ws: WebSocket) {
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log("📥 Mise à jour reçue :", message);
+
+        if (message.type === "update") {
+            ball.x = message.ball.x;
+            ball.y = message.ball.y;
+
+            for (const userId in message.players) {
+                if (userId === localStorage.getItem("userId")) {
+                    paddle1.y = message.players[userId].y;
+                } else {
+                    paddle2.y = message.players[userId].y;
+                }
+            }
+        }
+    };
+}
+
+
