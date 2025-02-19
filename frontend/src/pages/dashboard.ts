@@ -1,12 +1,13 @@
 import { state } from "../state";
 import { getUsers } from "../services/userService";
 import { connectToWebSocket } from "../services/auth";
-import Navbar from "../components/navbar";
 import { navigateTo } from "../router";
+import Sidebar from "../components/sidebar";
 
 export default function Dashboard(): HTMLElement {
     console.log("🖥 Rendu du dashboard...");
 
+    
     if (!state.user) {
         console.log("❌ Utilisateur non connecté. Redirection...");
         setTimeout(() => {
@@ -16,23 +17,18 @@ export default function Dashboard(): HTMLElement {
         }, 200);
         return document.createElement("div");
     }
-
+    
     console.log("✅ Utilisateur connecté :", state.user.username);
-
+    
     const container = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-black text-white relative overflow-hidden";
-
-    // ✅ Réintégration du fond visuel
+    
     container.innerHTML = `
-        <div class="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black"></div>
-        <div class="absolute inset-0 bg-stars animate-twinkling"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black"></div>
+    <div class="absolute inset-0 bg-stars animate-twinkling"></div>
     `;
-
-    // ✅ Ajout de la navbar
-    const navbar = Navbar();
-    navbar.className = "relative z-20 w-full"; // Assure que la navbar est bien visible au-dessus du fond
-    container.appendChild(navbar);
-
+    
+    document.body.appendChild(Sidebar());
     const mainSection = document.createElement("div");
     mainSection.className = "relative z-10 flex flex-col items-center p-8 w-full max-w-3xl mx-auto text-center";
 

@@ -1,10 +1,7 @@
-import Navbar from "./navbar";
 
 export default function Layout(pageContent: HTMLElement) {
   const container = document.createElement("div");
   container.className = "min-h-screen flex flex-col bg-gray-900 text-white";
-
-  container.appendChild(Navbar());
 
   // Contenu principal
   const contentWrapper = document.createElement("div");
