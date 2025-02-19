@@ -50,8 +50,15 @@ export default function Dashboard(): HTMLElement {
     const usersList = document.createElement("ul");
     usersList.className = "text-white text-lg space-y-2";
 
+    // 🔹 Bouton pour jouer en local
+    const localPlayButton = document.createElement("button");
+    localPlayButton.innerText = "🎮 Local 1v1";
+    localPlayButton.className = "mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-md transition-all";
+    localPlayButton.onclick = (e) => navigateTo(e, "/local-match");
+
     usersSection.append(usersTitle, usersList);
     mainSection.append(title, usersSection);
+    mainSection.append(localPlayButton)
     container.appendChild(mainSection);
 
     async function loadUsers() {
