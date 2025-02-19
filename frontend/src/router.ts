@@ -4,8 +4,10 @@ import Profile from "./pages/profile/Profile";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Dashboard from "./pages/dashboard";
+import LocalMatch from "./pages/localMatch"
+import GameLocal from "./pages/gameLocal"
 import { isAuthenticated } from "./services/auth";
-import Match from "./pages/match";
+//import Match from "./pages/match";
 
 const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
   "/": Home,
@@ -13,7 +15,9 @@ const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
   "/profile": async () => (isAuthenticated() ? await Profile() : await Login()),
   "/login": Login,
   "/dashboard": async () => (isAuthenticated() ? await Dashboard() : await Login()),
-  "/match": Match,
+  //"/match": Match,
+  "/local-match": LocalMatch,
+  "/game-local": GameLocal,
   "/register": Register
 };
 

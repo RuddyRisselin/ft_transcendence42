@@ -74,7 +74,7 @@ export async function logout() {
 }
 
 // Gère la connexion utilisateur
-export async function login(username: string, password: string) {
+export async function login(username: string, password: string, redirection: boolean) {
     try {
         const response = await fetch("http://localhost:3000/login", {
             method: "POST",
@@ -92,8 +92,8 @@ export async function login(username: string, password: string) {
         connectToWebSocket(data.user.id, (message) => {
             console.log("📩 Message WebSocket reçu :", message);
         });
-
-        window.location.href = "/dashboard";
+        if (redirection)
+            window.location.href = "/dashboard";
     } catch (error) {
         console.error("❌ Échec de la connexion :", error);
         throw error;
@@ -120,6 +120,21 @@ export async function register(username: string, email: string, password: string
         throw error;
     }
 }
+
+export async function loginWithoutSession(username: string, password: string) {
+    const response = await fetch("http://localhost:3000/login", { 
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+        headers: { "Content-Type": "application/json" },
+    });
+
+    if (response.ok) {
+        return await response.json(); // ✅ Retourne juste les infos du user sans modifier `state.user`
+    } else {
+        throw new Error("Login failed");
+    }
+}
+
 
 // Connexion WebSocket avec reconnexion automatique
 export function connectToWebSocket(userId: string, onMessage: (message: any) => void) {

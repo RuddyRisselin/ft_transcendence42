@@ -55,3 +55,19 @@ export async function updateUser(username: string, email: string) {
         return false;
     }
 }
+
+export async function getAllUsers() {
+    const response = await fetch("/api/users");
+    return response.json();
+}
+
+export async function authenticateUser(username: string, password: string) {
+    const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+
+    return response.ok;
+}
+

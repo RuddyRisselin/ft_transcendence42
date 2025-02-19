@@ -30,7 +30,7 @@ export default function Login() {
         errorMsg.classList.add("hidden");
 
         try {
-            await login(username.value, password.value);
+            await login(username.value, password.value, true);
             navigateTo(new Event("click"), "/register");
         } catch (error) {
             errorMsg.innerText = "Erreur : " + error.message;

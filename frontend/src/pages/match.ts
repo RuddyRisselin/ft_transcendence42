@@ -1,4 +1,4 @@
-import Layout from "../components/layout";
+/*import Layout from "../components/layout";
 import { startGame, setupWebSocket } from "../game/engine";
 import { setupControls } from "../game/controls";
 import { paddle1, paddle2, canvasHeight } from "../game/objects";
@@ -86,4 +86,4 @@ export default function Match() {
     connectWebSocket();
 
     return Layout(container);
-}
+}*/

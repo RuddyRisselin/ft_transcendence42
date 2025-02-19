@@ -3,19 +3,22 @@ export const canvasHeight = 500;
 
 export const paddle1 = {
     x: 20,
-    y: canvasHeight / 2 - 50,
+    y: 250,
     width: 10,
     height: 100,
-    speed: 4,
+    speed: 5,
+    scored: false // ✅ Ajout de la propriété "scored"
 };
 
 export const paddle2 = {
-    x: canvasWidth - 30,
-    y: canvasHeight / 2 - 50,
+    x: 970,
+    y: 250,
     width: 10,
     height: 100,
-    speed: 4,
+    speed: 5,
+    scored: false // ✅ Ajout de la propriété "scored"
 };
+
 
 export const ball = {
     x: canvasWidth / 2,
