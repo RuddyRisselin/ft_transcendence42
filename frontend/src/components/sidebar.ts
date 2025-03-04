@@ -42,8 +42,7 @@ export default function Sidebar(): HTMLElement {
     }
 
     updateStatus();
-    setInterval(updateStatus, 5000); // Met à jour toutes les 5 secondes
-
+    setInterval(updateStatus, 5000);
     statusContainer.append(statusIndicator, statusText);
     sidebar.appendChild(statusContainer);
 

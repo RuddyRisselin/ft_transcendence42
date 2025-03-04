@@ -3,21 +3,21 @@ import { state } from "../../state";
 
 export default function ProfileStats(): HTMLElement {
     const container = document.createElement("div");
-    container.className = "col-span-12 bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center space-y-6";
+    container.className = "col-span-12 bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col items-center space-y-4 w-full mx-auto";
 
     const title = document.createElement("h3");
     title.innerText = "Stats";
-    title.className = "text-2xl font-extrabold text-white mb-4";
+    title.className = "text-xl font-extrabold text-white";
 
     const statsList = document.createElement("div");
-    statsList.className = "text-white text-lg space-y-4 flex flex-col items-center";
+    statsList.className = "text-white text-sm space-y-2 flex flex-col items-center";
 
     const chartContainer = document.createElement("div");
-    chartContainer.className = "relative w-48 h-48 mt-6";
+    chartContainer.className = "relative w-40 h-40 mt-4"; // Réduction de la taille du graphique
 
     async function fetchStats() {
         if (!state.user) {
-            statsList.innerHTML = "<p class='text-red-500 text-lg font-bold'>User not found.</p>";
+            statsList.innerHTML = "<p class='text-red-500 text-sm font-bold'>User not found.</p>";
             return;
         }
         try {
@@ -32,7 +32,7 @@ export default function ProfileStats(): HTMLElement {
             console.log("Stats received:", stats);
 
             if (!stats || typeof stats.totalGames === "undefined") {
-                statsList.innerHTML = "<p class='text-white text-lg font-semibold'>No stats available.</p>";
+                statsList.innerHTML = "<p class='text-white text-sm font-semibold'>No stats available.</p>";
                 return;
             }
 
@@ -42,21 +42,22 @@ export default function ProfileStats(): HTMLElement {
             const winrate = totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
 
             statsList.innerHTML = `
-                <p class="text-blue-400 font-bold text-xl">Total Games: <span class="text-white">${totalGames}</span></p>
-                <p class="text-green-400 font-bold text-xl">Wins: <span class="text-white">${wins}</span></p>
-                <p class="text-red-400 font-bold text-xl">Losses: <span class="text-white">${losses}</span></p>
+                <p class="text-blue-400 font-bold text-sm">Total Games: <span class="text-white">${totalGames}</span></p>
+                <p class="text-green-400 font-bold text-sm">Wins: <span class="text-white">${wins}</span></p>
+                <p class="text-red-400 font-bold text-sm">Losses: <span class="text-white">${losses}</span></p>
             `;
 
             renderChart(wins, losses);
         } catch (error) {
             console.error("Error fetching stats:", error);
-            statsList.innerHTML = "<p class='text-red-500 text-lg font-bold'>Error loading stats.</p>";
+            statsList.innerHTML = "<p class='text-red-500 text-sm font-bold'>Error loading stats.</p>";
         }
     }
 
     function renderChart(wins, losses) {
         chartContainer.innerHTML = "";
         const canvas = document.createElement("canvas");
+        canvas.className = "max-w-40 max-h-40"; // Ajout d'une taille max au canvas
         chartContainer.appendChild(canvas);
 
         new Chart(canvas, {

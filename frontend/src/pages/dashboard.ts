@@ -27,8 +27,9 @@ export default function Dashboard(): HTMLElement {
     <div class="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black"></div>
     <div class="absolute inset-0 bg-stars animate-twinkling"></div>
     `;
-    
-    document.body.appendChild(Sidebar());
+    if (state.user) {
+        document.body.appendChild(Sidebar());
+    }
     const mainSection = document.createElement("div");
     mainSection.className = "relative z-10 flex flex-col items-center p-8 w-full max-w-3xl mx-auto text-center";
 

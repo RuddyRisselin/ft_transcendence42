@@ -38,7 +38,13 @@ export async function logout() {
     console.log("🔴 Déconnexion en cours...");
 
     try {
-        // ✅ Mettre à jour le statut utilisateur en "offline" dans la base de données
+        // ✅ Vérifier si l'utilisateur est bien connecté avant d'envoyer une requête
+        if (!state.user) {
+            console.warn("⚠️ Aucun utilisateur connecté.");
+            return;
+        }
+
+        // ✅ Mettre à jour le statut utilisateur en "offline"
         await fetch(`http://localhost:3000/users/${state.user.id}/status`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -56,7 +62,7 @@ export async function logout() {
         console.error("❌ Erreur lors de la déconnexion :", error);
     }
 
-    // ✅ Fermer WebSocket proprement (cela déclenchera `onclose` côté serveur)
+    // ✅ Fermer WebSocket proprement
     if (state.socket) {
         console.log("🔌 Fermeture du WebSocket...");
         state.socket.close();
@@ -69,9 +75,17 @@ export async function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
-    console.log("✅ Déconnexion réussie. Redirection vers /login...");
-    setTimeout(() => navigateTo(new Event("click"), "/login"), 100);
+    console.log("✅ Déconnexion réussie.");
+
+    // ✅ Empêcher la redirection infinie en vérifiant si on est déjà sur /login
+    if (window.location.pathname !== "/login") {
+        console.log("➡️ Redirection vers /login...");
+        window.location.href = "/login";
+    }
 }
+
+
+
 
 // Gère la connexion utilisateur
 export async function login(username: string, password: string, redirection: boolean) {

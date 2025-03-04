@@ -11,7 +11,7 @@ export default function Profile(): HTMLElement {
         window.location.href = "/login";
         return document.createElement("div");
     }
-
+    document.body.classList.add("overflow-hidden");
     // Wrapper général
     const profileWrapper = document.createElement("div");
     profileWrapper.className = "relative w-full h-screen flex flex-col";

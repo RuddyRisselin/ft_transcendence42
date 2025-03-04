@@ -2,6 +2,13 @@ import { login } from "../services/auth";
 import { navigateTo } from "../router";
 
 export default function Login() {
+    // 🔴 Suppression immédiate de la sidebar si elle est présente
+    const existingSidebar = document.querySelector(".sidebar");
+    if (existingSidebar) {
+        existingSidebar.remove();
+        console.log("✅ Sidebar supprimée sur la page de connexion.");
+    }
+
     const form = document.createElement("form");
     form.className = "flex flex-col items-center p-6 bg-gray-900 text-white rounded-xl shadow-lg w-96 mx-auto mt-20 border border-gray-700";
 
@@ -31,7 +38,7 @@ export default function Login() {
 
         try {
             await login(username.value, password.value, true);
-            navigateTo(new Event("click"), "/register");
+            navigateTo(new Event("click"), "/dashboard");
         } catch (error) {
             errorMsg.innerText = "Erreur : " + error.message;
             errorMsg.classList.remove("hidden");
