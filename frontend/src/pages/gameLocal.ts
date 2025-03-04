@@ -65,6 +65,10 @@ async function getUserId(username: string) {
 }
 
 export default function GameLocal() {
+    document.addEventListener("DOMContentLoaded", () => {
+        document.documentElement.style.overflow = "hidden"; // Désactive le scroll globalement
+        document.body.style.overflow = "hidden"; // Désactive le scroll sur le body
+    }); 
     if (!state.localMatch) {
         navigateTo(new Event("click"), "/dashboard");
         return document.createElement("div");
@@ -77,7 +81,7 @@ export default function GameLocal() {
     let matchEnded = false;
 
     const container = document.createElement("div");
-    container.className = "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-900 text-white";
+    container.className = "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-900 text-white overflow-hidden";
 
     const title = document.createElement("h1");
     title.className = "text-4xl font-bold mb-4 text-purple-400 animate-pulse";
