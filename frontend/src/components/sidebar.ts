@@ -1,4 +1,5 @@
 import { state } from "../state";
+import { logout } from "../services/auth";
 
 export default function Sidebar(): HTMLElement {
     const sidebar = document.createElement("aside");
@@ -79,8 +80,8 @@ export default function Sidebar(): HTMLElement {
     const logoutButton = document.createElement("button");
     logoutButton.className = "mt-auto p-3 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center rounded transition duration-200";
     logoutButton.innerHTML = "🔒 Logout";
-    logoutButton.onclick = () => {
-        alert("Logging out...");
+    logoutButton.onclick = async () => {
+        await logout();
     };
 
     sidebar.append(userContainer, nav, logoutButton, waveContainer);
