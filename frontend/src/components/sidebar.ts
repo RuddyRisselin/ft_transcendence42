@@ -1,5 +1,7 @@
 import { state } from "../state";
 import { logout } from "../services/auth";
+import { getUsers } from "../services/userService";
+
 
 export default function Sidebar(): HTMLElement {
     const sidebar = document.createElement("aside");
@@ -21,16 +23,29 @@ export default function Sidebar(): HTMLElement {
 
     // Statut (Online/Offline)
     const statusContainer = document.createElement("div");
-    statusContainer.className = "flex items-center mt-1";
+    statusContainer.className = "flex items-center mt-4";
 
     const statusIndicator = document.createElement("span");
-    statusIndicator.className = `w-3 h-3 rounded-full mr-2 ${
-        state.user?.status === "online" ? "bg-green-500" : "bg-red-500"
-    }`;
+    statusIndicator.className = "w-3 h-3 rounded-full mr-2";
 
     const statusText = document.createElement("span");
-    statusText.innerText = state.user?.status === "online" ? "Online" : "Offline";
-    statusText.className = "text-sm text-gray-400";
+    statusText.className = "text-sm";
+
+    async function updateStatus() {
+        const users = await getUsers();
+        const currentUser = users.find(user => user.id === state.user?.id);
+        
+        if (currentUser) {
+            statusIndicator.className = `w-3 h-3 rounded-full mr-2 ${currentUser.status === "online" ? "bg-green-500" : "bg-red-500"}`;
+            statusText.innerText = currentUser.status === "online" ? "En ligne" : "Hors ligne";
+        }
+    }
+
+    updateStatus();
+    setInterval(updateStatus, 5000); // Met à jour toutes les 5 secondes
+
+    statusContainer.append(statusIndicator, statusText);
+    sidebar.appendChild(statusContainer);
 
     statusContainer.append(statusIndicator, statusText);
     userContainer.append(avatar, username, statusContainer);
