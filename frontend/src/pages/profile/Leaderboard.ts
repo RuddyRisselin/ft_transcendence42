@@ -1,4 +1,4 @@
-import { state } from "../state";
+import { state } from "../../state";
 
 export default function Leaderboard(): HTMLElement {
     const container = document.createElement("div");
@@ -55,7 +55,7 @@ export default function Leaderboard(): HTMLElement {
                 podiumContainer.appendChild(playerItem);
             });
 
-            leaderboardData.slice(3, 10).forEach((player, index) => {
+            leaderboardData.slice(3, 6).forEach((player, index) => {
                 const playerRow = document.createElement("div");
                 playerRow.className = "flex items-center justify-between bg-gray-700 p-2 rounded-lg";
 

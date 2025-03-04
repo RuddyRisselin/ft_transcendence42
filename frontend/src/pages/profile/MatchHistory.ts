@@ -2,14 +2,16 @@ import { state } from "../../state";
 
 export default function MatchHistory(): HTMLElement {
     const history = document.createElement("div");
-    history.className = "col-span-3 bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col";
+    history.className = "col-span-3 bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col"; // Conteneur principal
 
     const historyTitle = document.createElement("h3");
     historyTitle.innerText = "Matches History";
     historyTitle.className = "text-lg font-bold text-white mb-2";
 
-    const historyList = document.createElement("div");
-    historyList.className = "flex flex-col gap-2";
+    const historyContainer = document.createElement("div");
+    historyContainer.className = "flex flex-col gap-2 overflow-y-scroll max-h-80"; 
+    // `max-h-80` = Hauteur fixe équivalente à ~6 matchs (ajuster si besoin)
+    // `overflow-y-scroll` = Scroll si plus de 6 matchs
 
     async function fetchMatchHistory() {
         try {
@@ -17,11 +19,11 @@ export default function MatchHistory(): HTMLElement {
             const matches = await response.json();
             
             if (!Array.isArray(matches) || matches.length === 0) {
-                historyList.innerHTML = "<p class='text-white'>No matches found.</p>";
+                historyContainer.innerHTML = "<p class='text-white'>No matches found.</p>";
                 return;
             }
 
-            historyList.innerHTML = "";
+            historyContainer.innerHTML = "";
 
             matches.forEach(match => {
                 const matchItem = document.createElement("div");
@@ -40,17 +42,17 @@ export default function MatchHistory(): HTMLElement {
                 matchText.innerText = `${new Date(match.played_at).toLocaleDateString()} - ${match.player1_name} VS ${match.player2_name} → Winner: ${match.winner_name}`;
 
                 matchItem.append(player1Avatar, matchText, player2Avatar);
-                historyList.appendChild(matchItem);
+                historyContainer.appendChild(matchItem);
             });
 
         } catch (error) {
             console.error("Error fetching match history:", error);
-            historyList.innerHTML = "<p class='text-red-500'>Error loading matches.</p>";
+            historyContainer.innerHTML = "<p class='text-red-500'>Error loading matches.</p>";
         }
     }
 
     fetchMatchHistory();
-    history.append(historyTitle, historyList);
+    history.append(historyTitle, historyContainer);
 
     return history;
 }
