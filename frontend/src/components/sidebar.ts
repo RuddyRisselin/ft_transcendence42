@@ -13,8 +13,8 @@ export default function Sidebar(): HTMLElement {
 
     // Avatar
     const avatar = document.createElement("img");
-    avatar.src = state.user?.avatar || "/public/avatars/default.png";
-    avatar.className = "w-12 h-12 rounded-full border-2 border-white";
+    avatar.src = state.user?.avatar ? `/api/avatars/${state.user.avatar}` : "/api/avatars/default.png";
+    avatar.className = "w-16 h-16 rounded-full border-2 border-white shadow-md";
 
     // Nom d'utilisateur
     const username = document.createElement("span");
