@@ -95,6 +95,7 @@ export default function Sidebar(): HTMLElement {
     logoutButton.className = "mt-auto p-3 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center rounded transition duration-200";
     logoutButton.innerHTML = "🔒 Logout";
     logoutButton.onclick = async () => {
+        sidebar.remove();
         await logout();
     };
 
