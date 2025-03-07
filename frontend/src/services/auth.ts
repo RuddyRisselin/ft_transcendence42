@@ -79,13 +79,9 @@ export async function logout() {
 
     // ✅ Empêcher la redirection infinie en vérifiant si on est déjà sur /login
     if (window.location.pathname !== "/login") {
-        console.log("➡️ Redirection vers /login...");
-        window.location.href = "/login";
+        navigateTo(new Event("click"), "/login");
     }
 }
-
-
-
 
 // Gère la connexion utilisateur
 export async function login(username: string, password: string, redirection: boolean) {
