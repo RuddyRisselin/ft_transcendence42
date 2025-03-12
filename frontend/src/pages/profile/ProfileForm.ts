@@ -1,5 +1,6 @@
 import { state } from "../../state";
-import { updateUser } from "../../services/userService";
+import { updateUser, deleteUser } from "../../services/userService";
+import { logout } from "../../services/auth";
 
 export default function ProfileForm(): HTMLElement {
     const container = document.createElement("div");
@@ -37,6 +38,28 @@ export default function ProfileForm(): HTMLElement {
         }
     };
 
-    container.append(title, avatar, username, email, saveBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "Delete account";
+    deleteBtn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mx-auto mt-2";
+    deleteBtn.onclick = async () => {
+        try {
+            const value = confirm("Are you sure ?");
+            if (value)
+            {
+                const success = await deleteUser(username.value);
+                if (success) {
+                    alert("Profil deleted!");
+                    await logout();
+                } else {
+                    alert("Error delete profil");
+                }
+            }
+            } catch (error) {
+                console.error("❌ Erreur inattendue :", error);
+                alert("Une erreur est survenue !");
+            }
+    };
+    container.append(title, avatar, username, email, saveBtn, deleteBtn);
     return container;
 }

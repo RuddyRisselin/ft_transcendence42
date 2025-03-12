@@ -56,6 +56,52 @@ export async function updateUser(username: string, email: string) {
     }
 }
 
+export async function deleteUser(username: string) {
+    console.log(`Envoi de la requête DELETE pour : ${username}`);
+    try {
+        // const response = await fetch(`/api/users/username/${username}`, {
+            const response = await fetch(`http://localhost:3000/users/username/${username}`, {
+            method: "DELETE",
+        });
+
+        console.log("📡 Réponse du serveur :", response.status, response.statusText);
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+
+        console.log(`✅ Utilisateur ${username} supprimé`);
+        return true;
+    } catch (error) {
+        console.error("❌ Erreur lors de la suppression de l'utilisateur :", error);
+        return false;
+    }
+}
+
+
+export async function anonymizeUser(username: string) {
+    console.log(`🛠️ Envoi de la requête PATCH pour anonymiser : ${username}`);
+
+    try {
+        const response = await fetch(`/api/users/username/${username}/anonymize`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+        });
+
+        console.log("📡 Reponse du serveur :", response.status, response.statusText);
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+
+        console.log(`✅ Utilisateur ${username} anonymiser`);
+        return true;
+    } catch (error) {
+        console.error("❌ Erreur lors de l'anonymisation de l'utilisateur :", error);
+        return false;
+    }
+}
+
 export async function getAllUsers() {
     const response = await fetch("/api/users");
     return response.json();
