@@ -1,4 +1,5 @@
-import { register } from "../services/auth";
+import { register, login } from "../services/auth";
+import { navigateTo } from "../router";
 
 export default function Register() {
     const form = document.createElement("form");
@@ -35,7 +36,9 @@ export default function Register() {
 
         try {
             await register(username.value, email.value, password.value);
-            window.location.href = "/login";
+            await login(username.value, password.value, true);
+            navigateTo(new Event("click"), "/dashboard");
+            // window.location.href = "/login";
         } catch (error) {
             errorMsg.innerText = "Erreur : " + error.message;
             errorMsg.classList.remove("hidden");
