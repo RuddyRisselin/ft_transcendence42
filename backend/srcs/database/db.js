@@ -6,11 +6,13 @@ try {
 
   // Création des tables si elles n'existent pas encore
   db.exec(`
+
       CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username TEXT UNIQUE NOT NULL,
           email TEXT UNIQUE NOT NULL,
           password TEXT NOT NULL,
+          anonymize INTEGER NOT NULL CHECK(anonymize IN (0, 1)) DEFAULT 0,
           avatar TEXT DEFAULT 'default.png',
           status TEXT CHECK( status IN ('online', 'offline', 'in-game') ) DEFAULT 'offline',
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -27,6 +29,16 @@ try {
           FOREIGN KEY (winner_id) REFERENCES users(id)
       );
   `);
+
+  const columnExists = db
+  .prepare("PRAGMA table_info(users);")
+  .all()
+  .some(column => column.name === "anonymize");
+
+  if (!columnExists)
+    db.exec(`ALTER TABLE users ADD COLUMN anonymize INTEGER NOT NULL CHECK(anonymize IN (0, 1)) DEFAULT 0;`);
+  else
+    console.log("ℹLa colonne 'anonymize' existe déjà.");
 
   console.log("✅ Base de données connectée et initialisée.");
   module.exports = db;

@@ -1,3 +1,6 @@
+import { log } from "console";
+import { saveAuthData } from "./auth";
+
 // Cache pour éviter les requêtes inutiles
 let cachedUsers: any[] = [];
 let lastFetchTime: number = 0;
@@ -79,21 +82,26 @@ export async function deleteUser(username: string) {
 }
 
 
-export async function anonymizeUser(username: string) {
+export async function anonymizeUser(username: string, token: string | "") {
     console.log(`🛠️ Envoi de la requête PATCH pour anonymiser : ${username}`);
 
     try {
-        const response = await fetch(`/api/users/username/${username}/anonymize`, {
+        // const response = await fetch(`/api/users/username/${username}/anonymize`, {
+        const response = await fetch(`http://localhost:3000/users/username/${username}/anonymize`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username }),
         });
-
+        const data = await response.json();
+                if (!response.ok) throw new Error(data.error || "Erreur de connexion");
+        
+        saveAuthData(token, data.user);
+        console.log("DATA ANONYMIZE = ", data);
         console.log("📡 Reponse du serveur :", response.status, response.statusText);
 
         if (!response.ok) {
             throw new Error(`Erreur HTTP : ${response.status}`);
         }
-
         console.log(`✅ Utilisateur ${username} anonymiser`);
         return true;
     } catch (error) {

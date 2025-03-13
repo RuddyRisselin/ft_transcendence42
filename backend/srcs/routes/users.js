@@ -88,25 +88,34 @@ async function userRoutes(fastify) {
   });
 
   // Anonymisation d'un utilisateur
-fastify.patch('/users/username/:username/anonymize', async (request, reply) => {
-  const { username } = request.params;
-  try
-  {
-    const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
-    if (!user)
-      return reply.status(404).send({ error: "Utilisateur non trouver" });
+  fastify.patch('/users/username/:username/anonymize', async (request, reply) => {
+    const { username } = request.params;
+    try
+    {
+      const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+      if (!user)
+        return reply.status(404).send({ error: "Utilisateur non trouver" });
 
-    db.prepare("UPDATE users SET username = ?, email = ? WHERE username = ?")
-      .run('anonymous_' + username, 'anonymous@gmail.com', username);
-
-    reply.send({ message: "Utilisateur anonymiser avec succes" });
-  }
-  catch (error)
-  {
-    console.error("Erreur lors de l'anonymisation de l'utilisateur", error);
-    reply.status(500).send({ error: "Erreur serveur" });
-  }
-});
+      if (user.anonymize === 1)
+        {
+          db.prepare("UPDATE users SET anonymize = 0 WHERE username = ?")
+          .run(username);
+        }
+        else
+        {
+          db.prepare("UPDATE users SET anonymize = 1 WHERE username = ?")
+          .run(username);
+        }
+        const newAnonymize = user.anonymize === 1 ? 0 : 1;
+        user.anonymize = newAnonymize;
+      reply.send({ message: "Utilisateur anonymiser avec succes", user });
+    }
+    catch (error)
+    {
+      console.error("Erreur lors de l'anonymisation de l'utilisateur", error);
+      reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
 }
 
 module.exports = userRoutes;
