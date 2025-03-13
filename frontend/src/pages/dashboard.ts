@@ -68,7 +68,7 @@ export default function Dashboard(): HTMLElement {
             const li = document.createElement("li");
             li.id = `user-${user.id}`;
             li.className = `p-2 rounded ${user.status === "online" ? "text-green-400" : "text-red-400"}`;
-            li.innerText = `${user.username} ${user.status === "online" ? "🟢" : "🔴"}`;
+            li.innerText = `${user.anonymize === 1 ? "*****" : user.username} ${user.status === "online" ? "🟢" : "🔴"}`;
             usersList.appendChild(li);
         });
     }
