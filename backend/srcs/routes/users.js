@@ -95,16 +95,24 @@ async function userRoutes(fastify) {
       const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
       if (!user)
         return reply.status(404).send({ error: "Utilisateur non trouver" });
-
+      
       if (user.anonymize === 1)
         {
-          db.prepare("UPDATE users SET anonymize = 0 WHERE username = ?")
-          .run(username);
+            db.prepare("UPDATE users SET anonymize = 0, username = ?, email = ? WHERE username = ?")
+            .run(username, user.email, username);
+            db.prepare("UPDATE users SET username = ? WHERE username = ?")
+            .run(username, username);
         }
         else
         {
           db.prepare("UPDATE users SET anonymize = 1 WHERE username = ?")
           .run(username);
+          const anonymizeUsername = "anonymize_" + username;
+          const anonymizeEmail = "anonymize_" + user.email;
+          db.prepare("UPDATE users SET username = ?, email = ? WHERE username = ?")
+          .run(anonymizeUsername, anonymizeEmail, username);
+          user.username = anonymizeUsername;
+          user.email = anonymizeEmail;
         }
         const newAnonymize = user.anonymize === 1 ? 0 : 1;
         user.anonymize = newAnonymize;
