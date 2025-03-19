@@ -47,7 +47,7 @@ export default function ProfileForm(): HTMLElement {
             const value = confirm("Are you sure ?");
             if (value)
             {
-                const success = await deleteUser(username.value);
+                const success = await deleteUser(state.user.username);
                 if (success) {
                     alert("Profil deleted!");
                     await logout();
@@ -65,8 +65,6 @@ export default function ProfileForm(): HTMLElement {
     let token = state.token;
     if (!token)
         token = "";
-    console.log("USER.ANONYMIZE = " + state.user.anonymize);
-    console.log("token = " + token);
     if (state.user.anonymize === 0)
         anonymizeBtn.innerText = "Going private";
     else
@@ -77,7 +75,7 @@ export default function ProfileForm(): HTMLElement {
             const value = confirm("Are you sure ?");
             if (value)
             {
-                const success = await anonymizeUser(username.value, token);
+                const success = await anonymizeUser(state.user.username, token);
                 if (success && anonymizeBtn.textContent === "Going private") {
                     alert("Your profil is private!");
                     anonymizeBtn.innerText = "Going public";
