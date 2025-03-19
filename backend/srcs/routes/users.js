@@ -99,9 +99,9 @@ async function userRoutes(fastify) {
       if (user.anonymize === 1)
         {
             db.prepare("UPDATE users SET anonymize = 0, username = ?, email = ? WHERE username = ?")
-            .run(username, user.email, username);
-            db.prepare("UPDATE users SET username = ? WHERE username = ?")
-            .run(username, username);
+            .run(username.split("_")[1], user.email.split("_")[1], username);
+            user.username = username.split("_")[1];
+            user.email = user.email.split("_")[1];
         }
         else
         {

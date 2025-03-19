@@ -89,6 +89,7 @@ export default function ProfileForm(): HTMLElement {
                 }
                 else
                     alert("Error request profil");
+                window.location.reload();
             }
             } catch (error) {
                 console.error("❌ Erreur inattendue :", error);
