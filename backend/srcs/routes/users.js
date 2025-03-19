@@ -63,6 +63,32 @@ async function userRoutes(fastify) {
     }
   });
 
+  // 🔹 Update un utilisateur
+  fastify.patch("/users/username/:username/update", async (request, reply) => {
+    const { username } = request.params;
+    const { username: inputUsername, email: inputEmail } = request.body;
+    console.log ("UPDATE Username = " + inputUsername);
+    console.log ("UPDATE Email = " + inputEmail);
+    try
+    {
+      const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+      if (!user)
+      {
+        console.log("❌ Utilisateur introuvable");
+        return reply.status(404).send({ error: "Utilisateur non trouvé." });
+      }
+      // db.prepare("DELETE FROM matches WHERE player1_id = ? OR player2_id = ?").run(user.id, user.id)
+      // db.prepare("DELETE FROM users WHERE username = ?").run(username);
+      console.log("✅ Utilisateur mis a jour avec succès");
+      return { message: "Utilisateur mis a jour avec succès!" };
+    }
+    catch (error)
+    {
+      console.error("Erreur lors de la mis a jour de l'utilisateur :", error);
+      return reply.status(500).send({ error: "Erreur serveur." });
+    }
+  });
+
   // 🔹 Supprimer un utilisateur
   fastify.delete("/users/username/:username", async (request, reply) => {
     const { username } = request.params;

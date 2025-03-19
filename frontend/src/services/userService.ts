@@ -41,7 +41,8 @@ export async function getUsers() {
 // Mise à jour des informations de l'utilisateur
 export async function updateUser(username: string, email: string) {
     try {
-        const response = await fetch("/api/users/update", {
+        // const response = await fetch("/api/users/update", {
+        const response = await fetch(`http://localhost:3000/users/username/${username}/update`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email }),
