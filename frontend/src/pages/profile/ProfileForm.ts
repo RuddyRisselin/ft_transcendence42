@@ -1,5 +1,5 @@
 import { state } from "../../state";
-import { updateUser, deleteUser } from "../../services/userService";
+import { updateUser, deleteUser, anonymizeUser } from "../../services/userService";
 import { logout } from "../../services/auth";
 
 export default function ProfileForm(): HTMLElement {
@@ -47,7 +47,7 @@ export default function ProfileForm(): HTMLElement {
             const value = confirm("Are you sure ?");
             if (value)
             {
-                const success = await deleteUser(username.value);
+                const success = await deleteUser(state.user.username);
                 if (success) {
                     alert("Profil deleted!");
                     await logout();
@@ -60,6 +60,40 @@ export default function ProfileForm(): HTMLElement {
                 alert("Une erreur est survenue !");
             }
     };
-    container.append(title, avatar, username, email, saveBtn, deleteBtn);
+
+    const anonymizeBtn = document.createElement("button");
+    let token = state.token;
+    if (!token)
+        token = "";
+    if (state.user.anonymize === 0)
+        anonymizeBtn.innerText = "Going private";
+    else
+        anonymizeBtn.innerText = "Going public";
+    anonymizeBtn.className = "bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mx-auto mt-2";
+    anonymizeBtn.onclick = async () => {
+        try {
+            const value = confirm("Are you sure ?");
+            if (value)
+            {
+                const success = await anonymizeUser(state.user.username, token);
+                if (success && anonymizeBtn.textContent === "Going private") {
+                    alert("Your profil is private!");
+                    anonymizeBtn.innerText = "Going public";
+                }
+                else if (success && anonymizeBtn.textContent === "Going public")
+                {
+                    alert("Your profil is public!");
+                    anonymizeBtn.innerText = "Going private";
+                }
+                else
+                    alert("Error request profil");
+                window.location.reload();
+            }
+            } catch (error) {
+                console.error("❌ Erreur inattendue :", error);
+                alert("Une erreur est survenue !");
+            }
+    };
+    container.append(title, avatar, username, email, saveBtn, anonymizeBtn, deleteBtn);
     return container;
 }

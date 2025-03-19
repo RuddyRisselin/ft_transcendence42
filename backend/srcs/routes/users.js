@@ -37,7 +37,7 @@ async function userRoutes(fastify) {
 
   fastify.get("/users/all", async (request, reply) => {
     try {
-      const users = db.prepare("SELECT id, username, status FROM users ORDER BY status DESC").all();
+      const users = db.prepare("SELECT id, username, status, anonymize FROM users ORDER BY status DESC").all();
       return users;
     } catch (error) {
       console.error("❌ Erreur lors de la récupération des utilisateurs :", error);
@@ -88,25 +88,42 @@ async function userRoutes(fastify) {
   });
 
   // Anonymisation d'un utilisateur
-fastify.patch('/users/username/:username/anonymize', async (request, reply) => {
-  const { username } = request.params;
-  try
-  {
-    const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
-    if (!user)
-      return reply.status(404).send({ error: "Utilisateur non trouver" });
-
-    db.prepare("UPDATE users SET username = ?, email = ? WHERE username = ?")
-      .run('anonymous_' + username, 'anonymous@gmail.com', username);
-
-    reply.send({ message: "Utilisateur anonymiser avec succes" });
-  }
-  catch (error)
-  {
-    console.error("Erreur lors de l'anonymisation de l'utilisateur", error);
-    reply.status(500).send({ error: "Erreur serveur" });
-  }
-});
+  fastify.patch('/users/username/:username/anonymize', async (request, reply) => {
+    const { username } = request.params;
+    try
+    {
+      const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+      if (!user)
+        return reply.status(404).send({ error: "Utilisateur non trouver" });
+      
+      if (user.anonymize === 1)
+        {
+            db.prepare("UPDATE users SET anonymize = 0, username = ?, email = ? WHERE username = ?")
+            .run(username.split("_")[1], user.email.split("_")[1], username);
+            user.username = username.split("_")[1];
+            user.email = user.email.split("_")[1];
+        }
+        else
+        {
+          db.prepare("UPDATE users SET anonymize = 1 WHERE username = ?")
+          .run(username);
+          const anonymizeUsername = "anonymize_" + username;
+          const anonymizeEmail = "anonymize_" + user.email;
+          db.prepare("UPDATE users SET username = ?, email = ? WHERE username = ?")
+          .run(anonymizeUsername, anonymizeEmail, username);
+          user.username = anonymizeUsername;
+          user.email = anonymizeEmail;
+        }
+        const newAnonymize = user.anonymize === 1 ? 0 : 1;
+        user.anonymize = newAnonymize;
+      reply.send({ message: "Utilisateur anonymiser avec succes", user });
+    }
+    catch (error)
+    {
+      console.error("Erreur lors de l'anonymisation de l'utilisateur", error);
+      reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
 }
 
 module.exports = userRoutes;
