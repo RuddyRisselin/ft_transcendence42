@@ -56,7 +56,7 @@ async function authRoutes(fastify) {
 
     // Génération du token JWT
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET || "supersecretkey");
-    db.prepare("UPDATE users SET is2FAEnabled = 1 WHERE username = ?").run(username);
+    // db.prepare("UPDATE users SET is2FAEnabled = 1 WHERE username = ?").run(username);
     return reply.send({ message: "Connexion réussie!", token, user });
   });
 

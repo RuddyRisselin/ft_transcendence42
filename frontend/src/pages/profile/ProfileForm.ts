@@ -1,5 +1,5 @@
 import { state } from "../../state";
-import { updateUser, deleteUser, anonymizeUser } from "../../services/userService";
+import { updateUser, deleteUser, anonymizeUser, getQrcode } from "../../services/userService";
 import { logout } from "../../services/auth";
 
 export default function ProfileForm(): HTMLElement {
@@ -95,28 +95,52 @@ export default function ProfileForm(): HTMLElement {
             }
     };
 
+    const btnQRCode = document.createElement("button");
+    btnQRCode.innerHTML = "QRCODE";
     const image = document.createElement("img");
-    // image.src = "http://localhost:3000/generate-2fa";
-        fetch("http://localhost:3000/2FA/generate-2fa", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: state.user.id, username: state.user.username })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.qrCode) {
-                image.src = data.qrCode; // Utilise la valeur base64 du QR Code
-            } else {
-                console.error("QR Code non reçu du serveur");
-            }
-        })
-        .catch(error => console.error("Erreur lors de la récupération du QR Code:", error));
+    btnQRCode.onclick = async () => {
+        try{
+            image.style.position = "absolute";
+            image.style.top = "50%";
+            image.style.left = "50%";
+            image.style.width = " 200px";
+            image.style.zIndex = "40";
+            getQrcode(state.user.id, state.user.username).then((data) =>{
+                console.log("STATE ", state);
+                if (data)
+                    image.src = data;
+                container.append(image);
+            });
+            console.log(image.src);
+        }
+        catch (error) {
+            console.error("❌ Erreur QRcode :", error);
+            alert("Erreur QRcode");
+        }
+        // const image = document.createElement("img");
+    };
+
+
+    // const image = document.createElement("img");
+    //     fetch("http://localhost:3000/2FA/generate-2fa", {
+    //         method: "POST",
+    //         headers: { "Content-Type": "application/json" },
+    //         body: JSON.stringify({ userId: state.user.id, username: state.user.username })
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data.qrCode) {
+    //             image.src = data.qrCode; // Utilise la valeur base64 du QR Code
+    //         } else {
+    //             console.error("QR Code non reçu du serveur");
+    //         }
+    //     })
+    //     .catch(error => console.error("Erreur lors de la récupération du QR Code:", error));
     
     
 
 
 
-
-    container.append(title, avatar, username, email, saveBtn, anonymizeBtn, deleteBtn, image);
+    container.append(title, avatar, username, email, saveBtn, anonymizeBtn, deleteBtn, btnQRCode, image);
     return container;
 }
