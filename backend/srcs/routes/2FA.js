@@ -29,7 +29,8 @@ async function twoFaRoutes(fastify) {
   });
 
   fastify.post('/enable-2fa', async (request, reply) => {
-    const { userId } = request.body;
+    const userId = request.body.userId;
+    const username = request.body.username;
   
     if (!userId) {
       return reply.status(400).send({ error: 'userId est requis' });
@@ -37,11 +38,11 @@ async function twoFaRoutes(fastify) {
   
     // Générer un secret et stocker dans la BDD
     const secret = speakeasy.generateSecret({
-      name: `ft_transcendence (${userId})`,
+      name: `ft_transcendence (${username})`,
     });
   
     await fastify.pg.query(
-      'UPDATE users SET twoFASecret = $1, is2FAEnabled = TRUE WHERE id = $2',
+      'UPDATE users SET twoFASecret = $1, is2FAEnabled = 1 WHERE id = $2',
       [secret.base32, userId]
     );
   
@@ -49,17 +50,16 @@ async function twoFaRoutes(fastify) {
     return reply.send({ qrCode: qrCodeUrl, secret: secret.base32 });
   });
 
-  
-
   fastify.post('/disable-2fa', async (request, reply) => {
-    const { userId } = request.body;
+    const userId = request.body.userId;
+    const username = request.body.username;
   
     if (!userId) {
       return reply.status(400).send({ error: 'userId est requis' });
     }
   
     await fastify.pg.query(
-      'UPDATE users SET twoFASecret = NULL, is2FAEnabled = FALSE WHERE id = $1',
+      'UPDATE users SET twoFASecret = NULL, is2FAEnabled = 0 WHERE id = $1',
       [userId]
     );
   

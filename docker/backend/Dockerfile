@@ -5,7 +5,7 @@ WORKDIR /app
 COPY backend/package.json backend/package-lock.json ./
 
 RUN npm install
-RUN npm install speakeasy qrcode
+RUN npm install speakeasy qrcode better-sqlite3
 RUN npm audit fix
 
 COPY backend/srcs ./srcs
