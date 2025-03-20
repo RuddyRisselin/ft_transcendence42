@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Backend Fastify pour ft_transcendence",
   "main": "srcs/server.js",
+  "type":"commonjs",
   "scripts": {
     "prestart": "npm install",
     "start": "node srcs/server.js",
