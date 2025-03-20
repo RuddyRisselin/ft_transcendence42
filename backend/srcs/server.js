@@ -5,6 +5,8 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const matchRoutes = require("./routes/matches");
 const gameWsRoutes = require("./websockets/gameWs");
+const tournamentRoutes = require("./routes/tournaments");
+
 
 async function startServer() {
   const fastify = Fastify({ logger: true });
@@ -20,6 +22,7 @@ async function startServer() {
   await fastify.register(userRoutes);
   await fastify.register(matchRoutes);
   await fastify.register(gameWsRoutes);
+  await fastify.register(tournamentRoutes);
 
   // ✅ Démarrer le serveur après configuration complète
   try {

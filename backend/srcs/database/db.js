@@ -28,6 +28,13 @@ try {
           FOREIGN KEY (player2_id) REFERENCES users(id),
           FOREIGN KEY (winner_id) REFERENCES users(id)
       );
+      
+      CREATE TABLE IF NOT EXISTS tournaments (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          players TEXT NOT NULL,
+          ranking TEXT
+      );
   `);
 
   const columnExists = db
