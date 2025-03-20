@@ -24,21 +24,30 @@ export default function ProfileForm(): HTMLElement {
     email.value = state.user.email;
     email.className = "input-style";
 
+    const anonymize = state.user.anonymize;
+    if (anonymize === 1)
+    {
+        username.disabled = true;
+        email.disabled = true;
+    }
     const saveBtn = document.createElement("button");
-    saveBtn.innerText = "Save";
+    saveBtn.innerText = "Update profile";
     saveBtn.className = "btn-primary";
+    if (anonymize === 1)
+        saveBtn.disabled = true;
     saveBtn.onclick = async () => {
-        const success = await updateUser(username.value, email.value);
+    let token = state.token;
+    if (!token)
+        token = "";
+        const success = await updateUser(token, state.user.username, username.value, email.value);
         if (success) {
             state.user.username = username.value;
             state.user.email = email.value;
             alert("Profile updated!");
         } else {
-            alert("Error updating profile");
+            alert("Error profile update impossible");
         }
     };
-
-
     const deleteBtn = document.createElement("button");
     deleteBtn.innerText = "Delete account";
     deleteBtn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mx-auto mt-2";
