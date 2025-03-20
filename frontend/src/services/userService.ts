@@ -39,18 +39,19 @@ export async function getUsers() {
 }
 
 // Mise à jour des informations de l'utilisateur
-export async function updateUser(username: string, email: string) {
+export async function updateUser(token: string | "", username:string, inputUsername: string, inputEmail: string) {
     try {
-        const response = await fetch("/api/users/update", {
+        // const response = await fetch("/api/users/update", {
+        const response = await fetch(`http://localhost:3000/users/username/${username}/update`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, email }),
+            body: JSON.stringify({ inputUsername, inputEmail }),
         });
-
+        const data = await response.json();
         if (!response.ok) {
             throw new Error(`Erreur HTTP : ${response.status}`);
         }
-
+        saveAuthData(token, data.user);
         console.log(`✅ Utilisateur ${username} mis à jour`);
         return true;
     } catch (error) {
@@ -93,7 +94,7 @@ export async function anonymizeUser(username: string, token: string | "") {
             body: JSON.stringify({ username }),
         });
         const data = await response.json();
-                if (!response.ok) throw new Error(data.error || "Erreur de connexion");
+        if (!response.ok) throw new Error(data.error || "Erreur de connexion");
         
         saveAuthData(token, data.user);
         console.log("DATA ANONYMIZE = ", data);
