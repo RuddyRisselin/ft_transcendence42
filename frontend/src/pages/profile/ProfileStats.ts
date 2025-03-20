@@ -13,7 +13,7 @@ export default function ProfileStats(): HTMLElement {
     statsList.className = "text-white text-sm space-y-2 flex flex-col items-center";
 
     const chartContainer = document.createElement("div");
-    chartContainer.className = "relative w-40 h-40 mt-4"; // Réduction de la taille du graphique
+    chartContainer.className = "relative w-40 h-40 mt-4";
 
     async function fetchStats() {
         if (!state.user) {
@@ -57,7 +57,7 @@ export default function ProfileStats(): HTMLElement {
     function renderChart(wins, losses) {
         chartContainer.innerHTML = "";
         const canvas = document.createElement("canvas");
-        canvas.className = "max-w-40 max-h-40"; // Ajout d'une taille max au canvas
+        canvas.className = "max-w-40 max-h-40";
         chartContainer.appendChild(canvas);
 
         new Chart(canvas, {

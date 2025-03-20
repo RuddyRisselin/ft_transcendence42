@@ -8,11 +8,9 @@ export default function Leaderboard(): HTMLElement {
     title.innerText = "Leaderboard";
     title.className = "text-2xl font-bold mb-4";
 
-    // Conteneur du podium
     const podiumContainer = document.createElement("div");
     podiumContainer.className = "relative flex justify-center items-end mb-6 w-full h-48";
 
-    // Liste des joueurs sous le podium
     const leaderboardList = document.createElement("div");
     leaderboardList.className = "w-full flex flex-col space-y-2";
 
@@ -23,11 +21,10 @@ export default function Leaderboard(): HTMLElement {
 
             leaderboardList.innerHTML = "";
 
-            // Positions du podium (ajustées pour mieux aligner)
             const podiumPositions = [
-                "absolute top-4 left-1/2 transform -translate-x-1/2",  // 1er place
-                "absolute top-12 left-1/3",  // 2e place
-                "absolute top-16 right-1/3"  // 3e place
+                "absolute top-4 left-1/2 transform -translate-x-1/2",  // 1st
+                "absolute top-12 left-1/3",  // 2
+                "absolute top-16 right-1/3"  // 3
             ];
             const podiumWidths = ["w-20", "w-16", "w-16"];
 

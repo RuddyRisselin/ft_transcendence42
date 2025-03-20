@@ -91,7 +91,6 @@ export default function MatchHistory(): HTMLElement {
                 return;
             }
     
-            // 🔹 Récupérer les noms des joueurs en une seule requête
             const allPlayerIds = new Set<number>();
             tournaments.forEach(tournament => {
                 const players = typeof tournament.players === "string" 
@@ -112,7 +111,6 @@ export default function MatchHistory(): HTMLElement {
     
                 const date = new Date(tournament.created_at).toLocaleDateString();
     
-                // 🔹 Assurer que players et ranking sont bien des tableaux
                 const players = typeof tournament.players === "string"
                     ? JSON.parse(tournament.players)
                     : tournament.players;
@@ -121,10 +119,8 @@ export default function MatchHistory(): HTMLElement {
                     ? (typeof tournament.ranking === "string" ? JSON.parse(tournament.ranking) : tournament.ranking)
                     : null;
     
-                // 🔹 Convertir les IDs en noms de joueurs
                 const playerNames = players.map(playerId => userMap.get(playerId) || "Inconnu");
     
-                // Trouver la position du joueur connecté
                 let userPosition = ranking ? ranking.indexOf(state.user.id) + 1 : null;
                 let positionText = "Non classé";
                 let positionColor = "bg-gray-600";
@@ -165,8 +161,6 @@ export default function MatchHistory(): HTMLElement {
             historyContainer.innerHTML = "<p class='text-red-500'>Erreur de chargement des tournois.</p>";
         }
     }
-    
-
     fetchMatchHistory();
 
     tabsContainer.append(tabMatches, tabTournaments);
