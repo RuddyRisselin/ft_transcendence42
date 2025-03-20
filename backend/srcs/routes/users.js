@@ -66,7 +66,8 @@ async function userRoutes(fastify) {
   // 🔹 Update un utilisateur
   fastify.patch("/users/username/:username/update", async (request, reply) => {
     const { username } = request.params;
-    const { username: inputUsername, email: inputEmail } = request.body;
+    const inputUsername = request.body.inputUsername;
+    const inputEmail = request.body.inputEmail;
     console.log ("UPDATE Username = " + inputUsername);
     console.log ("UPDATE Email = " + inputEmail);
     try
@@ -77,10 +78,24 @@ async function userRoutes(fastify) {
         console.log("❌ Utilisateur introuvable");
         return reply.status(404).send({ error: "Utilisateur non trouvé." });
       }
-      // db.prepare("DELETE FROM matches WHERE player1_id = ? OR player2_id = ?").run(user.id, user.id)
-      // db.prepare("DELETE FROM users WHERE username = ?").run(username);
-      console.log("✅ Utilisateur mis a jour avec succès");
-      return { message: "Utilisateur mis a jour avec succès!" };
+      if (user.anonymize === 0)
+      {
+        const updateUser = db.prepare("UPDATE users SET username = ?, email = ? WHERE username = ?").run(inputUsername, inputEmail, username);
+        if (!updateUser)
+          {
+            console.log("User already exist or private");
+            return reply.status(400).send({ error: "User already exist" });
+          }
+          user.username = inputUsername;
+          user.email = inputEmail;
+          console.log("✅ Utilisateur mis a jour avec succès");
+          return { message: "Utilisateur mis a jour avec succès!", user };
+      }
+      else
+      {
+        console.log("User is private, you don't update your profile");
+        return reply.status(400).send({ error: "User is private, you don't update your profile" });
+      }
     }
     catch (error)
     {
