@@ -94,6 +94,29 @@ export default function ProfileForm(): HTMLElement {
                 alert("Une erreur est survenue !");
             }
     };
-    container.append(title, avatar, username, email, saveBtn, anonymizeBtn, deleteBtn);
+
+    const image = document.createElement("img");
+    // image.src = "http://localhost:3000/generate-2fa";
+        fetch("http://localhost:3000/2FA/generate-2fa", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: state.user.id, username: state.user.username })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.qrCode) {
+                image.src = data.qrCode; // Utilise la valeur base64 du QR Code
+            } else {
+                console.error("QR Code non reçu du serveur");
+            }
+        })
+        .catch(error => console.error("Erreur lors de la récupération du QR Code:", error));
+    
+    
+
+
+
+
+    container.append(title, avatar, username, email, saveBtn, anonymizeBtn, deleteBtn, image);
     return container;
 }
