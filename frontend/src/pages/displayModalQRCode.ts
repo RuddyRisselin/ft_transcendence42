@@ -1,10 +1,11 @@
-import {  getQrcode } from "../services/userService";
+import {  getQrcode, update2FAOff } from "../services/userService";
 
 export function    displayModalQRCode(btnQRCode , userId, username, container)
 {
 
     btnQRCode.onclick = async () => 
     {
+        console.log("BTN CHECKED = ", btnQRCode.checked);
         if (btnQRCode.checked)
         {
             try
@@ -32,9 +33,6 @@ export function    displayModalQRCode(btnQRCode , userId, username, container)
                 
                 divQrcode.appendChild(divImageQr);
                 
-                /*      CHECKER DANS LA DB SI 2FAENABLED ON
-                SI NON getQROCDE
-                SI OUI get dans la DB           */
                 const image = document.createElement("img");
                 getQrcode(userId, username).then((data) => {
                     if (data)
@@ -74,7 +72,9 @@ export function    displayModalQRCode(btnQRCode , userId, username, container)
         }
         else
         {
-            container.removeChild("divQrcode");
+            console.log("JUST BEFORE CALLING update2FAOff");
+            update2FAOff(userId, username);
+            alert("La double authentification à était désactivé");
         }
 
     };

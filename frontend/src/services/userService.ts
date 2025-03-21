@@ -135,7 +135,19 @@ export async function getQrcode(userId : number, username : string)
     })
     .then(response => response.json())
     .then(data => data.qrCode)
-    .catch(error => console.error("Erreur lors de la récupération du QR Code:", error));
-        
+    .catch(error => console.error("Erreur lors de la récupération du QR Code:", error));    
+}
+
+
+export async function update2FAOff(userId : number, username : string)
+{
+    console.log("BEFORE disable-2FA");
+    return fetch("http://localhost:3000/2FA/disable-2fa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({userId, username})
+    })
+    .then(response => response.json())
+    .catch(error => console.error("Erreur lors de la désacivation du 2FA:", error));   
 }
 

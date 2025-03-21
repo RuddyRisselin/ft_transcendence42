@@ -72,11 +72,13 @@ async function twoFaRoutes(fastify) {
     if (!userId) {
       return reply.status(400).send({ error: 'userId est requis' });
     }
+
+    db.prepare("UPDATE users SET is2FAEnabled = 0 WHERE username = ?").run(username);
   
-    await fastify.pg.query(
-      'UPDATE users SET twoFASecret = NULL, is2FAEnabled = 0 WHERE id = $1',
-      [userId]
-    );
+    // await fastify.pg.query(
+    //   'UPDATE users SET twoFASecret = NULL, is2FAEnabled = 0 WHERE id = $1',
+    //   [userId]
+    // );
   
     return reply.send({ success: true });
   });
