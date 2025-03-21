@@ -1,5 +1,6 @@
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
+const db = require("../database/db");
 
 const userSecrets = {}; // Pour stocker temporairement les secrets
 
@@ -20,10 +21,24 @@ async function twoFaRoutes(fastify) {
 
     userSecrets[userId] = secret;
 
-    try {
-      const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url);
-      return reply.send({ qrCode: qrCodeUrl, secret: secret.base32 });
-    } catch (error) {
+    try 
+    {
+      const user = db.prepare("SELECT twoFASecret FROM users WHERE username = ?").get(username);
+      if (!user.twoFASecret)
+      {
+        const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url);
+        db.prepare("UPDATE users SET twoFASecret = ? WHERE username = ?").run(qrCodeUrl, username);
+        db.prepare("UPDATE users SET is2FAEnabled = 1 WHERE username = ?").run(username);
+        return reply.send({ qrCode: qrCodeUrl, secret: secret.base32 });
+      }
+      else
+      {
+        const qrCodeUrl = user.twoFASecret;
+        db.prepare("UPDATE users SET is2FAEnabled = 1 WHERE username = ?").run(username);
+        return reply.send({ qrCode: qrCodeUrl, secret: secret.base32 });
+      }
+    }
+    catch (error) {
       return reply.status(500).send({ error: 'Erreur lors de la génération du QR Code.' });
     }
   });

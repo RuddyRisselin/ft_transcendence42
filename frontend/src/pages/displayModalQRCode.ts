@@ -73,6 +73,9 @@ export function    displayModalQRCode(btnQRCode , userId, username, container)
             }
         }
         else
+        {
             container.removeChild("divQrcode");
+        }
+
     };
 }
