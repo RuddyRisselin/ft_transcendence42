@@ -1,4 +1,4 @@
-import { log } from "console";
+// import { log } from "console";
 import { saveAuthData } from "./auth";
 import { state } from "../../src/state";
 

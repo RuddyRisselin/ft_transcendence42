@@ -1,6 +1,7 @@
 import { state } from "../../state";
 import { updateUser, deleteUser, anonymizeUser, getQrcode } from "../../services/userService";
 import { logout } from "../../services/auth";
+import { displayModalQRCode } from "../displayModalQRCode";
 
 export default function ProfileForm(): HTMLElement {
     const container = document.createElement("div");
@@ -95,52 +96,28 @@ export default function ProfileForm(): HTMLElement {
             }
     };
 
-    const btnQRCode = document.createElement("button");
-    btnQRCode.innerHTML = "QRCODE";
-    const image = document.createElement("img");
-    btnQRCode.onclick = async () => {
-        try{
-            image.style.position = "absolute";
-            image.style.top = "50%";
-            image.style.left = "50%";
-            image.style.width = " 200px";
-            image.style.zIndex = "40";
-            getQrcode(state.user.id, state.user.username).then((data) =>{
-                console.log("STATE ", state);
-                if (data)
-                    image.src = data;
-                container.append(image);
-            });
-            console.log(image.src);
-        }
-        catch (error) {
-            console.error("❌ Erreur QRcode :", error);
-            alert("Erreur QRcode");
-        }
-        // const image = document.createElement("img");
-    };
 
+    const div2FA = document.createElement("div");
+    div2FA.classList.add("flex-box");
+    const span2FA = document.createElement("span");
+    span2FA.innerHTML = "Activate 2FA";
+    span2FA.style.marginRight = "10px";
+    div2FA.appendChild(span2FA);
 
-    // const image = document.createElement("img");
-    //     fetch("http://localhost:3000/2FA/generate-2fa", {
-    //         method: "POST",
-    //         headers: { "Content-Type": "application/json" },
-    //         body: JSON.stringify({ userId: state.user.id, username: state.user.username })
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         if (data.qrCode) {
-    //             image.src = data.qrCode; // Utilise la valeur base64 du QR Code
-    //         } else {
-    //             console.error("QR Code non reçu du serveur");
-    //         }
-    //     })
-    //     .catch(error => console.error("Erreur lors de la récupération du QR Code:", error));
+    const labelBtn = document.createElement("label");
+    labelBtn.classList.add("switch");
+    labelBtn.classList.add("btnQrCode");
+    const btnQRCode = document.createElement("input");
+    btnQRCode.type = "checkbox";
+    labelBtn.appendChild(btnQRCode);
+    const spanQrcode = document.createElement("span");
+    labelBtn.appendChild(spanQrcode);
+    div2FA.appendChild(labelBtn);
+
+    displayModalQRCode(btnQRCode, state.user.id, state.user.username, container);
     
     
 
-
-
-    container.append(title, avatar, username, email, saveBtn, anonymizeBtn, deleteBtn, btnQRCode, image);
+    container.append(title, avatar, username, email, saveBtn, anonymizeBtn, deleteBtn, div2FA);
     return container;
 }
