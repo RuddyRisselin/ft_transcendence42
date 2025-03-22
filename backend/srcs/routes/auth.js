@@ -59,19 +59,14 @@ async function authRoutes(fastify) {
     return reply.send({ message: "Connexion réussie!", token, user });
   });
 
-  // 🔹 Route pour valider le 2FA et générer le JWT
   fastify.post("/validate-2fa", async (request, reply) => {
     // const { userId, token } = request.body;
     const username = request.body.username;
     const codeOTP = request.body.codeOTP;
-    // Recherche de l'utilisateur
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
     if (!user || !user.twoFASecret) {
       return reply.status(400).send({ error: "Utilisateur introuvable ou 2FA non activé." });
     }
-    
-    console.log("username = ", username);
-    console.log("codeOTP = ", codeOTP);
     // Vérification du code OTP
     const isValid = speakeasy.totp.verify({
       secret: user.twoFASecret,
@@ -81,8 +76,7 @@ async function authRoutes(fastify) {
     });
 
     if (!isValid) {
-      console.log("!!!!!!!!!!!!!ISVALID");
-      return reply.status(400).send({ error: "Code OTP invalide." });
+      return reply.status(400).send({ error: "Code 2FA invalide." });
     }
 
     // Génération du JWT après validation du 2FA

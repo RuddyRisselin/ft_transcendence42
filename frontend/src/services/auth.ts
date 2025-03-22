@@ -96,7 +96,6 @@ export async function login(username: string, password: string, redirection: boo
         if (!response.ok) throw new Error(data.error || "Erreur de connexion");
 
         // Sauvegarde les informations utilisateur
-        saveAuthData(data.token, data.user);
         if (data.requires2FA)
         {
             const codeOTP: string | null = prompt("Code 2FA :");
@@ -120,7 +119,7 @@ export async function login(username: string, password: string, redirection: boo
                 window.location.href = "/dashboard";
             return ;
         }
-        // Connexion WebSocket après login
+        saveAuthData(data.token, data.user);
         connectToWebSocket(data.user.id, (message) => {
             console.log("📩 Message WebSocket reçu :", message);
         });
