@@ -23,17 +23,18 @@ async function twoFaRoutes(fastify) {
 
     try 
     {
-      const user = db.prepare("SELECT twoFASecret FROM users WHERE username = ?").get(username);
-      if (!user.twoFASecret)
+      const user = db.prepare("SELECT qrCodeUrl FROM users WHERE username = ?").get(username);
+      if (!user.qrCodeUrl)
       {
         const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url);
-        db.prepare("UPDATE users SET twoFASecret = ? WHERE username = ?").run(qrCodeUrl, username);
+        db.prepare("UPDATE users SET qrCodeUrl = ? WHERE username = ?").run(qrCodeUrl, username);
+        db.prepare("UPDATE users SET twoFASecret = ? WHERE username = ?").run(secret.base32, username);
         db.prepare("UPDATE users SET is2FAEnabled = 1 WHERE username = ?").run(username);
         return reply.send({ qrCode: qrCodeUrl, secret: secret.base32 });
       }
       else
       {
-        const qrCodeUrl = user.twoFASecret;
+        const qrCodeUrl = user.qrCodeUrl;
         db.prepare("UPDATE users SET is2FAEnabled = 1 WHERE username = ?").run(username);
         return reply.send({ qrCode: qrCodeUrl, secret: secret.base32 });
       }
@@ -57,7 +58,7 @@ async function twoFaRoutes(fastify) {
     });
   
     await fastify.pg.query(
-      'UPDATE users SET twoFASecret = $1, is2FAEnabled = 1 WHERE id = $2',
+      'UPDATE users SET qrCodeUrl = $1, is2FAEnabled = 1 WHERE id = $2',
       [secret.base32, userId]
     );
   

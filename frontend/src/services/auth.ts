@@ -89,7 +89,7 @@ export async function login(username: string, password: string, redirection: boo
         const response = await fetch("http://localhost:3000/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username, password}),
         });
 
         const data = await response.json();
@@ -97,7 +97,29 @@ export async function login(username: string, password: string, redirection: boo
 
         // Sauvegarde les informations utilisateur
         saveAuthData(data.token, data.user);
-
+        if (data.requires2FA)
+        {
+            const codeOTP: string | null = prompt("Code 2FA :");
+            const response = await fetch("http://localhost:3000/validate-2fa", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password, codeOTP }),
+            });
+            const data = await response.json();
+            if (data.error)
+            {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+            }
+            if (!response.ok) throw new Error(data.error || "Erreur de connexion");
+            saveAuthData(data.token, data.user);
+            connectToWebSocket(data.user.id, (message) => {
+                console.log("📩 Message WebSocket reçu :", message);
+            });
+            if (redirection)
+                window.location.href = "/dashboard";
+            return ;
+        }
         // Connexion WebSocket après login
         connectToWebSocket(data.user.id, (message) => {
             console.log("📩 Message WebSocket reçu :", message);

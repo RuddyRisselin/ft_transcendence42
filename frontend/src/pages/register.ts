@@ -2,6 +2,8 @@ import { register, login } from "../services/auth";
 import { navigateTo } from "../router";
 
 export default function Register() {
+    if (localStorage.getItem("user"))
+        window.location.href = "/dashboard";
     const form = document.createElement("form");
     form.className = "flex flex-col items-center p-6 bg-gray-900 text-white rounded-xl shadow-lg w-96 mx-auto mt-20 border border-gray-700";
 

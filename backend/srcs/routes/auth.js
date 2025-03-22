@@ -1,6 +1,7 @@
 const db = require("../database/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const speakeasy = require("speakeasy");
 
 async function authRoutes(fastify) {
   // 🔹 Route d'inscription
@@ -35,7 +36,7 @@ async function authRoutes(fastify) {
 
   // 🔹 Route de connexion
   fastify.post("/login", async (request, reply) => {
-    const { username, password } = request.body;
+    const { username, password, codeOTP } = request.body;
 
     // Recherche de l'utilisateur
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
@@ -48,36 +49,39 @@ async function authRoutes(fastify) {
     if (!isValid) {
       return reply.status(401).send({ error: "Mot de passe incorrect." });
     }
-
     // Vérification si le 2FA est activé
     if (user.is2FAEnabled) {
       return reply.send({ requires2FA: true, userId: user.id });
     }
-
+    // db.prepare("UPDATE users SET is2FAEnabled = 0").run();
     // Génération du token JWT
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET || "supersecretkey");
-    // db.prepare("UPDATE users SET is2FAEnabled = 1 WHERE username = ?").run(username);
     return reply.send({ message: "Connexion réussie!", token, user });
   });
 
   // 🔹 Route pour valider le 2FA et générer le JWT
   fastify.post("/validate-2fa", async (request, reply) => {
-    const { userId, token } = request.body;
-
+    // const { userId, token } = request.body;
+    const username = request.body.username;
+    const codeOTP = request.body.codeOTP;
     // Recherche de l'utilisateur
-    const user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
+    const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
     if (!user || !user.twoFASecret) {
       return reply.status(400).send({ error: "Utilisateur introuvable ou 2FA non activé." });
     }
-
+    
+    console.log("username = ", username);
+    console.log("codeOTP = ", codeOTP);
     // Vérification du code OTP
     const isValid = speakeasy.totp.verify({
       secret: user.twoFASecret,
       encoding: "base32",
-      token,
+      token: codeOTP,
+      window: 1,
     });
 
     if (!isValid) {
+      console.log("!!!!!!!!!!!!!ISVALID");
       return reply.status(400).send({ error: "Code OTP invalide." });
     }
 

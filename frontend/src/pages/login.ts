@@ -2,6 +2,8 @@ import { login } from "../services/auth";
 import { navigateTo } from "../router";
 
 export default function Login() {
+    if (localStorage.getItem("user"))
+        window.location.href = "/dashboard";
     // 🔴 Suppression immédiate de la sidebar si elle est présente
     const existingSidebar = document.querySelector(".sidebar");
     if (existingSidebar) {

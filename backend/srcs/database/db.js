@@ -45,7 +45,7 @@ try {
   if (!columnExists)
     db.exec(`ALTER TABLE users ADD COLUMN anonymize INTEGER NOT NULL CHECK(anonymize IN (0, 1)) DEFAULT 0;`);
   else
-    console.log("ℹLa colonne 'anonymize' existe déjà.");
+    console.log("La colonne 'anonymize' existe déjà.");
 
   const is2FAEnabledExists = db
   .prepare("PRAGMA table_info(users);")
@@ -55,7 +55,18 @@ try {
   if (!is2FAEnabledExists)
     db.exec(`ALTER TABLE users ADD COLUMN is2FAEnabled INTEGER NOT NULL CHECK(is2FAEnabled IN (0, 1)) DEFAULT 0;`);
   else
-    console.log("ℹLa colonne 'is2FAEnabled' existe déjà.");
+    console.log("La colonne 'is2FAEnabled' existe déjà.");
+
+
+  const qrCodeUrl = db
+  .prepare("PRAGMA table_info(users);")
+  .all()
+  .some(column => column.name === "qrCodeUrl");
+  
+  if (!qrCodeUrl)
+    db.exec(`ALTER TABLE users ADD COLUMN qrCodeUrl TEXT;`);
+  else
+    console.log("La colonne 'qrCodeUrl' existe déjà.");
 
   const twoFASecretExists = db
   .prepare("PRAGMA table_info(users);")
