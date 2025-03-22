@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Backend Fastify pour ft_transcendence",
   "main": "srcs/server.js",
-  "type":"commonjs",
+  "type": "commonjs",
   "scripts": {
     "prestart": "npm install",
     "start": "node srcs/server.js",
@@ -22,7 +22,9 @@
     "fastify-bcrypt": "^1.0.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.2",
-    "socket.io": "^4.8.1"
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1",
+    "speakeasy": "^2.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

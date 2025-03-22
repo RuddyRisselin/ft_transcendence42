@@ -21,6 +21,7 @@
   "dependencies": {
     "@fastify/websocket": "^11.0.2",
     "bcrypt": "^5.1.1",
+    "chart.js": "^4.4.8",
     "socket.io-client": "^4.8.1"
   }
 }
