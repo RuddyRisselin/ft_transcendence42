@@ -23,7 +23,7 @@ async function authRoutes(fastify) {
     try {
       const insert = db.prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
       const info = insert.run(username, email, hashedPassword);
-
+      db.prepare("UPDATE users SET avatar = ? WHERE username = ?").run("default.jpg", username);
       // Génération d'un token JWT
       const token = jwt.sign({ id: info.lastInsertRowid, username }, process.env.JWT_SECRET || "supersecretkey");
 

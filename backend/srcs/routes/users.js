@@ -104,6 +104,39 @@ async function userRoutes(fastify) {
     }
   });
 
+
+  fastify.patch("/users/username/:username/updatephoto", async (request, reply) => {
+    const { username, file } = request.body;
+    console.log("Username ===== ", username);
+    console.log("File ===== ", file);
+    try
+    {
+      const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+      if (!user)
+      {
+        console.log("❌ Utilisateur introuvable");
+        return reply.status(404).send({ error: "Utilisateur non trouvé." });
+      }
+      if (user.anonymize === 0)
+      {
+        const updateUser = db.prepare("UPDATE users SET avatar = ? WHERE username = ?").run(file, username);
+        user.avatar = file;
+        console.log("✅ Utilisateur mis a jour avec succès");
+        return { message: "Utilisateur mis a jour avec succès!", user };
+      }
+      else
+      {
+        console.log("User is private, you don't update your profile");
+        return reply.status(400).send({ error: "User is private, you don't update your profile" });
+      }
+    }
+    catch (error)
+    {
+      console.error("Erreur lors de la mis a jour de l'utilisateur :", error);
+      return reply.status(500).send({ error: "Erreur serveur." });
+    }
+  });
+
   // 🔹 Supprimer un utilisateur
   fastify.delete("/users/username/:username", async (request, reply) => {
     const { username } = request.params;
@@ -138,25 +171,29 @@ async function userRoutes(fastify) {
         return reply.status(404).send({ error: "Utilisateur non trouver" });
       
       if (user.anonymize === 1)
-        {
-            db.prepare("UPDATE users SET anonymize = 0, username = ?, email = ? WHERE username = ?")
-            .run(username.split("_")[1], user.email.split("_")[1], username);
-            user.username = username.split("_")[1];
-            user.email = user.email.split("_")[1];
-        }
-        else
-        {
-          db.prepare("UPDATE users SET anonymize = 1 WHERE username = ?")
-          .run(username);
-          const anonymizeUsername = "anonymize_" + username;
-          const anonymizeEmail = "anonymize_" + user.email;
-          db.prepare("UPDATE users SET username = ?, email = ? WHERE username = ?")
-          .run(anonymizeUsername, anonymizeEmail, username);
-          user.username = anonymizeUsername;
-          user.email = anonymizeEmail;
-        }
-        const newAnonymize = user.anonymize === 1 ? 0 : 1;
-        user.anonymize = newAnonymize;
+      {
+          db.prepare("UPDATE users SET anonymize = 0, username = ?, email = ? WHERE username = ?")
+          .run(username.split("_")[1], user.email.split("_")[1], username);
+          user.username = username.split("_")[1];
+          user.email = user.email.split("_")[1];
+      }
+      else
+      {
+        db.prepare("UPDATE users SET anonymize = 1 WHERE username = ?")
+        .run(username);
+        const anonymizeUsername = "anonymize_" + username;
+        const anonymizeEmail = "anonymize_" + user.email;
+        console.log("anonymize user = ", anonymizeUsername);
+        console.log("anonymize email = ", anonymizeEmail);
+        console.log("username = ", username);
+        db.prepare("UPDATE users SET username = ?, email = ?, avatar = ? WHERE username = ?")
+        .run(anonymizeUsername, anonymizeEmail, "default.jpg", username);
+        user.username = anonymizeUsername;
+        user.email = anonymizeEmail;
+        user.avatar = "default.jpg";
+      }
+      const newAnonymize = user.anonymize === 1 ? 0 : 1;
+      user.anonymize = newAnonymize;
       reply.send({ message: "Utilisateur anonymiser avec succes", user });
     }
     catch (error)

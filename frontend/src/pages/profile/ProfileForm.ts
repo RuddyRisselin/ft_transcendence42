@@ -1,18 +1,76 @@
 import { state } from "../../state";
-import { updateUser, deleteUser, anonymizeUser } from "../../services/userService";
+import { updatePhotoUser, updateUser, deleteUser, anonymizeUser } from "../../services/userService";
+import { uploadFile } from "../../services/uploadFile";
 import { logout } from "../../services/auth";
 
 export default function ProfileForm(): HTMLElement {
     const container = document.createElement("div");
     container.className = "flex flex-col items-start p-6 bg-gray-900 text-white rounded-xl shadow-lg w-96 border border-gray-700";
 
-    const title = document.createElement("h2");
+    const title: HTMLHeadingElement = document.createElement("h2");
     title.innerText = "Profile Management";
     title.className = "text-3xl font-bold mb-4 text-left text-blue-400";
 
-    const avatar = document.createElement("img");
-    avatar.src = state.user.avatar || "default-avatar.png";
-    avatar.className = "w-24 h-24 rounded-full border-2 border-blue-400 mb-3";
+    const divAvatar: HTMLDivElement = document.createElement("div");
+    divAvatar.className = "flex flex-row justify-around items-center w-80";
+    const avatar: HTMLImageElement = document.createElement("img");
+    avatar.src = "http://localhost:3000/images/" + state.user.avatar || "http://localhost:3000/images/default.jpg";
+    avatar.className = "w-24 h-24 rounded-full border-2 border-blue-400 mb-3 mr-3";
+    divAvatar.appendChild(avatar);
+    const btnRequestPhoto: HTMLButtonElement = document.createElement("button");
+    btnRequestPhoto.innerHTML = "Change photo";
+    btnRequestPhoto.className = "bg-black rounded-md border h-10 p-2 font-bold";
+    divAvatar.appendChild(btnRequestPhoto);
+    const divUpdatePhoto: HTMLDivElement = document.createElement("div");
+    divUpdatePhoto.className = "hidden";
+    const form: HTMLFormElement = document.createElement("form");
+    form.method = "POST";
+    form.enctype = "multipart/form-data";
+    const labelFile: HTMLLabelElement = document.createElement("label");
+    labelFile.innerHTML = "Choose profile picture : ";
+    labelFile.className = "mb-3";
+    const inputFile: HTMLInputElement = document.createElement("input");
+    inputFile.type = "file";
+    inputFile.accept = ".png, .jpeg, .jpg";
+    const submitFile: HTMLButtonElement = document.createElement("button");
+    submitFile.innerHTML = "Update picture";
+    submitFile.className = "w-40 bg-blue-500 rounded mt-2 p-1";
+    form.appendChild(labelFile);
+    form.appendChild(inputFile);
+    form.appendChild(submitFile);
+    divUpdatePhoto.appendChild(form);
+    divAvatar.appendChild(divUpdatePhoto);
+
+    btnRequestPhoto.onclick = () => {
+        if (state.user.anonymize)
+            return alert("Your account must be in public !");
+        divUpdatePhoto.classList.remove("hidden");
+        btnRequestPhoto.classList.add("hidden");
+    }
+    submitFile.onclick = async (e) => {
+        e.preventDefault();
+        if (!inputFile.files?.length)
+            return alert("Image not valid");
+
+        const formData: FormData = new FormData();
+        formData.append('image', inputFile.files[0]);
+        console.log("FORMDATA : ", typeof formData);
+        const response = await uploadFile(formData);
+        if (!response || !response.filename)
+            return alert("Echec du telechargement de l'image");
+        const success = await updatePhotoUser(state.user.username, response.filename);
+        if (success) {
+            state.user.avatar = response.filename;
+            localStorage.setItem("user", JSON.stringify(state.user));
+            divUpdatePhoto.classList.add("hidden");
+            btnRequestPhoto.classList.remove("hidden");
+            window.location.reload();
+        } else {
+            alert("Error profile update impossible");
+        }
+
+    };
+
 
     const username = document.createElement("input");
     username.type = "text";
@@ -103,6 +161,6 @@ export default function ProfileForm(): HTMLElement {
                 alert("Une erreur est survenue !");
             }
     };
-    container.append(title, avatar, username, email, saveBtn, anonymizeBtn, deleteBtn);
+    container.append(title, divAvatar, username, email, saveBtn, anonymizeBtn, deleteBtn);
     return container;
 }

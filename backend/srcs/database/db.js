@@ -13,7 +13,7 @@ try {
           email TEXT UNIQUE NOT NULL,
           password TEXT NOT NULL,
           anonymize INTEGER NOT NULL CHECK(anonymize IN (0, 1)) DEFAULT 0,
-          avatar TEXT DEFAULT 'default.png',
+          avatar TEXT DEFAULT 'default.jpg',
           status TEXT CHECK( status IN ('online', 'offline', 'in-game') ) DEFAULT 'offline',
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );

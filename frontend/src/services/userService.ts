@@ -1,4 +1,4 @@
-import { log } from "console";
+// import { log } from "console";
 import { saveAuthData } from "./auth";
 
 // Cache pour éviter les requêtes inutiles
@@ -52,6 +52,26 @@ export async function updateUser(token: string | "", username:string, inputUsern
             throw new Error(`Erreur HTTP : ${response.status}`);
         }
         saveAuthData(token, data.user);
+        console.log(`✅ Utilisateur ${username} mis à jour`);
+        return true;
+    } catch (error) {
+        console.error("❌ Erreur lors de la mise à jour de l'utilisateur :", error);
+        return false;
+    }
+}
+
+export async function updatePhotoUser(username:string, file: string) {
+    try {
+        // const response = await fetch("/api/users/update", {
+        const response = await fetch(`http://localhost:3000/users/username/${username}/updatephoto`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, file }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP : ${response.status}`);
+        }
         console.log(`✅ Utilisateur ${username} mis à jour`);
         return true;
     } catch (error) {
