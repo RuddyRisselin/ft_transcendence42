@@ -13,7 +13,9 @@ export default function Sidebar(): HTMLElement {
 
     // Avatar
     const avatar = document.createElement("img");
-    avatar.src = state.user?.avatar ? `/api/avatars/${state.user.avatar}` : "/api/avatars/default.png";
+    // avatar.src = state.user?.avatar ? `/api/avatars/${state.user.avatar}` : "/api/avatars/default.png";
+    console.log("AVATAR = ", state.user.avatar);
+    avatar.src = "http://localhost:3000/images/" + state.user.avatar || "http://localhost:3000/images/default.jpg";
     avatar.className = "w-16 h-16 rounded-full border-2 border-white shadow-md";
 
     // Nom d'utilisateur

@@ -3,9 +3,12 @@ const websocket = require("@fastify/websocket");
 const configureServer = require("./config");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
+const uploadFileRoutes = require("./routes/uploadFile");
 const matchRoutes = require("./routes/matches");
 const gameWsRoutes = require("./websockets/gameWs");
 const tournamentRoutes = require("./routes/tournaments");
+const path = require("path");
+const fastifyStatic = require("@fastify/static");
 
 
 async function startServer() {
@@ -20,10 +23,15 @@ async function startServer() {
   // 🔹 Ajouter les routes API
   await fastify.register(authRoutes);
   await fastify.register(userRoutes);
+  await fastify.register(uploadFileRoutes);
   await fastify.register(matchRoutes);
   await fastify.register(gameWsRoutes);
   await fastify.register(tournamentRoutes);
 
+  fastify.register(fastifyStatic, {
+    root: path.join(__dirname, "../../images"),
+    prefix: "/images/",
+  });
   // ✅ Démarrer le serveur après configuration complète
   try {
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
