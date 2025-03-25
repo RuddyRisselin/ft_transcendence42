@@ -1,11 +1,10 @@
 import {  getQrcode, update2FAOff } from "../services/userService";
+import { state } from "../state";
 
 export function    displayModalQRCode(btnQRCode , userId, username, container)
 {
-
     btnQRCode.onclick = async () => 
     {
-        console.log("BTN CHECKED = ", btnQRCode.checked);
         if (btnQRCode.checked)
         {
             try
@@ -57,12 +56,13 @@ export function    displayModalQRCode(btnQRCode , userId, username, container)
                 divQrcode.appendChild(hrefAppIOS);
                 
                 container.append(divQrcode);
-                console.log(image.src);
                 
                 btnCross.onclick = async () => {
                     container.removeChild(divQrcode);
                     container.removeChild(bigD);
                 }
+                state.user.is2FAEnabled = 1;
+                localStorage.setItem("user", JSON.stringify(state.user));
             }
             catch (error) 
             {
@@ -71,11 +71,6 @@ export function    displayModalQRCode(btnQRCode , userId, username, container)
             }
         }
         else
-        {
-            console.log("JUST BEFORE CALLING update2FAOff");
             update2FAOff(userId, username);
-            alert("La double authentification à était désactivé");
-        }
-
     };
 }

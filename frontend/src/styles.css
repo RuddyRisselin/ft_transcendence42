@@ -212,9 +212,9 @@
 	transition: all .5s;
 }
 
-.switch input:checked + span:before {
+.switch input:checked + span:before 
+{
     left: 34px;
-    
 }
 
 input:checked + span
@@ -222,7 +222,7 @@ input:checked + span
     background-color: #66bb6a;
 
 }
-
+/* background-color: #66bb6a; */
 
 .divQrCode
 {

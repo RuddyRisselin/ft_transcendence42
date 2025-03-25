@@ -141,7 +141,6 @@ export async function getQrcode(userId : number, username : string)
 
 export async function update2FAOff(userId : number, username : string)
 {
-    console.log("BEFORE disable-2FA");
     return fetch("http://localhost:3000/2FA/disable-2fa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

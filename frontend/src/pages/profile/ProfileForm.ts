@@ -109,6 +109,8 @@ export default function ProfileForm(): HTMLElement {
     labelBtn.classList.add("btnQrCode");
     const btnQRCode = document.createElement("input");
     btnQRCode.type = "checkbox";
+    if (state.user.is2FAEnabled == 1)
+        btnQRCode.checked = true;
     labelBtn.appendChild(btnQRCode);
     const spanQrcode = document.createElement("span");
     labelBtn.appendChild(spanQrcode);
