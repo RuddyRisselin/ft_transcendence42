@@ -3,7 +3,11 @@ const multer = require('multer');
 
 async function uploadFileRoutes(fastify) {
 
-    fastify.register(require("@fastify/multipart"));
+    fastify.register(require("@fastify/multipart"), {
+        limits: {
+            fileSize: 50 * 1024 * 1024,
+        },
+    });
 
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
@@ -16,7 +20,10 @@ async function uploadFileRoutes(fastify) {
         },
     });
 
-    const upload = multer({ storage: storage });
+    const upload = multer({
+        storage: storage,
+        limits: { fileSize: 50 * 1024 * 1024}
+    });
 
     fastify.post('/uploadFile', async (req, reply) => {
         const data = await req.file();
