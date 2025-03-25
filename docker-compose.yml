@@ -2,15 +2,18 @@ version: '3.8'
 
 services:
   web:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
     container_name: nginx_ft_transcendence
     ports:
       - "8080:80"
-      - "443:443"
+      # - "443:443"
     volumes:
       - ./frontend/dist:/usr/share/nginx/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./docker/nginx/certs:/etc/nginx/certs
+      - ./docker/nginx/modsecurity.conf:/etc/modsecurity.conf
     depends_on:
       - backend
       - frontend
