@@ -9,4 +9,5 @@ export const state = {
         mode: "time" | "points"; // ✅ Ajout du mode de jeu
         target: number; // ✅ Objectif (durée en secondes ou points)
     } | null,
+    qrCode: localStorage.getItem("qrCode"),
 };

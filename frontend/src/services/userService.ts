@@ -1,5 +1,6 @@
 // import { log } from "console";
 import { saveAuthData } from "./auth";
+import { state } from "../../src/state";
 
 // Cache pour éviter les requêtes inutiles
 let cachedUsers: any[] = [];
@@ -144,5 +145,29 @@ export async function authenticateUser(username: string, password: string) {
     });
 
     return response.ok;
+}
+
+export async function getQrcode(userId : number, username : string)
+{
+    return fetch("http://localhost:3000/2FA/generate-2fa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({userId, username})
+    })
+    .then(response => response.json())
+    .then(data => data.qrCode)
+    .catch(error => console.error("Erreur lors de la récupération du QR Code:", error));    
+}
+
+
+export async function update2FAOff(userId : number, username : string)
+{
+    return fetch("http://localhost:3000/2FA/disable-2fa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({userId, username})
+    })
+    .then(response => response.json())
+    .catch(error => console.error("Erreur lors de la désacivation du 2FA:", error));   
 }
 

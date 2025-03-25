@@ -10,6 +10,7 @@ const tournamentRoutes = require("./routes/tournaments");
 const path = require("path");
 const fastifyStatic = require("@fastify/static");
 
+const twoFaRoutes = require('./routes/2FA');
 
 async function startServer() {
   const fastify = Fastify({ logger: true });
@@ -32,6 +33,8 @@ async function startServer() {
     root: path.join(__dirname, "../../images"),
     prefix: "/images/",
   });
+  await fastify.register(twoFaRoutes, { prefix: '/2FA' });
+
   // ✅ Démarrer le serveur après configuration complète
   try {
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
@@ -44,3 +47,19 @@ async function startServer() {
 
 // 🔹 Lancer le serveur Fastify
 startServer();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

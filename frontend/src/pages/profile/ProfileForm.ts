@@ -1,7 +1,8 @@
 import { state } from "../../state";
-import { updatePhotoUser, updateUser, deleteUser, anonymizeUser } from "../../services/userService";
+import { updatePhotoUser, updateUser, deleteUser, anonymizeUser, getQrcode } from "../../services/userService";
 import { uploadFile } from "../../services/uploadFile";
 import { logout } from "../../services/auth";
+import { displayModalQRCode } from "../displayModalQRCode";
 
 export default function ProfileForm(): HTMLElement {
     const container = document.createElement("div");
@@ -161,6 +162,31 @@ export default function ProfileForm(): HTMLElement {
                 alert("Une erreur est survenue !");
             }
     };
-    container.append(title, divAvatar, username, email, saveBtn, anonymizeBtn, deleteBtn);
+
+
+    const div2FA = document.createElement("div");
+    div2FA.classList.add("flex-box");
+    const span2FA = document.createElement("span");
+    span2FA.innerHTML = "Activate 2FA";
+    span2FA.style.marginRight = "10px";
+    div2FA.appendChild(span2FA);
+
+    const labelBtn = document.createElement("label");
+    labelBtn.classList.add("switch");
+    labelBtn.classList.add("btnQrCode");
+    const btnQRCode = document.createElement("input");
+    btnQRCode.type = "checkbox";
+    if (state.user.is2FAEnabled == 1)
+        btnQRCode.checked = true;
+    labelBtn.appendChild(btnQRCode);
+    const spanQrcode = document.createElement("span");
+    labelBtn.appendChild(spanQrcode);
+    div2FA.appendChild(labelBtn);
+
+    displayModalQRCode(btnQRCode, state.user.id, state.user.username, container);
+    
+    
+
+    container.append(title, divAvatar, username, email, saveBtn, anonymizeBtn, deleteBtn, div2FA);
     return container;
 }

@@ -145,3 +145,118 @@
     margin-right: 10px;
     font-size: 20px;
 }
+
+
+.btnQrCode
+{
+    border: 2px solid black;
+    border-radius: 34px;
+    
+    
+    cursor: pointer;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.flex-box
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    padding: auto;
+    margin-top: 5px;
+}
+
+.switch {
+	display: inline-block;
+	position: relative;
+	width: 70px;
+	height: 40px;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.switch input {
+	position: absolute;
+	top: -30px;
+	left: -30px;
+	width: 0;
+	height: 0;
+}
+
+.switch input + span {
+    position: absolute;
+   top: 0;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   background: #99b4df;
+   border-radius: 20px;
+}
+
+.switch input + span:before {
+	content: "";
+	display: inline-block;
+	position: absolute;
+	top: 50%;
+	left: 4px;
+	width: 32px;
+	height: 32px;
+	background: white;
+	border-radius: 50%;
+	transform: translateY(-50%);
+	transition: all .5s;
+}
+
+.switch input:checked + span:before 
+{
+    left: 34px;
+}
+
+input:checked + span
+{
+    background-color: #66bb6a;
+
+}
+/* background-color: #66bb6a; */
+
+.divQrCode
+{
+    position:  absolute;
+    top : 25%;
+    left:  40%;
+    width :  300px;
+    background-color: grey;
+    border: 2px solid white;
+    border-radius: 10px;
+    z-index: 2;
+    text-align: center;
+    padding: 20px;
+}
+
+.divQrCode a
+{
+    color: blue;
+    text-decoration: underline;
+}
+
+.divImageQr
+{
+    display: flex;
+    justify-content: center;
+}
+
+.bigD
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: rgba(128, 128, 128, 0.281);
+}
