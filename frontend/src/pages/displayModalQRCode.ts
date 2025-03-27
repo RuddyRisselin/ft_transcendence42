@@ -71,6 +71,14 @@ export function    displayModalQRCode(btnQRCode , userId, username, container)
             }
         }
         else
-            update2FAOff(userId, username);
+        {
+            update2FAOff(userId, username).then ((user) => {
+                if (user)
+                {
+                    state.user.is2FAEnabled = user.is2FAEnabled;
+                    localStorage.setItem("user", JSON.stringify(state.user))
+                }
+            });
+        }
     };
 }

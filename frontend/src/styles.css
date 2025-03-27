@@ -146,83 +146,66 @@
     font-size: 20px;
 }
 
+/* ======================== */
+/* Switch Toggle 2FA        */
+/* ======================== */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
 
-.btnQrCode
-{
-    border: 2px solid black;
-    border-radius: 34px;
-    
-    
+/* Cache le checkbox HTML */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Le curseur/slider */
+.slider {
+    position: absolute;
     cursor: pointer;
-    background-color: #ccc;
-    -webkit-transition: .4s;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #374151;
     transition: .4s;
 }
 
-.flex-box
-{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    padding: auto;
-    margin-top: 5px;
-}
-
-.switch {
-	display: inline-block;
-	position: relative;
-	width: 70px;
-	height: 40px;
-	cursor: pointer;
-	overflow: hidden;
-}
-
-.switch input {
-	position: absolute;
-	top: -30px;
-	left: -30px;
-	width: 0;
-	height: 0;
-}
-
-.switch input + span {
+.slider:before {
     position: absolute;
-   top: 0;
-   bottom: 0;
-   left: 0;
-   right: 0;
-   background: #99b4df;
-   border-radius: 20px;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
 }
 
-.switch input + span:before {
-	content: "";
-	display: inline-block;
-	position: absolute;
-	top: 50%;
-	left: 4px;
-	width: 32px;
-	height: 32px;
-	background: white;
-	border-radius: 50%;
-	transform: translateY(-50%);
-	transition: all .5s;
+input:checked + .slider {
+    background-color: #10B981;
 }
 
-.switch input:checked + span:before 
-{
-    left: 34px;
+input:focus + .slider {
+    box-shadow: 0 0 1px #10B981;
 }
 
-input:checked + span
-{
-    background-color: #66bb6a;
-
+input:checked + .slider:before {
+    transform: translateX(30px);
 }
-/* background-color: #66bb6a; */
+
+/* Slider arrondi */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
 
 .divQrCode
 {

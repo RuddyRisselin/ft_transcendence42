@@ -13,7 +13,7 @@ async function configureServer(fastify) {
   });
 
   await fastify.register(jwt, {
-    secret: process.env.JWT_SECRET || "supersecretkey",
+    secret: process.env.JWT_SECRET,
   });
 
   await fastify.register(bcrypt, {
