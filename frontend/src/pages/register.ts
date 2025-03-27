@@ -26,6 +26,11 @@ export default function Register() {
     password.placeholder = "Mot de passe";
     password.className = "input-style";
 
+    const confirmPassword = document.createElement("input");
+    confirmPassword.type = "password";
+    confirmPassword.placeholder = "Confirmer le mot de passe";
+    confirmPassword.className = "input-style";
+
     const errorMsg = document.createElement("p");
     errorMsg.className = "text-red-500 text-sm mt-2 hidden";
 
@@ -37,6 +42,8 @@ export default function Register() {
         errorMsg.classList.add("hidden");
 
         try {
+            if (password.value != confirmPassword.value)
+                throw new Error("Les mots de passe ne sont pas identiques");
             await register(username.value, email.value, password.value);
             await login(username.value, password.value, true);
             navigateTo(new Event("click"), "/dashboard");
@@ -47,6 +54,14 @@ export default function Register() {
         }
     };
 
-    form.append(title, username, email, password, errorMsg, submit);
+    const loginLink = document.createElement("a");
+    loginLink.innerText = "Deja inscrit ?";
+    loginLink.className = "text-blue-400 hover:underline mt-3 cursor-pointer";
+    loginLink.onclick = (e) => {
+        e.preventDefault();
+        navigateTo(new Event("click"), "/login");
+    };
+
+    form.append(title, username, email, password, confirmPassword, errorMsg, submit, loginLink);
     return form;
 }
