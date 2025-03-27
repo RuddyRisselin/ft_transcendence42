@@ -75,13 +75,8 @@ async function twoFaRoutes(fastify) {
     }
 
     db.prepare("UPDATE users SET is2FAEnabled = 0 WHERE username = ?").run(username);
-  
-    // await fastify.pg.query(
-    //   'UPDATE users SET twoFASecret = NULL, is2FAEnabled = 0 WHERE id = $1',
-    //   [userId]
-    // );
-  
-    return reply.send({ success: true });
+    const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+    return reply.send({ success: true, user});
   });
 }
 
