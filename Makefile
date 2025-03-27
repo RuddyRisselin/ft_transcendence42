@@ -8,6 +8,4 @@ down:
 	docker rmi -f ft_transcendence42-backend
 	docker system prune -af --volumes
 
-rebuild:
-	all
-	down
+rebuild: all down
