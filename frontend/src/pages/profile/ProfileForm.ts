@@ -102,7 +102,6 @@ export default function ProfileForm(): HTMLElement {
         if (success) {
             state.user.username = username.value;
             state.user.email = email.value;
-            alert("Profile updated!");
         } else {
             alert("Error profile update impossible");
         }
@@ -117,14 +116,12 @@ export default function ProfileForm(): HTMLElement {
             {
                 const success = await deleteUser(state.user.username);
                 if (success) {
-                    alert("Profil deleted!");
                     await logout();
                 } else {
                     alert("Error delete profil");
                 }
             }
             } catch (error) {
-                console.error("❌ Erreur inattendue :", error);
                 alert("Une erreur est survenue !");
             }
     };
@@ -145,20 +142,15 @@ export default function ProfileForm(): HTMLElement {
             {
                 const success = await anonymizeUser(state.user.username, token);
                 if (success && anonymizeBtn.textContent === "Going private") {
-                    alert("Your profil is private!");
                     anonymizeBtn.innerText = "Going public";
                 }
                 else if (success && anonymizeBtn.textContent === "Going public")
-                {
-                    alert("Your profil is public!");
                     anonymizeBtn.innerText = "Going private";
-                }
                 else
                     alert("Error request profil");
                 window.location.reload();
             }
             } catch (error) {
-                console.error("❌ Erreur inattendue :", error);
                 alert("Une erreur est survenue !");
             }
     };
