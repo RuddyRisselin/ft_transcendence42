@@ -260,3 +260,7 @@ input:checked + span
     z-index: 1;
     background-color: rgba(128, 128, 128, 0.281);
 }
+
+html, body {
+    overflow: hidden;
+}
