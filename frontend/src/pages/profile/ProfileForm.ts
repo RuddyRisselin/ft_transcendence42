@@ -6,36 +6,41 @@ import { displayModalQRCode } from "../displayModalQRCode";
 
 export default function ProfileForm(): HTMLElement {
     const container = document.createElement("div");
-    container.className = "flex flex-col items-start p-6 bg-gray-900 text-white rounded-xl shadow-lg w-96 border border-gray-700";
+    container.className = "flex flex-col items-center p-6 bg-gray-800 text-white rounded-xl shadow-lg w-full h-full";
 
     const title: HTMLHeadingElement = document.createElement("h2");
     title.innerText = "Profile Management";
-    title.className = "text-3xl font-bold mb-4 text-left text-blue-400";
+    title.className = "text-2xl text-blue-400 font-bold mb-6";
 
     const divAvatar: HTMLDivElement = document.createElement("div");
-    divAvatar.className = "flex flex-row justify-around items-center w-80";
+    divAvatar.className = "flex flex-col items-center justify-center w-full mb-6";
+    
     const avatar: HTMLImageElement = document.createElement("img");
     avatar.src = "http://localhost:3000/images/" + state.user.avatar || "http://localhost:3000/images/default.jpg";
-    avatar.className = "w-24 h-24 rounded-full border-2 border-blue-400 mb-3 mr-3";
+    avatar.className = "w-24 h-24 rounded-full border-2 border-blue-400 mb-4";
     divAvatar.appendChild(avatar);
+    
     const btnRequestPhoto: HTMLButtonElement = document.createElement("button");
     btnRequestPhoto.innerHTML = "Change photo";
-    btnRequestPhoto.className = "bg-black rounded-md border h-10 p-2 font-bold";
+    btnRequestPhoto.className = "bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2 font-semibold text-sm";
     divAvatar.appendChild(btnRequestPhoto);
+    
     const divUpdatePhoto: HTMLDivElement = document.createElement("div");
-    divUpdatePhoto.className = "hidden";
+    divUpdatePhoto.className = "hidden w-full";
     const form: HTMLFormElement = document.createElement("form");
     form.method = "POST";
     form.enctype = "multipart/form-data";
+    form.className = "w-full";
     const labelFile: HTMLLabelElement = document.createElement("label");
     labelFile.innerHTML = "Choose profile picture : ";
-    labelFile.className = "mb-3";
+    labelFile.className = "mb-3 text-sm";
     const inputFile: HTMLInputElement = document.createElement("input");
     inputFile.type = "file";
     inputFile.accept = ".png, .jpeg, .jpg";
+    inputFile.className = "text-sm w-full mb-2";
     const submitFile: HTMLButtonElement = document.createElement("button");
     submitFile.innerHTML = "Update picture";
-    submitFile.className = "w-40 bg-blue-500 rounded mt-2 p-1";
+    submitFile.className = "w-full bg-blue-500 hover:bg-blue-600 rounded py-2 px-4 text-sm";
     form.appendChild(labelFile);
     form.appendChild(inputFile);
     form.appendChild(submitFile);
@@ -69,35 +74,43 @@ export default function ProfileForm(): HTMLElement {
         } else {
             alert("Error profile update impossible");
         }
-
     };
 
+    // Conteneur pour les entrées de formulaire
+    const formFieldsContainer = document.createElement("div");
+    formFieldsContainer.className = "w-full space-y-4";
 
     const username = document.createElement("input");
     username.type = "text";
     username.value = state.user.username;
-    username.className = "input-style";
+    username.className = "w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-blue-500";
 
     const email = document.createElement("input");
     email.type = "email";
     email.value = state.user.email;
-    email.className = "input-style";
+    email.className = "w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-blue-500";
+
+    formFieldsContainer.append(username, email);
 
     const anonymize = state.user.anonymize;
-    if (anonymize === 1)
-    {
+    if (anonymize === 1) {
         username.disabled = true;
         email.disabled = true;
     }
+
+    // Conteneur de boutons
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.className = "w-full space-y-3 mt-4";
+
     const saveBtn = document.createElement("button");
     saveBtn.innerText = "Update profile";
-    saveBtn.className = "btn-primary";
+    saveBtn.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded";
     if (anonymize === 1)
         saveBtn.disabled = true;
     saveBtn.onclick = async () => {
-    let token = state.token;
-    if (!token)
-        token = "";
+        let token = state.token;
+        if (!token)
+            token = "";
         const success = await updateUser(token, state.user.username, username.value, email.value);
         if (success) {
             state.user.username = username.value;
@@ -106,27 +119,6 @@ export default function ProfileForm(): HTMLElement {
         } else {
             alert("Error profile update impossible");
         }
-    };
-    const deleteBtn = document.createElement("button");
-    deleteBtn.innerText = "Delete account";
-    deleteBtn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mx-auto mt-2";
-    deleteBtn.onclick = async () => {
-        try {
-            const value = confirm("Are you sure ?");
-            if (value)
-            {
-                const success = await deleteUser(state.user.username);
-                if (success) {
-                    alert("Profil deleted!");
-                    await logout();
-                } else {
-                    alert("Error delete profil");
-                }
-            }
-            } catch (error) {
-                console.error("❌ Erreur inattendue :", error);
-                alert("Une erreur est survenue !");
-            }
     };
 
     const anonymizeBtn = document.createElement("button");
@@ -137,19 +129,17 @@ export default function ProfileForm(): HTMLElement {
         anonymizeBtn.innerText = "Going private";
     else
         anonymizeBtn.innerText = "Going public";
-    anonymizeBtn.className = "bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mx-auto mt-2";
+    anonymizeBtn.className = "w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded";
     anonymizeBtn.onclick = async () => {
         try {
             const value = confirm("Are you sure ?");
-            if (value)
-            {
+            if (value) {
                 const success = await anonymizeUser(state.user.username, token);
                 if (success && anonymizeBtn.textContent === "Going private") {
                     alert("Your profil is private!");
                     anonymizeBtn.innerText = "Going public";
                 }
-                else if (success && anonymizeBtn.textContent === "Going public")
-                {
+                else if (success && anonymizeBtn.textContent === "Going public") {
                     alert("Your profil is public!");
                     anonymizeBtn.innerText = "Going private";
                 }
@@ -157,36 +147,65 @@ export default function ProfileForm(): HTMLElement {
                     alert("Error request profil");
                 window.location.reload();
             }
-            } catch (error) {
-                console.error("❌ Erreur inattendue :", error);
-                alert("Une erreur est survenue !");
-            }
+        } catch (error) {
+            console.error("❌ Erreur inattendue :", error);
+            alert("Une erreur est survenue !");
+        }
     };
 
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "Delete account";
+    deleteBtn.className = "w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded";
+    deleteBtn.onclick = async () => {
+        try {
+            const value = confirm("Are you sure ?");
+            if (value) {
+                const success = await deleteUser(state.user.username);
+                if (success) {
+                    alert("Profil deleted!");
+                    await logout();
+                } else {
+                    alert("Error delete profil");
+                }
+            }
+        } catch (error) {
+            console.error("❌ Erreur inattendue :", error);
+            alert("Une erreur est survenue !");
+        }
+    };
 
+    // Activation 2FA
     const div2FA = document.createElement("div");
-    div2FA.classList.add("flex-box");
+    div2FA.className = "flex items-center justify-between w-full mt-4";
+    
     const span2FA = document.createElement("span");
     span2FA.innerHTML = "Activate 2FA";
-    span2FA.style.marginRight = "10px";
-    div2FA.appendChild(span2FA);
+    span2FA.className = "text-sm";
+    
+    const toggleContainer = document.createElement("div");
+    toggleContainer.className = "flex";
 
     const labelBtn = document.createElement("label");
-    labelBtn.classList.add("switch");
-    labelBtn.classList.add("btnQrCode");
+    labelBtn.className = "switch";
+    
     const btnQRCode = document.createElement("input");
     btnQRCode.type = "checkbox";
     if (state.user.is2FAEnabled == 1)
         btnQRCode.checked = true;
-    labelBtn.appendChild(btnQRCode);
+    
     const spanQrcode = document.createElement("span");
+    spanQrcode.className = "slider round";
+    
+    labelBtn.appendChild(btnQRCode);
     labelBtn.appendChild(spanQrcode);
-    div2FA.appendChild(labelBtn);
+    toggleContainer.appendChild(labelBtn);
+    
+    div2FA.appendChild(span2FA);
+    div2FA.appendChild(toggleContainer);
 
     displayModalQRCode(btnQRCode, state.user.id, state.user.username, container);
-    
-    
 
-    container.append(title, divAvatar, username, email, saveBtn, anonymizeBtn, deleteBtn, div2FA);
+    buttonsContainer.append(saveBtn, anonymizeBtn, deleteBtn);
+    container.append(title, divAvatar, formFieldsContainer, buttonsContainer, div2FA);
     return container;
 }
