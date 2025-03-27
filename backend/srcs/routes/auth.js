@@ -2,6 +2,7 @@ const db = require("../database/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const speakeasy = require("speakeasy");
+require("dotenv").config();
 
 async function authRoutes(fastify) {
   // 🔹 Route d'inscription
@@ -26,7 +27,7 @@ async function authRoutes(fastify) {
       const info = insert.run(username, email, hashedPassword);
       db.prepare("UPDATE users SET avatar = ? WHERE username = ?").run("default.jpg", username);
       // Génération d'un token JWT
-      const token = jwt.sign({ id: info.lastInsertRowid, username }, process.env.JWT_SECRET || "supersecretkey");
+      const token = jwt.sign({ id: info.lastInsertRowid, username }, process.env.JWT_SECRET);
 
       return reply.send({ message: "Utilisateur inscrit avec succès!", token, user: { id: info.lastInsertRowid, username, email } });
     } catch (error) {
@@ -53,9 +54,9 @@ async function authRoutes(fastify) {
     if (user.is2FAEnabled) {
       return reply.send({ requires2FA: true, userId: user.id });
     }
-    // db.prepare("UPDATE users SET is2FAEnabled = 0").run();
+
     // Génération du token JWT
-    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET || "supersecretkey");
+    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET);
     return reply.send({ message: "Connexion réussie!", token, user });
   });
 
@@ -80,7 +81,7 @@ async function authRoutes(fastify) {
     }
 
     // Génération du JWT après validation du 2FA
-    const authToken = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET || "supersecretkey");
+    const authToken = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET);
 
     return reply.send({ message: "Connexion réussie avec 2FA!", token: authToken, user });
   });
@@ -105,24 +106,3 @@ async function authRoutes(fastify) {
 
 module.exports = authRoutes; 
 
-
-// fastify.post("/login", async (request, reply) => {
-  //   const { username, password } = request.body;
-
-  //   // Recherche de l'utilisateur
-  //   const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
-  //   if (!user) {
-  //     return reply.status(401).send({ error: "Utilisateur introuvable." });
-  //   }
-
-  //   // Vérification du mot de passe
-  //   const isValid = await bcrypt.compare(password, user.password);
-  //   if (!isValid) {
-  //     return reply.status(401).send({ error: "Mot de passe incorrect." });
-  //   }
-
-  //   // Génération du token JWT
-  //   const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET || "supersecretkey");
-
-  //   return reply.send({ message: "Connexion réussie!", token, user });
-  // });
