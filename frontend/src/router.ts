@@ -6,6 +6,9 @@ import Register from "./pages/register";
 import Dashboard from "./pages/dashboard";
 import LocalMatch from "./pages/localMatch"
 import GameLocal from "./pages/gameLocal"
+import TournamentSettings from "./pages/tournamentSettings";
+import TournamentBracket from "./pages/tournamentBracket";
+import GameTournament from "./pages/gameTournament";
 import { isAuthenticated } from "./services/auth";
 //import Match from "./pages/match";
 
@@ -15,7 +18,9 @@ const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
   "/profile": async () => (isAuthenticated() ? await Profile() : await Login()),
   "/login": Login,
   "/dashboard": async () => (isAuthenticated() ? await Dashboard() : await Login()),
-  //"/match": Match,
+  "/tournament": () => TournamentSettings(),
+  "/tournament-bracket": () => TournamentBracket(),
+  "/tournament-game": () => GameTournament(),
   "/local-match": LocalMatch,
   "/game-local": GameLocal,
   "/register": Register

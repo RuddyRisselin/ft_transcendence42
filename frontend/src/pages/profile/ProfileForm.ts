@@ -115,32 +115,11 @@ export default function ProfileForm(): HTMLElement {
         if (success) {
             state.user.username = username.value;
             state.user.email = email.value;
+            alert("Profile updated!");
         } else {
             alert("Error profile update impossible");
         }
     };
-<<<<<<< HEAD
-=======
-    const deleteBtn = document.createElement("button");
-    deleteBtn.innerText = "Delete account";
-    deleteBtn.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mx-auto mt-2";
-    deleteBtn.onclick = async () => {
-        try {
-            const value = confirm("Are you sure ?");
-            if (value)
-            {
-                const success = await deleteUser(state.user.username);
-                if (success) {
-                    await logout();
-                } else {
-                    alert("Error delete profil");
-                }
-            }
-            } catch (error) {
-                alert("Une erreur est survenue !");
-            }
-    };
->>>>>>> 0f3f19155368d65d26436f6227f861bebad0ba68
 
     const anonymizeBtn = document.createElement("button");
     let token = state.token;
@@ -157,29 +136,21 @@ export default function ProfileForm(): HTMLElement {
             if (value) {
                 const success = await anonymizeUser(state.user.username, token);
                 if (success && anonymizeBtn.textContent === "Going private") {
+                    alert("Your profil is private!");
                     anonymizeBtn.innerText = "Going public";
                 }
-<<<<<<< HEAD
                 else if (success && anonymizeBtn.textContent === "Going public") {
                     alert("Your profil is public!");
-=======
-                else if (success && anonymizeBtn.textContent === "Going public")
->>>>>>> 0f3f19155368d65d26436f6227f861bebad0ba68
                     anonymizeBtn.innerText = "Going private";
+                }
                 else
                     alert("Error request profil");
                 window.location.reload();
             }
-<<<<<<< HEAD
         } catch (error) {
             console.error("❌ Erreur inattendue :", error);
             alert("Une erreur est survenue !");
         }
-=======
-            } catch (error) {
-                alert("Une erreur est survenue !");
-            }
->>>>>>> 0f3f19155368d65d26436f6227f861bebad0ba68
     };
 
     const deleteBtn = document.createElement("button");

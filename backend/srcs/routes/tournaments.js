@@ -1,93 +1,54 @@
+// srcs/routes/tournaments.js
 const db = require("../database/db");
 
-async function tournamentRoutes(fastify, options) {
+/**
+ * @param {import('fastify').FastifyInstance} fastify 
+ */
+async function tournamentRoutes(fastify) {
+    // 🔸 Créer un tournoi
+    fastify.post("/tournaments", async (req, res) => {
+        const { players, ranking } = req.body;
     
-    // Récupérer les tournois d'un joueur spécifique
-    fastify.get('/tournaments', async (request, reply) => {
-        const { userId } = request.query;
-
-        if (!userId) {
-            return reply.status(400).send({ error: "Missing userId parameter" });
+        if (!players || !ranking) {
+            return res.status(400).send({ error: "Champs manquants." });
         }
+    
+        const stmt = db.prepare("INSERT INTO tournaments (players, ranking) VALUES (?, ?)");
+        const info = stmt.run(JSON.stringify(players), JSON.stringify(ranking));
+    
+        return { success: true, tournamentId: info.lastInsertRowid };
+    });
+    
+
+    // 🔸 Obtenir les tournois d'un utilisateur
+    fastify.get("/tournaments/user/:username", async (request, reply) => {
+        const username = request.params.username;
 
         try {
-            const tournaments = db.prepare(`
-                SELECT id, created_at, players, ranking 
-                FROM tournaments
-                WHERE json_extract(players, '$') LIKE ?
-                ORDER BY created_at DESC
-            `).all(`%${userId}%`);
+            const stmt = db.prepare("SELECT * FROM tournaments");
+            const tournaments = stmt.all();
 
-            console.log(`Tournaments fetched for user ${userId}:`, tournaments);
-            
-            reply.send(Array.isArray(tournaments) ? tournaments : [tournaments]);
-        } catch (error) {
-            console.error("Error fetching tournaments:", error);
-            reply.status(500).send({ error: "Internal server error" });
+            const filtered = tournaments.filter(t => {
+                const players = JSON.parse(t.players);
+                return players.includes(username);
+            });
+
+            return filtered;
+        } catch (err) {
+            fastify.log.error(err);
+            return reply.code(500).send({ error: "Erreur serveur lors de la récupération." });
         }
     });
 
-    // Ajouter un tournoi
-    fastify.post('/tournaments', async (request, reply) => {
-        const { players } = request.body;
-
-        if (!players || !Array.isArray(players) || players.length < 2) {
-            return reply.status(400).send({ error: "Invalid players list. Must contain at least 2 players." });
-        }
-
+    // 🔸 Tous les tournois (debug/admin)
+    fastify.get("/tournaments", async (request, reply) => {
         try {
-            const insert = db.prepare(`
-                INSERT INTO tournaments (players, ranking) 
-                VALUES (?, NULL)
-            `);
-            const info = insert.run(JSON.stringify(players));
-
-            console.log(`New tournament added with ID ${info.lastInsertRowid}:`, players);
-            reply.send({ id: info.lastInsertRowid, players, ranking: null });
-        } catch (error) {
-            console.error("Error inserting tournament:", error);
-            reply.status(400).send({ error: "Error adding tournament" });
-        }
-    });
-
-    // Mettre à jour le classement d'un tournoi
-    fastify.put('/tournaments/:id/ranking', async (request, reply) => {
-        const { id } = request.params;
-        const { ranking } = request.body;
-
-        if (!ranking || !Array.isArray(ranking)) {
-            return reply.status(400).send({ error: "Invalid ranking format. Must be an array of player IDs." });
-        }
-
-        try {
-            const update = db.prepare(`
-                UPDATE tournaments
-                SET ranking = ?
-                WHERE id = ?
-            `);
-            update.run(JSON.stringify(ranking), id);
-
-            console.log(`Updated ranking for tournament ${id}:`, ranking);
-            reply.send({ id, ranking });
-        } catch (error) {
-            console.error("Error updating ranking:", error);
-            reply.status(400).send({ error: "Error updating tournament ranking" });
-        }
-    });
-
-    // Récupérer tous les tournois
-    fastify.get('/tournaments/all', async (request, reply) => {
-        try {
-            const tournaments = db.prepare(`
-                SELECT * FROM tournaments
-                ORDER BY created_at DESC
-            `).all();
-
-            console.log("Fetched all tournaments:", tournaments);
-            reply.send(tournaments);
-        } catch (error) {
-            console.error("Error fetching tournaments:", error);
-            reply.status(500).send({ error: "Internal server error" });
+            const stmt = db.prepare("SELECT * FROM tournaments");
+            const tournaments = stmt.all();
+            return tournaments;
+        } catch (err) {
+            fastify.log.error(err);
+            return reply.code(500).send({ error: "Erreur serveur lors de la récupération des tournois." });
         }
     });
 }
