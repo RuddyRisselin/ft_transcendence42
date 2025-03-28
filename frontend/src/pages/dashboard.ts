@@ -74,6 +74,31 @@ export default function Dashboard(): HTMLElement {
         </div>
     `;
 
+    // Menu de sélection de difficulté
+    const difficultyMenu = document.createElement("div") as HTMLDivElement;
+    difficultyMenu.className = "fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden";
+    difficultyMenu.innerHTML = `
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800/90 p-8 rounded-xl border border-green-500/30 shadow-2xl w-96">
+            <h3 class="text-2xl font-bold text-green-300 mb-6 text-center">Choisissez la difficulté</h3>
+            <div class="space-y-4">
+                <button class="difficulty-btn w-full bg-green-600 hover:bg-green-500 text-white text-lg font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl" data-difficulty="easy">
+                    <span class="mr-2">🌱</span> Facile
+                </button>
+                <button class="difficulty-btn w-full bg-yellow-600 hover:bg-yellow-500 text-white text-lg font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl" data-difficulty="normal">
+                    <span class="mr-2">⚡</span> Normal
+                </button>
+                <button class="difficulty-btn w-full bg-red-600 hover:bg-red-500 text-white text-lg font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl" data-difficulty="hard">
+                    <span class="mr-2">🔥</span> Difficile
+                </button>
+            </div>
+            <button class="close-menu mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold py-3 px-6 rounded-lg transition-all">
+                Annuler
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(difficultyMenu);
+
     // Mode Tournoi
     const tournamentCard = document.createElement("div");
     tournamentCard.className = "game-card bg-gray-800/50 p-8 rounded-xl shadow-lg backdrop-blur-sm border border-purple-500/20 hover:border-purple-500/50 transition-all transform hover:scale-105 group";
@@ -103,13 +128,47 @@ export default function Dashboard(): HTMLElement {
 
     const localAIButton = localAICard.querySelector('button');
     if (localAIButton) {
-        localAIButton.onclick = (e) => navigateTo(e, "/local-ai-match");
+        localAIButton.onclick = () => {
+            difficultyMenu.classList.remove('hidden');
+            difficultyMenu.classList.add('fade-in');
+        };
     }
 
     const tournamentButton = tournamentCard.querySelector('button');
     if (tournamentButton) {
         tournamentButton.onclick = (e) => navigateTo(e, "/tournament");
     }
+
+    // Gestionnaires d'événements pour le menu de difficulté
+    const closeMenuButton = difficultyMenu.querySelector('.close-menu') as HTMLButtonElement;
+    if (closeMenuButton) {
+        closeMenuButton.onclick = () => {
+            difficultyMenu.classList.add('fade-out');
+            setTimeout(() => {
+                difficultyMenu.classList.add('hidden');
+                difficultyMenu.classList.remove('fade-out');
+            }, 300);
+        };
+    }
+
+    const difficultyButtons = difficultyMenu.querySelectorAll('.difficulty-btn');
+    difficultyButtons.forEach(button => {
+        button.onclick = (e: Event) => {
+            const difficulty = (e.currentTarget as HTMLElement).dataset.difficulty;
+            navigateTo(e, `/local-ai-match?difficulty=${difficulty}`);
+        };
+    });
+
+    // Fermer le menu en cliquant en dehors
+    difficultyMenu.onclick = (e: MouseEvent) => {
+        if (e.target === difficultyMenu) {
+            difficultyMenu.classList.add('fade-out');
+            setTimeout(() => {
+                difficultyMenu.classList.add('hidden');
+                difficultyMenu.classList.remove('fade-out');
+            }, 300);
+        }
+    };
 
     return container;
 }
