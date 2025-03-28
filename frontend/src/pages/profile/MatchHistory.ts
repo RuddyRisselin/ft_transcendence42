@@ -100,7 +100,7 @@ export default function MatchHistory(): HTMLElement {
 
     async function fetchTournamentHistory(): Promise<void> {
         try {
-            historyContainer.innerHTML = "<p class='text-white text-center py-2'>Chargement...</p>";
+            historyContainer.innerHTML = "<p class='text-white'>Chargement...</p>";
     
             const response = await fetch(`/api/tournaments?userId=${state.user.id}`);
             if (!response.ok) throw new Error("Erreur API");
@@ -108,13 +108,13 @@ export default function MatchHistory(): HTMLElement {
             const tournaments: { 
                 id: number; 
                 created_at: string; 
-                players: string | number[]; 
-                ranking: string | number[] | null 
+                players: string | number[] | string[]; 
+                ranking: string | number[] | string[] | null 
             }[] = await response.json();
     
             historyContainer.innerHTML = "";
             if (!Array.isArray(tournaments) || tournaments.length === 0) {
-                historyContainer.innerHTML = "<p class='text-white text-center py-4'>Aucun tournoi trouvé.</p>";
+                historyContainer.innerHTML = "<p class='text-white'>Aucun tournoi trouvé.</p>";
                 return;
             }
     
@@ -123,18 +123,31 @@ export default function MatchHistory(): HTMLElement {
                 const players = typeof tournament.players === "string" 
                     ? JSON.parse(tournament.players) 
                     : tournament.players;
-                players.forEach(playerId => allPlayerIds.add(playerId));
+                
+                players.forEach(player => {
+                    if (typeof player === "number") {
+                        allPlayerIds.add(player);
+                    }
+                });
             });
     
-            const userResponse = await fetch(`/api/users?ids=${Array.from(allPlayerIds).join(",")}`);
-            if (!userResponse.ok) throw new Error("Erreur lors de la récupération des noms des joueurs");
-    
-            const users: { id: number; username: string }[] = await userResponse.json();
-            const userMap = new Map(users.map(user => [user.id, user.username]));
+            const userMap = new Map<number, string>();
+            
+            if (allPlayerIds.size > 0) {
+                try {
+                    const userResponse = await fetch(`/api/users?ids=${Array.from(allPlayerIds).join(",")}`);
+                    if (userResponse.ok) {
+                        const users: { id: number; username: string }[] = await userResponse.json();
+                        users.forEach(user => userMap.set(user.id, user.username));
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la récupération des noms des joueurs", error);
+                }
+            }
     
             tournaments.forEach(tournament => {
                 const tournamentItem = document.createElement("div");
-                tournamentItem.className = "p-3 rounded-lg text-white flex flex-col bg-gray-700 border border-gray-600 shadow-md";
+                tournamentItem.className = "p-3 rounded-lg text-white text-sm flex flex-col bg-gray-900 border border-gray-700 shadow-lg";
     
                 const date = new Date(tournament.created_at).toLocaleDateString();
     
@@ -146,63 +159,62 @@ export default function MatchHistory(): HTMLElement {
                     ? (typeof tournament.ranking === "string" ? JSON.parse(tournament.ranking) : tournament.ranking)
                     : null;
     
-                const playerNames = players.map(playerId => userMap.get(playerId) || "Inconnu");
+                const playerNames = players.map(player => {
+                    if (typeof player === "number") {
+                        return userMap.get(player) || "Inconnu";
+                    } else {
+                        return player;
+                    }
+                });
     
-                let userPosition = ranking ? ranking.indexOf(state.user.id) + 1 : null;
                 let positionText = "Non classé";
                 let positionColor = "bg-gray-600";
-    
-                if (userPosition) {
-                    switch (userPosition) {
-                        case 1:
+                
+                if (ranking && Array.isArray(ranking)) {
+                    const username = state.user.username;
+                    let userEntry: string | null = null;
+                    
+                    for (let i = 0; i < ranking.length; i++) {
+                        const entry = String(ranking[i]);
+                        if (entry === username || entry.indexOf(` ${username}`) >= 0 || entry.endsWith(username)) {
+                            userEntry = entry;
+                            break;
+                        }
+                    }
+                    
+                    if (userEntry) {
+                        if (userEntry.indexOf("🏆") >= 0) {
                             positionText = "🏆 1er";
                             positionColor = "bg-yellow-500";
-                            break;
-                        case 2:
+                        } else if (userEntry.indexOf("🥈") >= 0) {
                             positionText = "🥈 2e";
                             positionColor = "bg-gray-400";
-                            break;
-                        case 3:
+                        } else if (userEntry.indexOf("🥉") >= 0) {
                             positionText = "🥉 3e";
                             positionColor = "bg-orange-500";
-                            break;
-                        default:
-                            positionText = `${userPosition}ème`;
+                        } else {
+                            const position = Math.floor(ranking.indexOf(userEntry) / (players.length / 4)) + 4;
+                            positionText = `${position}ème`;
                             positionColor = "bg-gray-700";
-                            break;
+                        }
                     }
                 }
     
-                const tournamentHeader = document.createElement("div");
-                tournamentHeader.className = "flex justify-between items-center mb-2";
-                
-                const tournamentTitle = document.createElement("span");
-                tournamentTitle.innerHTML = `Tournoi n°${tournament.id}`;
-                tournamentTitle.className = "font-bold text-blue-400";
-                
-                const tournamentDate = document.createElement("span");
-                tournamentDate.innerText = date;
-                tournamentDate.className = "text-xs text-gray-300";
-                
-                tournamentHeader.append(tournamentTitle, tournamentDate);
-                
-                const playersList = document.createElement("div");
-                playersList.className = "text-xs text-gray-300 mb-2";
-                playersList.innerText = `Joueurs : ${playerNames.join(", ")}`;
-                
-                const positionBadge = document.createElement("div");
-                positionBadge.className = `mt-1 p-1 rounded-lg text-center text-xs font-bold ${positionColor}`;
-                positionBadge.innerText = positionText;
-                
-                tournamentItem.append(tournamentHeader, playersList, positionBadge);
+                tournamentItem.innerHTML = `
+                    <p class="font-bold text-lg text-blue-400">Tournoi n°${tournament.id} du ${date}</p>
+                    <p class="text-sm text-gray-300">Joueurs : ${playerNames.join(", ")}</p>
+                    <div class="mt-2 p-2 rounded-lg text-center text-black font-bold ${positionColor}">
+                        ${positionText}
+                    </div>
+                `;
+    
                 historyContainer.appendChild(tournamentItem);
             });
         } catch (error) {
             console.error("❌ Erreur lors de la récupération des tournois :", error);
-            historyContainer.innerHTML = "<p class='text-red-500 text-center py-4'>Erreur de chargement des tournois.</p>";
+            historyContainer.innerHTML = "<p class='text-red-500'>Erreur de chargement des tournois.</p>";
         }
     }
-    
     fetchMatchHistory();
 
     tabsContainer.append(tabMatches, tabTournaments);
