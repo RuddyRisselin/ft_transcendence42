@@ -6,7 +6,6 @@ try {
 
   // Création des tables si elles n'existent pas encore
   db.exec(`
-
       CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username TEXT UNIQUE NOT NULL,
@@ -34,6 +33,17 @@ try {
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           players TEXT NOT NULL,
           ranking TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS friends (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          friend_id INTEGER NOT NULL,
+          status TEXT CHECK(status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES users(id),
+          FOREIGN KEY (friend_id) REFERENCES users(id),
+          UNIQUE(user_id, friend_id)
       );
   `);
 

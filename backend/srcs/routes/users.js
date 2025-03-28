@@ -202,6 +202,153 @@ async function userRoutes(fastify) {
       reply.status(500).send({ error: "Erreur serveur" });
     }
   });
+
+  // 🔹 Ajouter un ami
+  fastify.post("/users/:userId/friends/:friendId", async (request, reply) => {
+    const { userId, friendId } = request.params;
+    
+    try {
+      // Vérifier si l'utilisateur existe
+      const user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
+      if (!user) {
+        return reply.status(404).send({ error: "Utilisateur non trouvé" });
+      }
+
+      // Vérifier si l'ami existe
+      const friend = db.prepare("SELECT * FROM users WHERE id = ?").get(friendId);
+      if (!friend) {
+        return reply.status(404).send({ error: "Ami non trouvé" });
+      }
+
+      // Vérifier si la relation existe déjà
+      const existingRelation = db.prepare(`
+        SELECT * FROM friends 
+        WHERE (user_id = ? AND friend_id = ?) 
+        OR (user_id = ? AND friend_id = ?)
+      `).get(userId, friendId, friendId, userId);
+
+      if (existingRelation) {
+        return reply.status(400).send({ error: "Cette relation d'amitié existe déjà" });
+      }
+
+      // Créer la relation d'amitié
+      db.prepare(`
+        INSERT INTO friends (user_id, friend_id, status)
+        VALUES (?, ?, 'pending')
+      `).run(userId, friendId);
+
+      return { message: "Demande d'amitié envoyée" };
+    } catch (error) {
+      console.error("Erreur lors de l'ajout d'un ami:", error);
+      return reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
+
+  // 🔹 Accepter une demande d'amitié
+  fastify.patch("/users/:userId/friends/:friendId/accept", async (request, reply) => {
+    const { userId, friendId } = request.params;
+    
+    try {
+      const result = db.prepare(`
+        UPDATE friends 
+        SET status = 'accepted'
+        WHERE user_id = ? AND friend_id = ? AND status = 'pending'
+      `).run(friendId, userId);
+
+      if (result.changes === 0) {
+        return reply.status(404).send({ error: "Demande d'amitié non trouvée" });
+      }
+
+      return { message: "Demande d'amitié acceptée" };
+    } catch (error) {
+      console.error("Erreur lors de l'acceptation de la demande d'amitié:", error);
+      return reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
+
+  // 🔹 Rejeter une demande d'amitié
+  fastify.patch("/users/:userId/friends/:friendId/reject", async (request, reply) => {
+    const { userId, friendId } = request.params;
+    
+    try {
+      const result = db.prepare(`
+        UPDATE friends 
+        SET status = 'rejected'
+        WHERE user_id = ? AND friend_id = ? AND status = 'pending'
+      `).run(friendId, userId);
+
+      if (result.changes === 0) {
+        return reply.status(404).send({ error: "Demande d'amitié non trouvée" });
+      }
+
+      return { message: "Demande d'amitié rejetée" };
+    } catch (error) {
+      console.error("Erreur lors du rejet de la demande d'amitié:", error);
+      return reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
+
+  // 🔹 Supprimer un ami
+  fastify.delete("/users/:userId/friends/:friendId", async (request, reply) => {
+    const { userId, friendId } = request.params;
+    
+    try {
+      const result = db.prepare(`
+        DELETE FROM friends 
+        WHERE (user_id = ? AND friend_id = ?) 
+        OR (user_id = ? AND friend_id = ?)
+      `).run(userId, friendId, friendId, userId);
+
+      if (result.changes === 0) {
+        return reply.status(404).send({ error: "Relation d'amitié non trouvée" });
+      }
+
+      return { message: "Ami supprimé" };
+    } catch (error) {
+      console.error("Erreur lors de la suppression d'un ami:", error);
+      return reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
+
+  // 🔹 Obtenir la liste des amis
+  fastify.get("/users/:userId/friends", async (request, reply) => {
+    const { userId } = request.params;
+    
+    try {
+      const friends = db.prepare(`
+        SELECT u.id, u.username, u.avatar, u.status, f.status as friendship_status
+        FROM friends f
+        JOIN users u ON (f.friend_id = u.id AND f.user_id = ?) 
+          OR (f.user_id = u.id AND f.friend_id = ?)
+        WHERE f.status = 'accepted'
+      `).all(userId, userId);
+
+      return friends;
+    } catch (error) {
+      console.error("Erreur lors de la récupération des amis:", error);
+      return reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
+
+  // 🔹 Obtenir les demandes d'amitié en attente
+  fastify.get("/users/:userId/friend-requests", async (request, reply) => {
+    const { userId } = request.params;
+    
+    try {
+      const requests = db.prepare(`
+        SELECT u.id, u.username, u.avatar, f.created_at
+        FROM friends f
+        JOIN users u ON f.user_id = u.id
+        WHERE f.friend_id = ? AND f.status = 'pending'
+        ORDER BY f.created_at DESC
+      `).all(userId);
+
+      return requests;
+    } catch (error) {
+      console.error("Erreur lors de la récupération des demandes d'amitié:", error);
+      return reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
 }
 
 module.exports = userRoutes;

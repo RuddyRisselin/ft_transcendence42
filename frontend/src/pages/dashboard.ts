@@ -1,13 +1,9 @@
 import { state } from "../state";
-import { getUsers } from "../services/userService";
 import { connectToWebSocket } from "../services/auth";
 import { navigateTo } from "../router";
 import Sidebar from "../components/sidebar";
 
 export default function Dashboard(): HTMLElement {
-    console.log("🖥 Rendu du dashboard...");
-
-    
     if (!state.user) {
         console.log("❌ Utilisateur non connecté. Redirection...");
         setTimeout(() => {
@@ -17,9 +13,7 @@ export default function Dashboard(): HTMLElement {
         }, 200);
         return document.createElement("div");
     }
-    
-    console.log("✅ Utilisateur connecté :", state.user.username);
-    
+
     const container = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-black text-white relative overflow-hidden";
     
@@ -27,71 +21,95 @@ export default function Dashboard(): HTMLElement {
     <div class="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black"></div>
     <div class="absolute inset-0 bg-stars animate-twinkling"></div>
     `;
+
     if (state.user) {
         document.body.appendChild(Sidebar());
     }
+
     const mainSection = document.createElement("div");
-    mainSection.className = "relative z-10 flex flex-col items-center p-8 w-full max-w-3xl mx-auto text-center";
+    mainSection.className = "relative z-10 flex w-full h-screen pl-[250px]";
 
-    const title = document.createElement("h2");
-    title.innerText = `🌌 Bienvenue, ${state.user.username} !`;
-    title.className = "text-4xl font-bold text-purple-400 drop-shadow-md";
+    // Section centrale (modes de jeu)
+    const gameSection = document.createElement("div");
+    gameSection.className = "flex-1 p-8 overflow-y-auto custom-scrollbar";
 
-    const usersSection = document.createElement("div");
-    usersSection.className = "mt-8 bg-gray-800 bg-opacity-50 p-4 rounded-lg shadow-lg w-full max-w-md";
+    const gameSectionTitle = document.createElement("h2");
+    gameSectionTitle.className = "text-4xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-12";
+    gameSectionTitle.innerText = "🎮 Modes de Jeu";
 
-    const usersTitle = document.createElement("h3");
-    usersTitle.innerText = "🌠 Joueurs en ligne";
-    usersTitle.className = "text-xl text-green-300 mb-2";
+    // Conteneur pour les cartes de jeu
+    const gameCardsContainer = document.createElement("div");
+    gameCardsContainer.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto";
 
-    const usersList = document.createElement("ul");
-    usersList.className = "text-white text-lg space-y-2";
+    // Mode Local 1v1
+    const localGameCard = document.createElement("div");
+    localGameCard.className = "game-card bg-gray-800/50 p-8 rounded-xl shadow-lg backdrop-blur-sm border border-blue-500/20 hover:border-blue-500/50 transition-all transform hover:scale-105 group";
+    
+    localGameCard.innerHTML = `
+        <div class="flex flex-col h-full text-center">
+            <h3 class="text-3xl font-semibold text-blue-300 mb-6 group-hover:text-blue-200 transition-colors">
+                <span class="game-icon">🎮</span> Local 1v1
+            </h3>
+            <p class="text-gray-300 mb-8 text-lg game-card-text">Affrontez un ami en local sur le même écran dans un duel épique de Pong !</p>
+            <button class="game-button w-full bg-blue-600 hover:bg-blue-500 text-white text-xl font-semibold py-6 px-8 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl">
+                Jouer maintenant
+            </button>
+        </div>
+    `;
 
-    // 🔹 Bouton pour jouer en local
-    const localPlayButton = document.createElement("button");
-    localPlayButton.innerText = "🎮 Local 1v1";
-    localPlayButton.className = "mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-md transition-all";
-    localPlayButton.onclick = (e) => navigateTo(e, "/local-match");
+    // Mode Local vs IA
+    const localAICard = document.createElement("div");
+    localAICard.className = "game-card bg-gray-800/50 p-8 rounded-xl shadow-lg backdrop-blur-sm border border-green-500/20 hover:border-green-500/50 transition-all transform hover:scale-105 group";
+    localAICard.setAttribute("data-mode", "ai");
+    
+    localAICard.innerHTML = `
+        <div class="flex flex-col h-full text-center">
+            <h3 class="text-3xl font-semibold text-green-300 mb-6 group-hover:text-green-200 transition-colors">
+                <span class="game-icon">🤖</span> Local vs IA
+            </h3>
+            <p class="text-gray-300 mb-8 text-lg game-card-text">Défiez notre IA dans un match de Pong et testez vos compétences !</p>
+            <button class="game-button w-full bg-green-600 hover:bg-green-500 text-white text-xl font-semibold py-6 px-8 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl">
+                Jouer contre l'IA
+            </button>
+        </div>
+    `;
 
-    usersSection.append(usersTitle, usersList);
-    mainSection.append(title, usersSection);
-    mainSection.append(localPlayButton)
+    // Mode Tournoi
+    const tournamentCard = document.createElement("div");
+    tournamentCard.className = "game-card bg-gray-800/50 p-8 rounded-xl shadow-lg backdrop-blur-sm border border-purple-500/20 hover:border-purple-500/50 transition-all transform hover:scale-105 group";
+    
+    tournamentCard.innerHTML = `
+        <div class="flex flex-col h-full text-center">
+            <h3 class="text-3xl font-semibold text-purple-300 mb-6 group-hover:text-purple-200 transition-colors">
+                <span class="game-icon">🏆</span> Tournoi
+            </h3>
+            <p class="text-gray-300 mb-8 text-lg game-card-text">Participez à un tournoi épique et prouvez que vous êtes le meilleur joueur de Pong !</p>
+            <button class="game-button w-full bg-purple-600 hover:bg-purple-500 text-white text-xl font-semibold py-6 px-8 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl">
+                Rejoindre un tournoi
+            </button>
+        </div>
+    `;
+
+    gameCardsContainer.append(localGameCard, localAICard, tournamentCard);
+    gameSection.append(gameSectionTitle, gameCardsContainer);
+    mainSection.appendChild(gameSection);
     container.appendChild(mainSection);
 
-    async function loadUsers() {
-        const users = await getUsers();
-        usersList.innerHTML = ""; 
-
-        users.sort((a, b) => (a.status === "online" ? -1 : 1));
-
-        users.forEach((user) => {
-            const li = document.createElement("li");
-            li.id = `user-${user.id}`;
-            li.className = `p-2 rounded ${user.status === "online" ? "text-green-400" : "text-red-400"}`;
-            li.innerText = `${user.anonymize === 1 ? "*****" : user.username} ${user.status === "online" ? "🟢" : "🔴"}`;
-            usersList.appendChild(li);
-        });
+    // Gestionnaires de clic pour les boutons
+    const localPlayButton = localGameCard.querySelector('button');
+    if (localPlayButton) {
+        localPlayButton.onclick = (e) => navigateTo(e, "/local-match");
     }
 
-    function updateUserStatus(userId: string, status: string) {
-        const userElement = document.getElementById(`user-${userId}`);
-        if (userElement) {
-            userElement.className = `p-2 rounded ${status === "online" ? "text-green-400" : "text-red-400"}`;
-            userElement.innerText = `${userElement.innerText.split(" ")[0]} ${status === "online" ? "🟢" : "🔴"}`;
-
-            if (status === "online") {
-                usersList.prepend(userElement);
-            }
-        }
+    const localAIButton = localAICard.querySelector('button');
+    if (localAIButton) {
+        localAIButton.onclick = (e) => navigateTo(e, "/local-ai-match");
     }
 
-    connectToWebSocket(String(state.user.id), (message) => {
-        if (message.type === "user_status") {
-            updateUserStatus(message.userId, message.status);
-        }
-    });
-
-    loadUsers();
+    const tournamentButton = tournamentCard.querySelector('button');
+    if (tournamentButton) {
+        tournamentButton.onclick = (e) => navigateTo(e, "/tournament");
+    }
 
     return container;
 }
