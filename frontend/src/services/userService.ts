@@ -171,3 +171,21 @@ export async function update2FAOff(userId : number, username : string)
     .catch(error => console.error("Erreur lors de la désacivation du 2FA:", error));   
 }
 
+export async function getUserById(userId: number) {
+    try {
+        console.log(`🔹 Récupération de l'utilisateur avec l'ID: ${userId}`);
+        const response = await fetch(`http://localhost:3000/users/${userId}`);
+        
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+        
+        const user = await response.json();
+        console.log("✅ Utilisateur reçu :", user);
+        return user;
+    } catch (error) {
+        console.error("❌ Erreur lors de la récupération de l'utilisateur :", error);
+        return null;
+    }
+}
+

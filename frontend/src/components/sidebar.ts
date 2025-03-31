@@ -2,6 +2,7 @@ import { state } from "../state";
 import { logout, connectToWebSocket } from "../services/auth";
 import { getUsers } from "../services/userService";
 import { getFriends, getFriendRequests, removeFriend, acceptFriendRequest, rejectFriendRequest, addFriend } from "../services/friendService";
+import FriendProfile from "../pages/profile/FriendProfile";
 
 export default function Sidebar(): HTMLElement {
     const sidebar = document.createElement("aside");
@@ -333,9 +334,23 @@ export default function Sidebar(): HTMLElement {
 
             userInfo.append(avatar, username);
 
+            const buttonsContainer = document.createElement("div");
+            buttonsContainer.className = "flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity";
+
+            const viewProfileBtn = document.createElement("button");
+            viewProfileBtn.innerHTML = "👤";
+            viewProfileBtn.className = "p-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors";
+            viewProfileBtn.onclick = () => {
+                const mainContent = document.querySelector(".flex-1");
+                if (mainContent) {
+                    mainContent.innerHTML = "";
+                    mainContent.appendChild(FriendProfile(friend.id));
+                }
+            };
+
             const removeBtn = document.createElement("button");
             removeBtn.innerHTML = "🗑️";
-            removeBtn.className = "p-1.5 bg-red-600 hover:bg-red-500 rounded-lg transition-all opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100";
+            removeBtn.className = "p-1.5 bg-red-600 hover:bg-red-500 rounded-lg transition-all scale-95 group-hover:scale-100";
             removeBtn.onclick = async () => {
                 if (confirm("Voulez-vous vraiment supprimer cet ami ?")) {
                     await removeFriend(friend.id);
@@ -343,7 +358,8 @@ export default function Sidebar(): HTMLElement {
                 }
             };
 
-            li.append(userInfo, removeBtn);
+            buttonsContainer.append(viewProfileBtn, removeBtn);
+            li.append(userInfo, buttonsContainer);
             friendsUl.appendChild(li);
         });
     }

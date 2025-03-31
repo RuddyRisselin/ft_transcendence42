@@ -1,6 +1,6 @@
 import { state } from "../../state";
 
-export default function MatchHistory(): HTMLElement {
+export default function MatchHistory(userId?: number): HTMLElement {
     const container = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 flex flex-col h-full";
 
@@ -24,7 +24,8 @@ export default function MatchHistory(): HTMLElement {
     const historyContainer = document.createElement("div");
     historyContainer.className = "flex flex-col gap-2 overflow-y-auto max-h-64 scrollbar-thin scrollbar-thumb-gray-700";
 
-    if (!state.user || !state.user.id) {
+    const targetUserId = userId || state.user?.id;
+    if (!targetUserId) {
         historyContainer.innerHTML = "<p class='text-red-500 text-center py-4'>Utilisateur non authentifié.</p>";
         return container;
     }
@@ -56,7 +57,7 @@ export default function MatchHistory(): HTMLElement {
     async function fetchMatchHistory() {
         try {
             historyContainer.innerHTML = "<p class='text-white text-center py-2'>Chargement...</p>";
-            const response = await fetch(`/api/matches?userId=${state.user.id}`);
+            const response = await fetch(`/api/matches?userId=${targetUserId}`);
             if (!response.ok) throw new Error("Erreur API");
             const matches = await response.json();
 
@@ -67,7 +68,7 @@ export default function MatchHistory(): HTMLElement {
             }
 
             matches.forEach(match => {
-                const isWinner = match.winner_name === state.user.username;
+                const isWinner = match.winner_name === (userId ? match.player1_name === userId ? match.player1_name : match.player2_name : state.user.username);
                 const matchItem = document.createElement("div");
                 matchItem.className = `p-3 rounded-lg flex flex-col ${isWinner ? "bg-blue-600" : "bg-red-600"}`;
 
@@ -102,7 +103,7 @@ export default function MatchHistory(): HTMLElement {
         try {
             historyContainer.innerHTML = "<p class='text-white'>Chargement...</p>";
     
-            const response = await fetch(`/api/tournaments?userId=${state.user.id}`);
+            const response = await fetch(`/api/tournaments?userId=${targetUserId}`);
             if (!response.ok) throw new Error("Erreur API");
     
             const tournaments: { 
@@ -171,7 +172,7 @@ export default function MatchHistory(): HTMLElement {
                 let positionColor = "bg-gray-600";
                 
                 if (ranking && Array.isArray(ranking)) {
-                    const username = state.user.username;
+                    const username = userId ? userMap.get(userId) : state.user.username;
                     let userEntry: string | null = null;
                     
                     for (let i = 0; i < ranking.length; i++) {
@@ -215,6 +216,7 @@ export default function MatchHistory(): HTMLElement {
             historyContainer.innerHTML = "<p class='text-red-500'>Erreur de chargement des tournois.</p>";
         }
     }
+
     fetchMatchHistory();
 
     tabsContainer.append(tabMatches, tabTournaments);

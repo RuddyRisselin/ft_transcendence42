@@ -1,4 +1,5 @@
 import { state } from "../state";
+import { getUsers } from "./userService";
 
 export async function getFriends() {
     try {
@@ -19,6 +20,31 @@ export async function getFriendRequests() {
     } catch (error) {
         console.error("❌ Erreur:", error);
         return [];
+    }
+}
+
+export async function getFriendDetails(friendId: number) {
+    try {
+        // D'abord, essayons de récupérer les amis
+        const friends = await getFriends();
+        const friend = friends.find((f: any) => f.id === friendId);
+        
+        if (friend) {
+            return friend;
+        }
+        
+        // Si l'ami n'est pas trouvé dans la liste d'amis, récupérons tous les utilisateurs
+        const users = await getUsers();
+        const user = users.find((u: any) => u.id === friendId);
+        
+        if (user) {
+            return user;
+        }
+        
+        throw new Error("Ami non trouvé");
+    } catch (error) {
+        console.error("❌ Erreur lors de la récupération des détails de l'ami:", error);
+        return null;
     }
 }
 

@@ -1,7 +1,7 @@
 import Chart from "chart.js/auto";
 import { state } from "../../state";
 
-export default function ProfileStats(): HTMLElement {
+export default function ProfileStats(userId?: number): HTMLElement {
     const container = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-lg shadow-lg p-6 flex flex-col items-center w-full h-full";
 
@@ -19,14 +19,15 @@ export default function ProfileStats(): HTMLElement {
     chartContainer.className = "w-48 h-48";
 
     async function fetchStats() {
-        if (!state.user) {
+        const targetUserId = userId || state.user?.id;
+        if (!targetUserId) {
             statsList.innerHTML = "<p class='text-red-500 font-semibold'>User not found.</p>";
             return;
         }
         try {
-            console.log(`Fetching stats for user ID: ${state.user.id}`);
+            console.log(`Fetching stats for user ID: ${targetUserId}`);
 
-            const response = await fetch(`/api/user/stats?userId=${state.user.id}`);
+            const response = await fetch(`/api/user/stats?userId=${targetUserId}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch user stats.");
             }
