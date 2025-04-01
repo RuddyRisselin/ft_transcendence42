@@ -149,7 +149,8 @@ async function userRoutes(fastify) {
         console.log("❌ Utilisateur introuvable");
         return reply.status(404).send({ error: "Utilisateur non trouvé." });
       }
-      db.prepare("DELETE FROM matches WHERE player1_id = ? OR player2_id = ?").run(user.id, user.id)
+      db.prepare("DELETE FROM friends WHERE user_id = ? OR friend_id = ?").run(user.id, user.id);
+      db.prepare("DELETE FROM matches WHERE player1_id = ? OR player2_id = ?").run(user.id, user.id);
       db.prepare("DELETE FROM users WHERE username = ?").run(username);
       console.log("✅ Utilisateur supprimé avec succès");
       return { message: "Utilisateur supprimé avec succès!" };

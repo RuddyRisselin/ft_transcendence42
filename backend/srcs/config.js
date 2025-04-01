@@ -5,7 +5,7 @@ require("dotenv").config();
 
 async function configureServer(fastify) {
     await fastify.register(require("@fastify/cors"), {
-      origin: ["http://localhost:5173", "https://localhost"],  // 🔒 Autorise uniquement le frontend
+      origin: ["http://localhost:5173", "https://localhost:4430"],  // 🔒 Autorise uniquement le frontend
       methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true, 
