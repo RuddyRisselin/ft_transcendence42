@@ -1,4 +1,5 @@
-import { state } from "../../state";
+import { state } from "../state";
+import { translateText } from "../translate";
 
 export default function MatchHistory(): HTMLElement {
     const history = document.createElement("div");
@@ -10,18 +11,24 @@ export default function MatchHistory(): HTMLElement {
     tabsContainer.className = "flex space-x-2 mb-4";
 
     const tabMatches = document.createElement("button");
-    tabMatches.innerText = "Matchs";
+    translateText("Matchs").then((translated) => {
+        tabMatches.innerHTML = translated;
+    })
     tabMatches.className = "px-4 py-2 text-white bg-blue-600 rounded-lg";
 
     const tabTournaments = document.createElement("button");
-    tabTournaments.innerText = "Tournois";
+    translateText("Tournois").then((translated) => {
+        tabTournaments.innerHTML = translated;
+    })
     tabTournaments.className = "px-4 py-2 text-white bg-blue-600 rounded-lg";
 
     const historyContainer = document.createElement("div");
     historyContainer.className = "flex flex-col gap-2 overflow-y-scroll max-h-80";
 
     if (!state.user || !state.user.id) {
-        historyContainer.innerHTML = "<p class='text-red-500'>Utilisateur non authentifié.</p>";
+        translateText("Utilisateur non authentifié.").then((translated) => {
+            historyContainer.innerHTML = `<p class='text-red-500'>${translated}</p>`;
+        })
         return history;
     }
 
@@ -47,14 +54,18 @@ export default function MatchHistory(): HTMLElement {
 
     async function fetchMatchHistory() {
         try {
-            historyContainer.innerHTML = "<p class='text-white'>Chargement...</p>";
+            translateText("Chargement...").then((translated) => {
+                historyContainer.innerHTML = `<p class='text-white'>${translated}</p>`;
+            })
             const response = await fetch(`/api/matches?userId=${state.user.id}`);
             if (!response.ok) throw new Error("Erreur API");
             const matches = await response.json();
 
             historyContainer.innerHTML = "";
             if (!Array.isArray(matches) || matches.length === 0) {
-                historyContainer.innerHTML = "<p class='text-white'>Aucun match trouvé.</p>";
+                translateText("Aucun match trouvé.").then((translated) => {
+                    historyContainer.innerHTML = `<p class='text-white'>${translated}</p>`;
+                })
                 return;
             }
 
@@ -67,13 +78,17 @@ export default function MatchHistory(): HTMLElement {
                 historyContainer.appendChild(matchItem);
             });
         } catch (error) {
-            historyContainer.innerHTML = "<p class='text-red-500'>Erreur de chargement des matchs.</p>";
+            translateText("Erreur de chargement des matchs.").then((translated) => {
+                historyContainer.innerHTML = `<p class='text-red-500'>${translated}</p>`;
+            })
         }
     }
 
     async function fetchTournamentHistory(): Promise<void> {
         try {
-            historyContainer.innerHTML = "<p class='text-white'>Chargement...</p>";
+            translateText("Chargement...").then((translated) => {
+                historyContainer.innerHTML = `<p class='text-white'>${translated}</p>`;
+            })
     
             const response = await fetch(`/api/tournaments?userId=${state.user.id}`);
             if (!response.ok) throw new Error("Erreur API");
@@ -87,7 +102,9 @@ export default function MatchHistory(): HTMLElement {
     
             historyContainer.innerHTML = "";
             if (!Array.isArray(tournaments) || tournaments.length === 0) {
-                historyContainer.innerHTML = "<p class='text-white'>Aucun tournoi trouvé.</p>";
+                translateText("Aucun tournoi trouvé.").then((translated) => {
+                    historyContainer.innerHTML = `<p class='text-white'>${translated}</p>`;
+                })
                 return;
             }
     
@@ -105,7 +122,7 @@ export default function MatchHistory(): HTMLElement {
             const users: { id: number; username: string }[] = await userResponse.json();
             const userMap = new Map(users.map(user => [user.id, user.username]));
     
-            tournaments.forEach(tournament => {
+            tournaments.forEach(async tournament => {
                 const tournamentItem = document.createElement("div");
                 tournamentItem.className = "p-3 rounded-lg text-white text-sm flex flex-col bg-gray-900 border border-gray-700 shadow-lg";
     
@@ -145,10 +162,21 @@ export default function MatchHistory(): HTMLElement {
                             break;
                     }
                 }
-    
+                ///////***************=====================*****************////////////
+                const textToTranslate = [
+                    "Tournoi",
+                    "du",
+                    "Joueurs"
+                ];
+                const [
+                    translatedTournament,
+                    translatedof,
+                    translatedplayers
+                ] = await Promise.all(textToTranslate.map(text => translateText(text)));
+
                 tournamentItem.innerHTML = `
-                    <p class="font-bold text-lg text-blue-400">Tournoi n°${tournament.id} du ${date}</p>
-                    <p class="text-sm text-gray-300">Joueurs : ${playerNames.join(", ")}</p>
+                    <p class="font-bold text-lg text-blue-400">${translatedTournament} n°${tournament.id} ${translatedof} ${date}</p>
+                    <p class="text-sm text-gray-300">${translatedplayers} : ${playerNames.join(", ")}</p>
                     <div class="mt-2 p-2 rounded-lg text-center text-black font-bold ${positionColor}">
                         ${positionText}
                     </div>
@@ -158,7 +186,9 @@ export default function MatchHistory(): HTMLElement {
             });
         } catch (error) {
             console.error("❌ Erreur lors de la récupération des tournois :", error);
-            historyContainer.innerHTML = "<p class='text-red-500'>Erreur de chargement des tournois.</p>";
+            translateText("Erreur de chargement des tournois.").then((translated) => {
+                historyContainer.innerHTML = `<p class='text-red-500'>${translated}</p>`;
+            })
         }
     }
     fetchMatchHistory();

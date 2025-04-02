@@ -1,5 +1,6 @@
 import {  getQrcode, update2FAOff } from "../services/userService";
 import { state } from "../state";
+import { translateText } from "../translate";
 
 export function    displayModalQRCode(btnQRCode , userId, username, container)
 {
@@ -40,19 +41,25 @@ export function    displayModalQRCode(btnQRCode , userId, username, container)
                 });
 
                 const linkApp = document.createElement("p");
-                linkApp.innerHTML = "Scanner le QRCODE sur Google Authenticator";
+                translateText("Scanner le QRCODE sur Google Authenticator").then((translated) => {
+                    linkApp.innerHTML = translated;
+                })
                 divQrcode.appendChild(linkApp);            
                 
                 const hrefAppAndroid = document.createElement("a");
                 hrefAppAndroid.href = "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr";
                 hrefAppAndroid.target = "_blank";
-                hrefAppAndroid.innerHTML = "Google Authenticator for Android<br>";
+                translateText("Google Authenticator pour Android").then((translated) => {
+                    hrefAppAndroid.innerHTML = translated + "<br>";
+                })
                 divQrcode.appendChild(hrefAppAndroid);
                 
                 const hrefAppIOS = document.createElement("a");
                 hrefAppIOS.href = "https://apps.apple.com/fr/app/google-authenticator/id388497605";
                 hrefAppIOS.target = "_blank";
-                hrefAppIOS.innerHTML = "Google Authenticator for IOS";
+                translateText("Google Authenticator pour IOS").then((translated) => {
+                    hrefAppIOS.innerHTML = translated;
+                })
                 divQrcode.appendChild(hrefAppIOS);
                 
                 container.append(divQrcode);

@@ -77,9 +77,6 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
             </button>
         </div>
     `;
-    translateText("Local 1v1").then((translated) => {
-        gameSectionTitle.innerHTML = "🎮 " + `<span class="text-transparent">${translated}</span>`;
-    });
 
     // Mode Local vs IA
     const localAICard = document.createElement("div");

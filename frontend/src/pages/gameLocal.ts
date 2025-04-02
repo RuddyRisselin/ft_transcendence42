@@ -5,6 +5,7 @@ import { startGame, resetGame } from "../game/engine";
 import { setupControls } from "../game/controls";
 import { paddle1, paddle2 } from "../game/objects";
 import { removeAllControls } from "../game/controls";
+import { translateText } from "../translate";
 
 async function saveMatch(winner: string) {
     if (!state.localMatch) {
@@ -113,7 +114,10 @@ function endMatch(winner: string) {
     removeAllControls(); // ✅ Désactive proprement les touches après la partie
     saveMatch(winner);
 
-    endMessage.innerText = `🎉 ${winner} a gagné la partie !`;
+    // endMessage.innerText = `🎉 ${winner} a gagné la partie !`;
+    translateText(" a gagné la partie !").then((translated) => {
+        endMessage.innerHTML = winner + translated;
+    })
     endMessage.classList.remove("hidden");
     endMessage.classList.add("animate-bounce");
 
@@ -147,8 +151,10 @@ function endMatch(winner: string) {
         let timeLeft = state.localMatch.target;
         const timerDisplay = document.createElement("div");
         timerDisplay.className = "text-2xl text-yellow-400 mt-4 p-2 bg-gray-700 rounded-lg shadow-md";
-        timerDisplay.innerText = `⏳ Temps restant: ${timeLeft} sec`;
-
+        // timerDisplay.innerText = `⏳ Temps restant: ${timeLeft} sec`;
+        translateText(" Temps restant: ").then((translated) => {
+            timerDisplay.innerHTML = `⏳ ${translated} ${timeLeft} sec`;
+        })
         container.appendChild(timerDisplay);
 
         const timerInterval = setInterval(() => {
@@ -158,7 +164,10 @@ function endMatch(winner: string) {
             }
 
             timeLeft--;
-            timerDisplay.innerText = `⏳ Temps restant: ${timeLeft} sec`;
+            // timerDisplay.innerText = `⏳ Temps restant: ${timeLeft} sec`;
+            translateText(" Temps restant: ").then((translated) => {
+                timerDisplay.innerHTML = `⏳ ${translated} ${timeLeft} sec`;
+            })
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);

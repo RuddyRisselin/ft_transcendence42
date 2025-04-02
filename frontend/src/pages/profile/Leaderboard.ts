@@ -1,4 +1,5 @@
 import { state } from "../../state";
+import { translateText } from "../../translate";
 
 export default function Leaderboard(): HTMLElement {
     const container = document.createElement("div");
