@@ -6,6 +6,7 @@ import FriendProfile from "../pages/profile/FriendProfile";
 import { translateText } from "../translate";
 
 export default function Sidebar(): HTMLElement {
+
     const sidebar = document.createElement("aside");
     sidebar.className = "fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
 
@@ -36,7 +37,9 @@ export default function Sidebar(): HTMLElement {
 
     // Nom d'utilisateur
     const username = document.createElement("span");
-    username.innerText = `${state.user?.username || "Guest"}`;
+    translateText("invité").then((translated) => {
+        username.innerText = `${state.user?.username || translated}`;
+    });
     username.className = "text-lg font-semibold mt-3 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
 
     // Statut (Online/Offline)
@@ -55,7 +58,7 @@ export default function Sidebar(): HTMLElement {
         
         if (currentUser) {
             statusIndicator.className = `w-2 h-2 rounded-full mr-2 ${currentUser.status === "online" ? "bg-green-500" : "bg-red-500"}`;
-            statusText.innerText = currentUser.status === "online" ? "En ligne" : "Hors ligne";
+            statusText.innerText = currentUser.status === "online" ?  (localStorage.getItem("language") == "fr" ? "En ligne" :  await translateText("online")) : (localStorage.getItem("language") == "fr" ? "Hors ligne" :  await translateText("offline"));
         }
     }
 
@@ -69,10 +72,10 @@ export default function Sidebar(): HTMLElement {
     nav.className = "flex flex-col mt-4 px-4 space-y-2";
 
     const navLinks = [
-        { icon: "🏠", text: "Dashboard", href: "/dashboard" },
+        { icon: "🏠", text: "Tableau de bord", href: "/dashboard" },
         { icon: "👤", text: "Profile", href: "/profile" },
         { icon: "🎮", text: "Matches", href: "/matches" },
-        { icon: "📜", text: "Rules", href: "/rules" }
+        { icon: "📜", text: "Règles", href: "/rules" }
     ];
 
     navLinks.forEach(link => {
@@ -85,7 +88,9 @@ export default function Sidebar(): HTMLElement {
         icon.className = "mr-3 text-lg group-hover:scale-110 transition-transform";
 
         const text = document.createElement("span");
-        text.innerText = link.text;
+        translateText(link.text).then((translated) => {
+            text.innerText = translated;
+        })
         text.className = "text-gray-300 group-hover:text-white transition-colors";
 
         a.append(icon, text);
@@ -110,7 +115,9 @@ export default function Sidebar(): HTMLElement {
     // Bouton de déconnexion
     const logoutButton = document.createElement("button");
     logoutButton.className = "mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
-    logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒</span> Déconnexion';
+    translateText(" Déconnexion").then((translated) => {
+        logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒</span>' +  translated;
+    });
     logoutButton.onclick = async () => {
         sidebar.remove();
         await logout();
@@ -129,7 +136,9 @@ export default function Sidebar(): HTMLElement {
 
     const friendsTitle = document.createElement("h2");
     friendsTitle.className = "text-lg font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
-    friendsTitle.innerText = "Gestion des Amis";
+    translateText("Gestion des Amis").then((translated) => {
+        friendsTitle.innerText = translated;
+    });
 
     friendsHeader.append(backButton, friendsTitle);
     friendsContent.appendChild(friendsHeader);
@@ -185,7 +194,10 @@ export default function Sidebar(): HTMLElement {
                         loadFriendRequests();
                         // Feedback visuel
                         const originalContent: string = userItem.innerHTML;
-                        userItem.innerHTML = "✅ Demande envoyée";
+
+                        translateText("Demande envoyée").then((translated) => {
+                            userItem.innerHTML = "✅ " + translated;
+                        });
                         userItem.className += " text-green-400";
                         setTimeout(() => {
                             userItem.innerHTML = originalContent;
@@ -194,7 +206,9 @@ export default function Sidebar(): HTMLElement {
                     } catch (error) {
                         // Feedback d'erreur
                         const originalContent: string = userItem.innerHTML;
-                        userItem.innerHTML = "❌ Erreur";
+                        translateText("Erreur").then((translated) => {
+                            userItem.innerHTML = "❌ " + translated;
+                        });
                         userItem.className += " text-red-400";
                         setTimeout(() => {
                             userItem.innerHTML = originalContent;
@@ -206,7 +220,9 @@ export default function Sidebar(): HTMLElement {
             });
         } else {
             searchResults.className = "flex flex-col gap-1 mt-2";
-            searchResults.innerHTML = '<div class="text-gray-400 text-sm text-center py-1">Aucun utilisateur trouvé</div>';
+            translateText("Aucun utilisateur trouvé").then((translated) => {
+                searchResults.innerHTML = `<div class="text-gray-400 text-sm text-center py-1">${translated}</div>`;
+            });
         }
     };
 
@@ -220,7 +236,9 @@ export default function Sidebar(): HTMLElement {
 
     const requestsTitle = document.createElement("h3");
     requestsTitle.className = "text-yellow-300 font-semibold mb-3 flex items-center gap-2";
-    requestsTitle.innerHTML = "📨 Demandes d'amitié";
+    translateText("Demandes d'amitié").then((translated) => {
+        requestsTitle.innerHTML = "📨 " + translated;
+    });
 
     const requestsList = document.createElement("ul");
     requestsList.className = "space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar";
@@ -233,7 +251,9 @@ export default function Sidebar(): HTMLElement {
 
     const friendsListTitle = document.createElement("h3");
     friendsListTitle.className = "text-green-300 font-semibold mb-3 flex items-center gap-2";
-    friendsListTitle.innerHTML = "👥 Mes Amis";
+    translateText("Mes Amis").then((translated) => {
+        friendsListTitle.innerHTML = "👥 " + translated;
+    });
 
     const friendsUl = document.createElement("ul");
     friendsUl.className = "space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar";
@@ -256,7 +276,9 @@ export default function Sidebar(): HTMLElement {
         requestsList.innerHTML = "";
 
         if (requests.length === 0) {
-            requestsList.innerHTML = '<li class="text-gray-400 text-center py-2">Aucune demande en attente</li>';
+            translateText("Aucune demande en attente").then((translated) => {
+                requestsList.innerHTML = `<li class="text-gray-400 text-center py-2">${translated}</li>`;
+            });
             return;
         }
 
@@ -308,13 +330,15 @@ export default function Sidebar(): HTMLElement {
         friendsUl.innerHTML = "";
 
         if (friends.length === 0) {
-            friendsUl.innerHTML = '<li class="text-gray-400 text-center py-2">Aucun ami pour le moment</li>';
+            translateText("Aucun ami pour le moment").then((translated) => {
+                friendsUl.innerHTML = `<li class="text-gray-400 text-center py-2">${translated}</li>`;
+            })
             return;
         }
 
         friends.sort((a: any, b: any) => (a.status === "online" ? -1 : 1));
 
-        friends.forEach((friend: any) => {
+        friends.forEach(async (friend: any) => {
             const li = document.createElement("li");
             li.id = `friend-${friend.id}`;
             li.className = `flex items-center justify-between p-2 ${friend.status === "online" ? "bg-green-900/30" : "bg-gray-700/50"} rounded-lg group`;
@@ -328,10 +352,12 @@ export default function Sidebar(): HTMLElement {
 
             const username = document.createElement("div");
             username.className = "flex flex-col";
+            
+            //ICII
             username.innerHTML = `
                 <span class="text-sm">${friend.username}</span>
                 <span class="text-xs ${friend.status === "online" ? "text-green-400" : "text-gray-400"}">
-                    ${friend.status === "online" ? "🟢 En ligne" : "⭘ Hors ligne"}
+                    ${friend.status === "online" ? (localStorage.getItem("language") == "fr" ? "En ligne" :  await translateText("online")) : (localStorage.getItem("language") == "fr" ? "Hors ligne" :  await translateText("offline"))}
                 </span>
             `;
 
@@ -355,7 +381,7 @@ export default function Sidebar(): HTMLElement {
             removeBtn.innerHTML = "🗑️";
             removeBtn.className = "p-1.5 bg-red-600 hover:bg-red-500 rounded-lg transition-all scale-95 group-hover:scale-100";
             removeBtn.onclick = async () => {
-                if (confirm("Voulez-vous vraiment supprimer cet ami ?")) {
+                if (confirm( await translateText("Voulez-vous vraiment supprimer cet ami ?"))) {
                     await removeFriend(friend.id);
                     loadFriends();
                 }
