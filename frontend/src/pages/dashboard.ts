@@ -4,9 +4,29 @@ import { navigateTo } from "../router";
 import Sidebar from "../components/sidebar";
 import { translateText } from "../translate";
 
-export default function Dashboard(): HTMLElement {
+export default async function Dashboard() : Promise<HTMLDivElement> {
+
+    const textsToTranslate = [
+        "Modes de jeu",
+        "Local 1v1",
+        "Affrontez un ami en local sur le même écran dans un duel épique de Pong !",
+        "Jouer maintenant",
+        "Local vs IA",
+        "Défiez notre IA dans un match de Pong et testez vos compétences !",
+        "Jouer contre l'IA"
+    ];
+
+    const [
+        translatedTitle,
+        translatedLocal1v1, 
+        translatedLocalDesc, 
+        translatedPlayNow, 
+        translatedLocalAI, 
+        translatedAIDesc, 
+        translatedPlayAI
+    ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
+
     if (!state.user) {
-        console.log("❌ Utilisateur non connecté. Redirection...");
         setTimeout(() => {
             if (!state.user) {
                 navigateTo(new Event("click"), "/login");
@@ -36,9 +56,7 @@ export default function Dashboard(): HTMLElement {
 
     const gameSectionTitle = document.createElement("h2");
     gameSectionTitle.className = "text-4xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text mb-12";
-    translateText("Modes de Jeu").then((translated) => {
-        gameSectionTitle.innerHTML = "🎮 " + `<span class="text-transparent">${translated}</span>`;
-    });
+    gameSectionTitle.innerHTML = "🎮 " + `<span class="text-transparent">${translatedTitle}</span>`;
 
     // Conteneur pour les cartes de jeu
     const gameCardsContainer = document.createElement("div");
@@ -51,14 +69,17 @@ export default function Dashboard(): HTMLElement {
     localGameCard.innerHTML = `
         <div class="flex flex-col h-full text-center">
             <h3 class="text-3xl font-semibold text-blue-300 mb-6 group-hover:text-blue-200 transition-colors">
-                <span class="game-icon">🎮</span> Local 1v1
+                <span class="game-icon">🎮</span> ${translatedLocal1v1}
             </h3>
-            <p class="text-gray-300 mb-8 text-lg game-card-text">Affrontez un ami en local sur le même écran dans un duel épique de Pong !</p>
+            <p class="text-gray-300 mb-8 text-lg game-card-text">${translatedLocalDesc}</p>
             <button class="game-button w-full bg-blue-600 hover:bg-blue-500 text-white text-xl font-semibold py-6 px-8 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl">
-                Jouer maintenant
+                ${translatedPlayNow}
             </button>
         </div>
     `;
+    translateText("Local 1v1").then((translated) => {
+        gameSectionTitle.innerHTML = "🎮 " + `<span class="text-transparent">${translated}</span>`;
+    });
 
     // Mode Local vs IA
     const localAICard = document.createElement("div");
@@ -68,11 +89,11 @@ export default function Dashboard(): HTMLElement {
     localAICard.innerHTML = `
         <div class="flex flex-col h-full text-center">
             <h3 class="text-3xl font-semibold text-green-300 mb-6 group-hover:text-green-200 transition-colors">
-                <span class="game-icon">🤖</span> Local vs IA
+                <span class="game-icon">🤖</span> ${translatedLocalAI}
             </h3>
-            <p class="text-gray-300 mb-8 text-lg game-card-text">Défiez notre IA dans un match de Pong et testez vos compétences !</p>
+            <p class="text-gray-300 mb-8 text-lg game-card-text">${translatedAIDesc}</p>
             <button class="game-button w-full bg-green-600 hover:bg-green-500 text-white text-xl font-semibold py-6 px-8 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl">
-                Jouer contre l'IA
+                ${translatedPlayAI}
             </button>
         </div>
     `;
@@ -82,7 +103,7 @@ export default function Dashboard(): HTMLElement {
     difficultyMenu.className = "fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden";
     difficultyMenu.innerHTML = `
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800/90 p-8 rounded-xl border border-green-500/30 shadow-2xl w-96">
-            <h3 class="text-2xl font-bold text-green-300 mb-6 text-center">Choisissez la difficulté</h3>
+            <h3 class="text-2xl font-bold text-green-300 mb-6 text-center">${await translateText("Choisissez la difficulté")}</h3>
             <div class="space-y-4">
                 <button class="difficulty-btn w-full bg-green-600 hover:bg-green-500 text-white text-lg font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl" data-difficulty="easy">
                     <span class="mr-2">🌱</span> Facile

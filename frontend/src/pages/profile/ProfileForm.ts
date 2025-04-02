@@ -3,13 +3,42 @@ import { updatePhotoUser, updateUser, deleteUser, anonymizeUser, getQrcode } fro
 import { uploadFile } from "../../services/uploadFile";
 import { logout } from "../../services/auth";
 import { displayModalQRCode } from "../displayModalQRCode";
+import { translateText } from "../../translate";
 
-export default function ProfileForm(): HTMLElement {
-    const container = document.createElement("div");
-    container.className = "flex flex-col items-center p-6 bg-gray-800 text-white rounded-xl shadow-lg w-full h-full";
+export default async function ProfileForm() {
+
+    const textsToTranslate = [
+        "Gestion du profil",
+        "Changer de photo",
+        "Choisir la photo",
+        "Mettre la photo à jour",
+        "Mettre la profil à jour",
+        "Se mettre en privé",
+        "Se mettre en publique",
+        "êtes-vous sûr ?",
+        "Supprimer mon compte",
+        "Activer 2FA"
+    ];
+
+    const [
+        translatedProfil,
+        translatedChangePhoto, 
+        translatedChoosePhoto, 
+        translatedUpdatePhoto, 
+        translatedUpdateProfil, 
+        translatedPrivate,
+        translatedPublic,
+        translatedConfirm,
+        translatedDeleteAccount,
+        translated2FA
+
+    ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
+
+    const container: HTMLDivElement = document.createElement("div");
+    container.className = "flex flex-col items-center p-6 bg-gray-800 text-white rounded-xl shadow-lg w-full h-full test";
 
     const title: HTMLHeadingElement = document.createElement("h2");
-    title.innerText = "Profile Management";
+    title.innerHTML = "translatedProfil";
     title.className = "text-2xl text-blue-400 font-bold mb-6";
 
     const divAvatar: HTMLDivElement = document.createElement("div");
@@ -21,7 +50,7 @@ export default function ProfileForm(): HTMLElement {
     divAvatar.appendChild(avatar);
     
     const btnRequestPhoto: HTMLButtonElement = document.createElement("button");
-    btnRequestPhoto.innerHTML = "Change photo";
+    btnRequestPhoto.innerHTML = "translatedChangePhoto";
     btnRequestPhoto.className = "bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2 font-semibold text-sm";
     divAvatar.appendChild(btnRequestPhoto);
     
@@ -32,14 +61,14 @@ export default function ProfileForm(): HTMLElement {
     form.enctype = "multipart/form-data";
     form.className = "w-full";
     const labelFile: HTMLLabelElement = document.createElement("label");
-    labelFile.innerHTML = "Choose profile picture : ";
+    labelFile.innerHTML = "translatedChoosePhoto";
     labelFile.className = "mb-3 text-sm";
     const inputFile: HTMLInputElement = document.createElement("input");
     inputFile.type = "file";
     inputFile.accept = ".png, .jpeg, .jpg";
     inputFile.className = "text-sm w-full mb-2";
     const submitFile: HTMLButtonElement = document.createElement("button");
-    submitFile.innerHTML = "Update picture";
+    submitFile.innerHTML = "translatedUpdatePhoto";
     submitFile.className = "w-full bg-blue-500 hover:bg-blue-600 rounded py-2 px-4 text-sm";
     form.appendChild(labelFile);
     form.appendChild(inputFile);
@@ -103,7 +132,7 @@ export default function ProfileForm(): HTMLElement {
     buttonsContainer.className = "w-full space-y-3 mt-4";
 
     const saveBtn = document.createElement("button");
-    saveBtn.innerText = "Update profile";
+    saveBtn.innerHTML = "translatedUpdateProfil";
     saveBtn.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded";
     if (anonymize === 1)
         saveBtn.disabled = true;
@@ -126,22 +155,20 @@ export default function ProfileForm(): HTMLElement {
     if (!token)
         token = "";
     if (state.user.anonymize === 0)
-        anonymizeBtn.innerText = "Going private";
+        anonymizeBtn.innerHTML = "translatedPrivate";
     else
-        anonymizeBtn.innerText = "Going public";
+        anonymizeBtn.innerHTML = "translatedPublic";
     anonymizeBtn.className = "w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded";
     anonymizeBtn.onclick = async () => {
         try {
-            const value = confirm("Are you sure ?");
+            const value = confirm("translatedConfirm");
             if (value) {
                 const success = await anonymizeUser(state.user.username, token);
                 if (success && anonymizeBtn.textContent === "Going private") {
-                    alert("Your profil is private!");
-                    anonymizeBtn.innerText = "Going public";
+                        anonymizeBtn.innerHTML = "translatedPublic";
                 }
                 else if (success && anonymizeBtn.textContent === "Going public") {
-                    alert("Your profil is public!");
-                    anonymizeBtn.innerText = "Going private";
+                        anonymizeBtn.innerHTML = "translatedPrivate";
                 }
                 else
                     alert("Error request profil");
@@ -154,7 +181,7 @@ export default function ProfileForm(): HTMLElement {
     };
 
     const deleteBtn = document.createElement("button");
-    deleteBtn.innerText = "Delete account";
+    deleteBtn.innerHTML = "translatedDeleteAccount";
     deleteBtn.className = "w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded";
     deleteBtn.onclick = async () => {
         try {
@@ -179,7 +206,7 @@ export default function ProfileForm(): HTMLElement {
     div2FA.className = "flex items-center justify-between w-full mt-4";
     
     const span2FA = document.createElement("span");
-    span2FA.innerHTML = "Activate 2FA";
+        span2FA.innerHTML = translated2FA;
     span2FA.className = "text-sm";
     
     const toggleContainer = document.createElement("div");

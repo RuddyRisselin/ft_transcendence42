@@ -7,13 +7,20 @@ export async function translateText(text: string): Promise<string>
     if (target == "fr" || !target)
         return text;
 
+    const cacheKey = `translation_${target}_${text}`;
+    const cachedTranslation = localStorage.getItem(cacheKey);
+    if (cachedTranslation) {
+        return cachedTranslation;
+    }
+
     const source = "fr";
     const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`;
     try {
         const response = await fetch(url);
         const data = await response.json();
-        
-        return data.responseData.translatedText || "Erreur de traduction";
+        const translatedText = data.responseData.translatedText || "Erreur de traduction";
+        localStorage.setItem(cacheKey, translatedText);
+        return translatedText;
     } catch (error) {
         console.error("Erreur lors de la traduction :", error);
         return "Erreur de traduction";
