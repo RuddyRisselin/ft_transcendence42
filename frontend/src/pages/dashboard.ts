@@ -2,6 +2,7 @@ import { state } from "../state";
 import { connectToWebSocket } from "../services/auth";
 import { navigateTo } from "../router";
 import Sidebar from "../components/sidebar";
+import { translateText } from "../translate";
 
 export default function Dashboard(): HTMLElement {
     if (!state.user) {
@@ -34,8 +35,10 @@ export default function Dashboard(): HTMLElement {
     gameSection.className = "flex-1 p-8 overflow-y-auto custom-scrollbar";
 
     const gameSectionTitle = document.createElement("h2");
-    gameSectionTitle.className = "text-4xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-12";
-    gameSectionTitle.innerText = "🎮 Modes de Jeu";
+    gameSectionTitle.className = "text-4xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text mb-12";
+    translateText("Modes de Jeu").then((translated) => {
+        gameSectionTitle.innerHTML = "🎮 " + `<span class="text-transparent">${translated}</span>`;
+    });
 
     // Conteneur pour les cartes de jeu
     const gameCardsContainer = document.createElement("div");

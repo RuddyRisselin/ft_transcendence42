@@ -3,6 +3,7 @@ import { logout, connectToWebSocket } from "../services/auth";
 import { getUsers } from "../services/userService";
 import { getFriends, getFriendRequests, removeFriend, acceptFriendRequest, rejectFriendRequest, addFriend } from "../services/friendService";
 import FriendProfile from "../pages/profile/FriendProfile";
+import { translateText } from "../translate";
 
 export default function Sidebar(): HTMLElement {
     const sidebar = document.createElement("aside");
@@ -94,7 +95,9 @@ export default function Sidebar(): HTMLElement {
     // Bouton amis
     const friendsButton = document.createElement("button");
     friendsButton.className = "flex items-center p-3 hover:bg-gray-800/50 rounded-lg transition duration-200 group w-full mt-2";
-    friendsButton.innerHTML = '<span class="mr-3 text-lg group-hover:scale-110 transition-transform">👥</span><span class="text-gray-300 group-hover:text-white transition-colors">Amis</span>';
+    translateText("Amis").then((translated) => {
+            friendsButton.innerHTML = '<span class="mr-3 text-lg group-hover:scale-110 transition-transform">👥</span>' + `<span class="text-gray-300 group-hover:text-white transition-colors">${translated}</span>`;
+    });
     friendsButton.onclick = () => {
         mainContainer.style.transform = "translateX(-256px)";
         // Recharger les données quand on ouvre le panneau
@@ -106,7 +109,7 @@ export default function Sidebar(): HTMLElement {
 
     // Bouton de déconnexion
     const logoutButton = document.createElement("button");
-    logoutButton.className = "mt-auto mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
+    logoutButton.className = "mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
     logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒</span> Déconnexion';
     logoutButton.onclick = async () => {
         sidebar.remove();
@@ -379,10 +382,53 @@ export default function Sidebar(): HTMLElement {
         }
     });
 
-    // Assemblage final
-    sidebarContent.append(userContainer, nav, logoutButton);
+
+    
+    const languageDiv = document.createElement("div");
+    languageDiv.className = "mt-auto mb-4 flex p-3 flex-row flex-wrap justify-around items-center";
+    // languageDiv.className = "mt-auto mb-4 mx-4 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20"
+    const btnEN = document.createElement("button");
+    const btnES = document.createElement("button");
+    const btnFR = document.createElement("button");
+    btnEN.innerHTML = "🇺🇸";
+    btnEN.className = "p-1";
+    
+    btnES.innerHTML = "🇪🇦";
+    btnES.className = "p-1";
+    
+    btnFR.innerHTML = "🇨🇵";
+    btnFR.className = "p-1";
+    languageDiv.appendChild(btnEN);
+    languageDiv.appendChild(btnES);
+    languageDiv.appendChild(btnFR);
+
+    // function setLanguage(language: string)
+    // {
+    //     localStorage.setItem("language", language);
+       
+    // }
+
+    btnEN.onclick = async () => {
+        const langue = "en";
+        localStorage.setItem("language", langue);
+        window.location.reload();
+    };
+    btnES.onclick = async () => {
+        const langue = "es";
+        localStorage.setItem("language", langue);
+        window.location.reload();
+    };
+    btnFR.onclick = async () => {
+        const langue = "fr";
+        localStorage.setItem("language", langue);
+        window.location.reload();
+    };
+
+
+    // Assemblage final    
+    sidebarContent.append(userContainer, nav, languageDiv, logoutButton);
     mainContainer.append(sidebarContent, friendsContent);
     sidebar.appendChild(mainContainer);
-
+    // setLanguage("fr");
     return sidebar;
 }
