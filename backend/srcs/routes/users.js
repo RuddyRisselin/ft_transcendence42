@@ -107,8 +107,6 @@ async function userRoutes(fastify) {
 
   fastify.patch("/users/username/:username/updatephoto", async (request, reply) => {
     const { username, file } = request.body;
-    console.log("Username ===== ", username);
-    console.log("File ===== ", file);
     try
     {
       const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
@@ -132,7 +130,7 @@ async function userRoutes(fastify) {
     }
     catch (error)
     {
-      console.error("Erreur lors de la mis a jour de l'utilisateur :", error);
+      console.error("Erreur lors de la mise à jour de l'utilisateur :", error.message, error.stack);
       return reply.status(500).send({ error: "Erreur serveur." });
     }
   });

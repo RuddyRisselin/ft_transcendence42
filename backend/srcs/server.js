@@ -30,7 +30,7 @@ async function startServer() {
   await fastify.register(tournamentRoutes);
 
   fastify.register(fastifyStatic, {
-    root: path.join(__dirname, "../../images"),
+    root: "/app/images",
     prefix: "/images/",
   });
   await fastify.register(twoFaRoutes, { prefix: '/2FA' });
