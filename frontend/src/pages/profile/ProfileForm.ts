@@ -91,7 +91,6 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
 
         const formData: FormData = new FormData();
         formData.append('image', inputFile.files[0]);
-        console.log("FORMDATA : ", typeof formData);
         const response = await uploadFile(formData);
         if (!response || !response.filename)
             return alert("Echec du telechargement de l'image");
@@ -143,12 +142,17 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         let token = state.token;
         if (!token)
             token = "";
-        const success = await updateUser(token, state.user.username, username.value, email.value);
-        if (success) {
-            state.user.username = username.value;
-            state.user.email = email.value;
-        } else {
-            alert("Error profile update impossible");
+        const value = confirm(translatedAreYouSure);
+        if (value)
+        {
+            const success = await updateUser(token, state.user.username, username.value, email.value);
+            if (success) {
+                state.user.username = username.value;
+                state.user.email = email.value;
+                window.location.reload();
+            } else {
+                alert("Error profile update impossible");
+            }
         }
     };
 
@@ -157,9 +161,9 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
     if (!token)
         token = "";
     if (state.user.anonymize === 0)
-            anonymizeBtn.innerHTML = translatedGoingPrivate;
+        anonymizeBtn.innerHTML = translatedGoingPrivate;
     else
-            anonymizeBtn.innerHTML = translatedGoingPublic;
+        anonymizeBtn.innerHTML = translatedGoingPublic;
     anonymizeBtn.className = "w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded";
     anonymizeBtn.onclick = async () => {
         try {

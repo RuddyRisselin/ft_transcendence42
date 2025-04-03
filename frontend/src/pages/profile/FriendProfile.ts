@@ -6,7 +6,7 @@ import StarsBackground from "./StarsBackground";
 import BackButton from "./BackButton";
 import { getFriendDetails } from "../../services/friendService";
 
-export default function FriendProfile(friendId: number): HTMLElement {
+export default async function FriendProfile(friendId: number): Promise<HTMLElement> {
     document.body.classList.add("overflow-hidden");
     const mainContainer = document.createElement("div");
     mainContainer.className = "flex w-full h-screen overflow-hidden bg-gray-900";
@@ -66,7 +66,9 @@ export default function FriendProfile(friendId: number): HTMLElement {
     // Section Leaderboard (milieu)
     const leaderboard = document.createElement("div");
     leaderboard.className = "lg:col-span-6 bg-gray-800/50 rounded-lg shadow-lg flex flex-col";
-    leaderboard.append(Leaderboard());
+    Leaderboard().then(container => {
+        leaderboard.append(container);
+    })
 
     // Section History (droite)
     const history = document.createElement("div");
@@ -80,9 +82,9 @@ export default function FriendProfile(friendId: number): HTMLElement {
     
     // Rangée inférieure avec les stats
     const stats = ProfileStats(friendId);
-    stats.className = "lg:col-span-12 bg-gray-800/50 rounded-lg shadow-lg";
+    (await stats).className = "lg:col-span-12 bg-gray-800/50 rounded-lg shadow-lg";
 
-    layoutWrapper.append(topRow, stats);
+    layoutWrapper.append(topRow, await stats);
     profileWrapper.appendChild(layoutWrapper);
     mainContainer.appendChild(profileWrapper);
 

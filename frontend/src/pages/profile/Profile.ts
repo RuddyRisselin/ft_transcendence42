@@ -55,9 +55,9 @@ export default async function Profile(): Promise<HTMLElement> {
     
     // Rangée inférieure avec les stats
     const stats = ProfileStats();
-    stats.className = "lg:col-span-12 bg-gray-800 rounded-lg shadow-lg";
+    (await stats).className = "lg:col-span-12 bg-gray-800 rounded-lg shadow-lg";
 
-    layoutWrapper.append(topRow, stats);
+    layoutWrapper.append(topRow, await stats);
     
     const toggleSidebarButton = document.createElement("div");
     toggleSidebarButton.className = "fixed top-4 right-4 w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center cursor-pointer text-white text-base transition duration-300 transform hover:scale-110 hover:bg-gray-600 shadow-lg z-10 md:hidden";
