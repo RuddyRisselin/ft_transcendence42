@@ -13,7 +13,15 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
         "Jouer maintenant",
         "Local vs IA",
         "Défiez notre IA dans un match de Pong et testez vos compétences !",
-        "Jouer contre l'IA"
+        "Jouer contre l'IA",
+        "Choisissez la difficulté",
+        "Facile",
+        "Normal",
+        "Difficile",
+        "Annuler",
+        "Tournoi",
+        "Participez à un tournoi épique et prouvez que vous êtes le meilleur joueur de Pong !",
+        "Rejoindre un tournoi"
     ];
 
     const [
@@ -23,7 +31,15 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
         translatedPlayNow, 
         translatedLocalAI, 
         translatedAIDesc, 
-        translatedPlayAI
+        translatedPlayAI,
+        translatedDifficulty,
+        translatedEasy,
+        translatedNormal,
+        translatedHard,
+        transletedCancel,
+        translatedTournament,
+        translatedTournamentDesc,
+        translatedPlayTournament
     ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
 
     if (!state.user) {
@@ -100,23 +116,25 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
     difficultyMenu.className = "fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden";
     difficultyMenu.innerHTML = `
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800/90 p-8 rounded-xl border border-green-500/30 shadow-2xl w-96">
-            <h3 class="text-2xl font-bold text-green-300 mb-6 text-center">${await translateText("Choisissez la difficulté")}</h3>
+            <h3 class="text-2xl font-bold text-green-300 mb-6 text-center">${translatedDifficulty}</h3>
             <div class="space-y-4">
                 <button class="difficulty-btn w-full bg-green-600 hover:bg-green-500 text-white text-lg font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl" data-difficulty="easy">
-                    <span class="mr-2">🌱</span> Facile
+                    <span class="mr-2">🌱</span> ${translatedEasy}
                 </button>
                 <button class="difficulty-btn w-full bg-yellow-600 hover:bg-yellow-500 text-white text-lg font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl" data-difficulty="normal">
-                    <span class="mr-2">⚡</span> Normal
+                    <span class="mr-2">⚡</span> ${translatedNormal}
                 </button>
                 <button class="difficulty-btn w-full bg-red-600 hover:bg-red-500 text-white text-lg font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl" data-difficulty="hard">
-                    <span class="mr-2">🔥</span> Difficile
+                    <span class="mr-2">🔥</span> ${translatedHard}
                 </button>
             </div>
             <button class="close-menu mt-6 w-full bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold py-3 px-6 rounded-lg transition-all">
-                Annuler
+                ${transletedCancel}
             </button>
         </div>
     `;
+
+
 
     document.body.appendChild(difficultyMenu);
 
@@ -127,11 +145,11 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
     tournamentCard.innerHTML = `
         <div class="flex flex-col h-full text-center">
             <h3 class="text-3xl font-semibold text-purple-300 mb-6 group-hover:text-purple-200 transition-colors">
-                <span class="game-icon">🏆</span> Tournoi
+                <span class="game-icon">🏆</span> ${translatedTournament}
             </h3>
-            <p class="text-gray-300 mb-8 text-lg game-card-text">Participez à un tournoi épique et prouvez que vous êtes le meilleur joueur de Pong !</p>
+            <p class="text-gray-300 mb-8 text-lg game-card-text">${translatedTournamentDesc}</p>
             <button class="game-button w-full bg-purple-600 hover:bg-purple-500 text-white text-xl font-semibold py-6 px-8 rounded-lg transition-all transform hover:scale-105 hover:shadow-xl">
-                Rejoindre un tournoi
+                ${translatedPlayTournament}
             </button>
         </div>
     `;

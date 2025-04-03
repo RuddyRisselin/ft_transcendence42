@@ -5,15 +5,42 @@ import { logout } from "../../services/auth";
 import { displayModalQRCode } from "../displayModalQRCode";
 import { translateText } from "../../translate";
 
-export default function ProfileForm(): HTMLDivElement {
-    
+export default async function ProfileForm(): Promise<HTMLDivElement> {
+    const textsToTranslate = [
+        "Gestion de profil",
+        "Changer de photo",
+        "Choisir la photo",
+        "Mettre la photo à jour",
+        "Votre compte doit être en publique !",
+        "Image non valide",
+        "Mettre le profil à jour",
+        "Se mettre en privé",
+        "Se mettre en publique",
+        "êtes-vous sûr ?",
+        "Supprimer mon compte",
+        "Activer 2FA"
+    ];
+
+    const [
+        translatedProfilGes,
+        translatedChangeAvatar, 
+        translatedChooseAvatar, 
+        translatedUpdateAvatar, 
+        translatedNeedPublicAccount, 
+        translatedNotValidAvatar, 
+        translatedUpdateProfil,
+        translatedGoingPrivate,
+        translatedGoingPublic,
+        translatedAreYouSure,
+        translatedDeleteAccount,
+        transletedActivate2FA
+    ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
+
     const container: HTMLDivElement = document.createElement("div");
     container.className = "flex flex-col items-center p-6 bg-gray-800 text-white rounded-xl shadow-lg w-full h-full test";
     
     const title: HTMLHeadingElement = document.createElement("h2");
-    translateText("Gestion de profil").then((translated) => {
-        title.innerHTML = translated;
-    })
+    title.innerHTML = translatedProfilGes;
     title.className = "text-2xl text-blue-400 font-bold mb-6";
     
     const divAvatar: HTMLDivElement = document.createElement("div");
@@ -25,9 +52,7 @@ export default function ProfileForm(): HTMLDivElement {
     divAvatar.appendChild(avatar);
     
     const btnRequestPhoto: HTMLButtonElement = document.createElement("button");
-    translateText("Changer de photo").then((translated) => {
-        btnRequestPhoto.innerHTML = translated;
-    })
+    btnRequestPhoto.innerHTML = translatedChangeAvatar;
     btnRequestPhoto.className = "bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2 font-semibold text-sm";
     divAvatar.appendChild(btnRequestPhoto);
     
@@ -38,18 +63,14 @@ export default function ProfileForm(): HTMLDivElement {
     form.enctype = "multipart/form-data";
     form.className = "w-full";
     const labelFile: HTMLLabelElement = document.createElement("label");
-    translateText("Choisir la photo").then((translated) => {
-        labelFile.innerHTML = translated;
-    })
+    labelFile.innerHTML = translatedChooseAvatar;
     labelFile.className = "mb-3 text-sm";
     const inputFile: HTMLInputElement = document.createElement("input");
     inputFile.type = "file";
     inputFile.accept = ".png, .jpeg, .jpg";
     inputFile.className = "text-sm w-full mb-2";
     const submitFile: HTMLButtonElement = document.createElement("button");
-    translateText("Mettre la photo à jour").then((translated) => {
-        submitFile.innerHTML = translated;
-    })
+    submitFile.innerHTML = translatedUpdateAvatar;
     submitFile.className = "w-full bg-blue-500 hover:bg-blue-600 rounded py-2 px-4 text-sm";
     form.appendChild(labelFile);
     form.appendChild(inputFile);
@@ -59,14 +80,14 @@ export default function ProfileForm(): HTMLDivElement {
 
     btnRequestPhoto.onclick = () => {
         if (state.user.anonymize)
-            return alert("Your account must be in public !");
+            return alert(translatedNeedPublicAccount);
         divUpdatePhoto.classList.remove("hidden");
         btnRequestPhoto.classList.add("hidden");
     }
     submitFile.onclick = async (e) => {
         e.preventDefault();
         if (!inputFile.files?.length)
-            return alert("Image not valid");
+            return alert(translatedNotValidAvatar);
 
         const formData: FormData = new FormData();
         formData.append('image', inputFile.files[0]);
@@ -113,9 +134,7 @@ export default function ProfileForm(): HTMLDivElement {
     buttonsContainer.className = "w-full space-y-3 mt-4";
 
     const saveBtn = document.createElement("button");
-    translateText("Mettre le profil à jour").then((translated) => {
-        saveBtn.innerHTML = translated;
-    })
+    saveBtn.innerHTML = translatedUpdateProfil;
 
     saveBtn.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded";
     if (anonymize === 1)
@@ -128,7 +147,6 @@ export default function ProfileForm(): HTMLDivElement {
         if (success) {
             state.user.username = username.value;
             state.user.email = email.value;
-            alert("Profile updated!");
         } else {
             alert("Error profile update impossible");
         }
@@ -139,33 +157,19 @@ export default function ProfileForm(): HTMLDivElement {
     if (!token)
         token = "";
     if (state.user.anonymize === 0)
-    {
-        translateText("Se mettre en privé").then((translated) => {
-            anonymizeBtn.innerHTML = translated;
-        })
-    }
+            anonymizeBtn.innerHTML = translatedGoingPrivate;
     else
-    {
-        translateText("Se mettre en publique").then((translated) => {
-            anonymizeBtn.innerHTML = translated;
-        })
-    }
+            anonymizeBtn.innerHTML = translatedGoingPublic;
     anonymizeBtn.className = "w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded";
     anonymizeBtn.onclick = async () => {
         try {
-            const value = confirm(await translateText("êtes-vous sûr ?"));
+            const value = confirm(translatedAreYouSure);
             if (value) {
                 const success = await anonymizeUser(state.user.username, token);
-                if (success && anonymizeBtn.textContent?.includes("priv")) {
-                    translateText("Se mettre en publique").then((translated) => {
-                        anonymizeBtn.innerHTML = translated;
-                    })
-                }
-                else if (success && anonymizeBtn.textContent?.includes("bli")) {
-                    translateText("Se mettre en privé").then((translated) => {
-                        anonymizeBtn.innerHTML = translated;
-                    })
-                }
+                if (success && anonymizeBtn.textContent?.includes("priv"))
+                        anonymizeBtn.innerHTML = translatedGoingPublic;
+                else if (success && anonymizeBtn.textContent?.includes("bli"))
+                        anonymizeBtn.innerHTML = translatedGoingPrivate;
                 else
                     alert("Error request profil");
                 window.location.reload();
@@ -177,18 +181,14 @@ export default function ProfileForm(): HTMLDivElement {
     };
 
     const deleteBtn = document.createElement("button");
-    deleteBtn.innerHTML = "Supprimer mon compte";
-    translateText("Supprimer mon compte").then((translated) => {
-        deleteBtn.innerHTML = translated;
-    })
+    deleteBtn.innerHTML = translatedDeleteAccount;
     deleteBtn.className = "w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded";
     deleteBtn.onclick = async () => {
         try {
-            const value = confirm("Are you sure ?");
+            const value = confirm(translatedAreYouSure);
             if (value) {
                 const success = await deleteUser(state.user.username);
                 if (success) {
-                    alert("Profil deleted!");
                     await logout();
                 } else {
                     alert("Error delete profil");
@@ -205,9 +205,7 @@ export default function ProfileForm(): HTMLDivElement {
     div2FA.className = "flex items-center justify-between w-full mt-4";
     
     const span2FA = document.createElement("span");
-    translateText("Activer 2FA").then((translated) => {
-        span2FA.innerHTML = translated;
-    })
+    span2FA.innerHTML = transletedActivate2FA;
     span2FA.className = "text-sm";
     
     const toggleContainer = document.createElement("div");
