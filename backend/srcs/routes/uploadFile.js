@@ -30,7 +30,7 @@ async function uploadFileRoutes(fastify) {
         if (!data)
             return reply.code(400).send({ message: 'Image not uploaded' });
         const filename = Date.now() + data.filename
-        const filePath = path.join(__dirname, "../../../images", filename);
+        const filePath = path.join("/app/images", filename);
         await data.toBuffer().then((buffer) => require("fs").writeFileSync(filePath, buffer));
         reply.code(200).send({ message: "Image uploaded", filename: filename });
     });
