@@ -105,7 +105,7 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         const response = await uploadFile(formData);
         if (!response || !response.filename)
             return alert(translatedErrorDownloadAvatar);
-        const success = await updatePhotoUser(state.user.username, response.filename);
+        const success: boolean = await updatePhotoUser(state.user.username, response.filename);
         if (success) {
             state.user.avatar = response.filename;
             localStorage.setItem("user", JSON.stringify(state.user));
@@ -118,15 +118,15 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
     };
 
     // Conteneur pour les entrées de formulaire
-    const formFieldsContainer = document.createElement("div");
+    const formFieldsContainer: HTMLDivElement = document.createElement("div");
     formFieldsContainer.className = "w-full space-y-4";
 
-    const username = document.createElement("input");
+    const username: HTMLInputElement = document.createElement("input");
     username.type = "text";
     username.value = state.user.username;
     username.className = "w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-blue-500";
 
-    const email = document.createElement("input");
+    const email: HTMLInputElement = document.createElement("input");
     email.type = "email";
     email.value = state.user.email;
     email.className = "w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-blue-500";
@@ -139,11 +139,10 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         email.disabled = true;
     }
 
-    // Conteneur de boutons
-    const buttonsContainer = document.createElement("div");
+    const buttonsContainer: HTMLDivElement = document.createElement("div");
     buttonsContainer.className = "w-full space-y-3 mt-4";
 
-    const saveBtn = document.createElement("button");
+    const saveBtn: HTMLButtonElement = document.createElement("button");
     saveBtn.innerHTML = translatedUpdateProfil;
 
     saveBtn.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded";
@@ -153,10 +152,10 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         let token = state.token;
         if (!token)
             token = "";
-        const value = confirm(translatedAreYouSure);
+        const value: boolean = confirm(translatedAreYouSure);
         if (value)
         {
-            const success = await updateUser(token, state.user.username, username.value, email.value);
+            const success: boolean = await updateUser(token, state.user.username, username.value, email.value);
             if (success) {
                 state.user.username = username.value;
                 state.user.email = email.value;
@@ -167,7 +166,7 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         }
     };
 
-    const anonymizeBtn = document.createElement("button");
+    const anonymizeBtn: HTMLButtonElement = document.createElement("button");
     let token = state.token;
     if (!token)
         token = "";
@@ -178,9 +177,9 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
     anonymizeBtn.className = "w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded";
     anonymizeBtn.onclick = async () => {
         try {
-            const value = confirm(translatedAreYouSure);
+            const value: boolean = confirm(translatedAreYouSure);
             if (value) {
-                const success = await anonymizeUser(state.user.username, token);
+                const success: boolean = await anonymizeUser(state.user.username, token);
                 if (success && anonymizeBtn.textContent?.includes("priv"))
                         anonymizeBtn.innerHTML = translatedGoingPublic;
                 else if (success && anonymizeBtn.textContent?.includes("bli"))
@@ -195,14 +194,14 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         }
     };
 
-    const deleteBtn = document.createElement("button");
+    const deleteBtn: HTMLButtonElement = document.createElement("button");
     deleteBtn.innerHTML = translatedDeleteAccount;
     deleteBtn.className = "w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded";
     deleteBtn.onclick = async () => {
         try {
-            const value = confirm(translatedAreYouSure);
+            const value: boolean = confirm(translatedAreYouSure);
             if (value) {
-                const success = await deleteUser(state.user.username);
+                const success: boolean = await deleteUser(state.user.username);
                 if (success) {
                     await logout();
                 } else {
@@ -216,25 +215,25 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
     };
 
     // Activation 2FA
-    const div2FA = document.createElement("div");
+    const div2FA: HTMLDivElement = document.createElement("div");
     div2FA.className = "flex items-center justify-between w-full mt-4";
     
-    const span2FA = document.createElement("span");
+    const span2FA: HTMLSpanElement = document.createElement("span");
     span2FA.innerHTML = transletedActivate2FA;
     span2FA.className = "text-sm";
     
-    const toggleContainer = document.createElement("div");
+    const toggleContainer: HTMLDivElement = document.createElement("div");
     toggleContainer.className = "flex";
 
-    const labelBtn = document.createElement("label");
+    const labelBtn: HTMLLabelElement = document.createElement("label");
     labelBtn.className = "switch";
     
-    const btnQRCode = document.createElement("input");
+    const btnQRCode: HTMLInputElement = document.createElement("input");
     btnQRCode.type = "checkbox";
     if (state.user.is2FAEnabled == 1)
         btnQRCode.checked = true;
     
-    const spanQrcode = document.createElement("span");
+    const spanQrcode: HTMLSpanElement = document.createElement("span");
     spanQrcode.className = "slider round";
     
     labelBtn.appendChild(btnQRCode);
