@@ -94,7 +94,7 @@ export default function TournamentBracket(): HTMLElement {
     container.className = "flex flex-col items-center min-h-screen bg-black text-white p-8";
 
     const title = document.createElement("h1");
-    title.innerText = "🏆 " + translatedBracket;
+    title.innerHTML = "🏆 " + translatedBracket;
     title.className = "text-4xl font-bold text-yellow-400 mb-6";
 
     if (!state.tournament.bracket.length) {
@@ -130,7 +130,7 @@ export default function TournamentBracket(): HTMLElement {
     } else {
 		// ✅ Bouton pour lancer le match
 		const startNextMatchButton = document.createElement("button");
-		startNextMatchButton.innerText = "🚀 " + translatedStartNextmatch;
+		startNextMatchButton.innerHTML = "🚀 " + translatedStartNextmatch;
 		startNextMatchButton.className = "mt-6 px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg shadow-lg transition-all transform hover:scale-105";
 
 		startNextMatchButton.onclick = () => {
