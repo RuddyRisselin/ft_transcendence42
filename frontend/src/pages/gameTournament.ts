@@ -5,6 +5,7 @@ import { startGame, resetGame } from "../game/engine";
 import { setupControls, removeAllControls } from "../game/controls";
 import { paddle1, paddle2 } from "../game/objects";
 import { drawBracket } from "./tournamentBracket";
+import { translateText } from "../translate";
 
 async function saveTournamentToHistory() {
     if (!state.tournament || !state.tournament.winner) return;
@@ -93,7 +94,7 @@ export default function GameTournament() {
 
     const title = document.createElement("h1");
     title.className = "text-4xl font-bold mb-4 text-purple-400 animate-pulse";
-    title.innerText = `🏓 ${player1} vs ${player2}`;
+    title.innerHTML = `🏓 ${player1} vs ${player2}`;
 
     const gameCanvas = document.createElement("canvas");
     gameCanvas.width = 1000;
@@ -118,7 +119,9 @@ export default function GameTournament() {
         matchEnded = true;
 
         removeAllControls(); // ✅ Désactive proprement les touches après la partie
-        endMessage.innerText = `🎉 ${winner} a gagné la partie !`;
+        translateText("a gagné la partie !").then((translated) => {
+            endMessage.innerHTML = `🎉 ${winner} ` + translated;
+        })
         endMessage.classList.remove("hidden");
         endMessage.classList.add("animate-bounce");
 
