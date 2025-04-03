@@ -17,7 +17,8 @@ export default async function Login() {
         "Nom d'utilisateur",
         "Mot de passe",
         "Se connecter",
-        "Pas encore inscrit"
+        "Pas encore inscrit",
+        "Erreur"
     ];
 
     const [
@@ -25,7 +26,8 @@ export default async function Login() {
         translatedUsernameInput, 
         translatedPwdInput, 
         translatedBtnConnection, 
-        translatedNotRegistered
+        translatedNotRegistered,
+        translatedOnlyError
     ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
 
 
@@ -60,7 +62,7 @@ export default async function Login() {
             await login(username.value, password.value, true);
             navigateTo(new Event("click"), "/dashboard");
         } catch (error) {
-            errorMsg.innerHTML = "Erreur : " + error.message;
+            errorMsg.innerHTML = `${translatedOnlyError} : ${await translateText(error.message)}`;
             errorMsg.classList.remove("hidden");
         }
     };
