@@ -383,7 +383,9 @@ export default async function Sidebar(): Promise<HTMLElement> {
                 const mainContent = document.querySelector(".flex-1");
                 if (mainContent) {
                     mainContent.innerHTML = "";
-                    mainContent.appendChild(FriendProfile(friend.id));
+                    FriendProfile(friend.id).then(container => {
+                        mainContent.appendChild(container);
+                    });
                 }
             };
 

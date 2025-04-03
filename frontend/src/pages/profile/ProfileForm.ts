@@ -18,7 +18,13 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         "Se mettre en publique",
         "êtes-vous sûr ?",
         "Supprimer mon compte",
-        "Activer 2FA"
+        "Activer 2FA",
+        "Echec du téléchargement de l'image",
+        "Erreur de mise à jour du profil",
+        "Erreur de la requête du profil",
+        "Une erreur est survenue",
+        "Erreur lors de la suppression du profil",
+
     ];
 
     const [
@@ -33,7 +39,12 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         translatedGoingPublic,
         translatedAreYouSure,
         translatedDeleteAccount,
-        transletedActivate2FA
+        transletedActivate2FA,
+        translatedErrorDownloadAvatar,
+        translatedErrorUpdateProfil,
+        translatedErrorRequestProfil,
+        translatedError,
+        translatedErrorDeleteProfil
     ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
 
     const container: HTMLDivElement = document.createElement("div");
@@ -93,7 +104,7 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         formData.append('image', inputFile.files[0]);
         const response = await uploadFile(formData);
         if (!response || !response.filename)
-            return alert("Echec du telechargement de l'image");
+            return alert(translatedErrorDownloadAvatar);
         const success = await updatePhotoUser(state.user.username, response.filename);
         if (success) {
             state.user.avatar = response.filename;
@@ -102,7 +113,7 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
             btnRequestPhoto.classList.remove("hidden");
             window.location.reload();
         } else {
-            alert("Error profile update impossible");
+            alert(translatedErrorUpdateProfil);
         }
     };
 
@@ -151,7 +162,7 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
                 state.user.email = email.value;
                 window.location.reload();
             } else {
-                alert("Error profile update impossible");
+                alert(translatedErrorUpdateProfil);
             }
         }
     };
@@ -175,12 +186,12 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
                 else if (success && anonymizeBtn.textContent?.includes("bli"))
                         anonymizeBtn.innerHTML = translatedGoingPrivate;
                 else
-                    alert("Error request profil");
+                    alert(translatedErrorRequestProfil);
                 window.location.reload();
             }
         } catch (error) {
             console.error("❌ Erreur inattendue :", error);
-            alert("Une erreur est survenue !");
+            alert(translatedError);
         }
     };
 
@@ -195,12 +206,12 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
                 if (success) {
                     await logout();
                 } else {
-                    alert("Error delete profil");
+                    alert(translatedErrorDeleteProfil);
                 }
             }
         } catch (error) {
             console.error("❌ Erreur inattendue :", error);
-            alert("Une erreur est survenue !");
+            alert(translatedError);
         }
     };
 
