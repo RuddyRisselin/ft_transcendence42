@@ -429,22 +429,16 @@ export default async function Sidebar(): Promise<HTMLElement> {
     const btnES = document.createElement("button");
     const btnFR = document.createElement("button");
     btnEN.innerHTML = "🇺🇸";
-    btnEN.className = "p-1";
+    btnEN.className = "px-1 m-1 border-2 border-red-500/75 rounded hover:bg-red-700 duration-500";
     
     btnES.innerHTML = "🇪🇦";
-    btnES.className = "p-1";
+    btnES.className = "px-1 m-1 border-2 border-yellow-500/75 rounded hover:bg-yellow-700 duration-500";
     
     btnFR.innerHTML = "🇨🇵";
-    btnFR.className = "p-1";
+    btnFR.className = "px-1 m-1 border-2 border-blue-500/75 rounded hover:bg-blue-700 duration-500";
     languageDiv.appendChild(btnEN);
     languageDiv.appendChild(btnES);
     languageDiv.appendChild(btnFR);
-
-    // function setLanguage(language: string)
-    // {
-    //     localStorage.setItem("language", language);
-       
-    // }
 
     btnEN.onclick = async () => {
         const langue = "en";
@@ -467,6 +461,5 @@ export default async function Sidebar(): Promise<HTMLElement> {
     sidebarContent.append(userContainer, nav, languageDiv, logoutButton);
     mainContainer.append(sidebarContent, friendsContent);
     sidebar.appendChild(mainContainer);
-    // setLanguage("fr");
     return sidebar;
 }

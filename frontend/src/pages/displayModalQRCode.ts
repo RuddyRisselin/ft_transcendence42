@@ -7,13 +7,15 @@ export async function displayModalQRCode(btnQRCode , userId, username, container
     const textsToTranslate = [
         "Scanner le QRCODE sur Google Authenticator",
         "Google Authenticator pour Android",
-        "Google Authenticator pour IOS"
+        "Google Authenticator pour IOS",
+        "Erreur QRcode"
     ];
 
     const [
         translatedScanQRcode,
         translatedGoogleForAndroid, 
-        translatedGoogleForIOS
+        translatedGoogleForIOS,
+        translatedAlertQrCode
     ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
 
     btnQRCode.onclick = async () => 
@@ -80,7 +82,7 @@ export async function displayModalQRCode(btnQRCode , userId, username, container
             catch (error) 
             {
                 console.error("❌ Erreur QRcode :", error);
-                alert("Erreur QRcode");
+                alert(translatedAlertQrCode);
             }
         }
         else

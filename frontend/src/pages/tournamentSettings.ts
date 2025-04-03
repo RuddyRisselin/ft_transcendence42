@@ -21,7 +21,9 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         "min",
         "points",
         "Lancer le tournoi",
-        "Connexion échouée !"
+        "Connexion échouée !",
+        "Remplissez les champs !",
+        "Ce joueur est déjà connecté !",
     ];
     const [
         translatedParam,
@@ -37,7 +39,9 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         translatedMin,
         translatedPoint,
         translatedStartTournament,
-        translatedFailedConnexion
+        translatedFailedConnexion,
+        translatedAlertFillUpForm,
+        translatedAlertUserConnected
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     
     if (!state.user) {
@@ -115,12 +119,12 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
                 const password = passwordInput.value.trim();
 
                 if (!username || !password) {
-                    alert("⚠️ Remplissez les champs !");
+                    alert("⚠️ " + translatedAlertFillUpForm);
                     return;
                 }
 
                 if (connectedPlayers.has(username)) {
-                    alert("⚠️ Ce joueur est déjà connecté !");
+                    alert("⚠️ " + translatedAlertUserConnected);
                     return;
                 }
 

@@ -44,7 +44,7 @@ export default async function Register() {
 
     const password = document.createElement("input");
     password.type = "password";
-    password.placeholder = translatedPwdInput;
+    password.placeholder = (localStorage.getItem("language") === "en") ? "Password" : translatedPwdInput;
     password.className = "input-style";
 
     const confirmPassword = document.createElement("input");
@@ -83,6 +83,40 @@ export default async function Register() {
         navigateTo(new Event("click"), "/login");
     };
 
-    form.append(title, username, email, password, confirmPassword, errorMsg, submit, loginLink);
+    const languageDiv = document.createElement("div");
+    languageDiv.className = "mt-auto mb-4 flex p-3 flex-row flex-wrap justify-around items-center";
+    // languageDiv.className = "mt-auto mb-4 mx-4 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20"
+    const btnEN = document.createElement("button");
+    const btnES = document.createElement("button");
+    const btnFR = document.createElement("button");
+    btnEN.innerHTML = "🇺🇸";
+    btnEN.className = "px-1 m-1 border-2 border-red-500/75 rounded hover:bg-red-700 duration-500";
+    
+    btnES.innerHTML = "🇪🇦";
+    btnES.className = "px-1 m-1 border-2 border-yellow-500/75 rounded hover:bg-yellow-700 duration-500";
+    
+    btnFR.innerHTML = "🇨🇵";
+    btnFR.className = "px-1 m-1 border-2 border-blue-500/75 rounded hover:bg-blue-700 duration-500";
+    languageDiv.appendChild(btnEN);
+    languageDiv.appendChild(btnES);
+    languageDiv.appendChild(btnFR);
+
+    btnEN.onclick = async () => {
+        const langue = "en";
+        localStorage.setItem("language", langue);
+        window.location.reload();
+    };
+    btnES.onclick = async () => {
+        const langue = "es";
+        localStorage.setItem("language", langue);
+        window.location.reload();
+    };
+    btnFR.onclick = async () => {
+        const langue = "fr";
+        localStorage.setItem("language", langue);
+        window.location.reload();
+    };
+
+    form.append(title, username, email, password, confirmPassword, errorMsg, submit, loginLink, languageDiv);
     return form;
 }
