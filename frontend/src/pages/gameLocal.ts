@@ -114,8 +114,8 @@ function endMatch(winner: string) {
     removeAllControls(); // ✅ Désactive proprement les touches après la partie
     saveMatch(winner);
 
-    translateText(" a gagné la partie !").then((translated) => {
-        endMessage.innerHTML = winner + translated;
+    translateText(" a gagné la partie").then((translated) => {
+        endMessage.innerHTML = winner + " " + translated;
     })
     endMessage.classList.remove("hidden");
     endMessage.classList.add("animate-bounce");

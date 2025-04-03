@@ -2,22 +2,6 @@ import { state } from "../state";
 import { navigateTo } from "../router";
 import { translateText } from "../translate";
 
-/*          TRANSLATE TAB          */
-const textToTranslate = [
-    "Bracket du Tournoi",
-    "Vainqueur du tournoi :",
-    "Lancer le prochain match",
-    "Tournoi terminé !",
-    "En attente..."
-];
-const [
-    translatedBracket,
-    translatedWinnerTournament,
-    translatedStartNextmatch,
-    translatedAlertTournamentEnd,
-    translatedWaiting
-] = await Promise.all(textToTranslate.map(text => translateText(text)));
-
 // 🔥 **Générer un bracket de tournoi en arbre binaire**
 async function generateBracket() {
     if (!state.tournament)
@@ -84,7 +68,16 @@ function shuffleArray(array: any[]) {
 }
 
 
-export default function TournamentBracket(): HTMLElement {
+export default async function TournamentBracket(): Promise<HTMLElement> {
+
+     /*          TRANSLATE TAB          */
+     const textToTranslate = [
+        "Vainqueur du Tournoi :"
+    ];
+    const [
+        translatedWinner
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
+
     if (!state.tournament || !state.tournament.players.length) {
         navigateTo(new Event("click"), "/tournament-settings");
         return document.createElement("div");
@@ -94,7 +87,9 @@ export default function TournamentBracket(): HTMLElement {
     container.className = "flex flex-col items-center min-h-screen bg-black text-white p-8";
 
     const title = document.createElement("h1");
-    title.innerHTML = "🏆 " + translatedBracket;
+    translateText("Bracket du Tournoi").then((translated) => {
+        title.innerHTML = "🏆 " + translated;
+    })
     title.className = "text-4xl font-bold text-yellow-400 mb-6";
 
     if (!state.tournament.bracket.length) {
@@ -124,13 +119,15 @@ export default function TournamentBracket(): HTMLElement {
     }
 	if (state.tournament.winner) {
         const winnerText = document.createElement("h2");
-        winnerText.innerText = `🏆 ${translatedWinnerTournament} ${state.tournament.winner}`;
+        winnerText.innerText = `🏆 ${translatedWinner} ${state.tournament.winner}`;
         winnerText.className = "text-2xl text-yellow-400 font-bold mt-6";
         container.append(winnerText);
     } else {
 		// ✅ Bouton pour lancer le match
 		const startNextMatchButton = document.createElement("button");
-		startNextMatchButton.innerHTML = "🚀 " + translatedStartNextmatch;
+        translateText("Lancer le prochain match").then((translated) => {
+            startNextMatchButton.innerHTML = "🚀 " + translated;
+        })
 		startNextMatchButton.className = "mt-6 px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg shadow-lg transition-all transform hover:scale-105";
 
 		startNextMatchButton.onclick = () => {
@@ -139,7 +136,9 @@ export default function TournamentBracket(): HTMLElement {
 				state.tournament!.currentMatch = nextMatch;
 				navigateTo(new Event("click"), "/tournament-game");
 			} else {
-				alert("🏆 " + translatedAlertTournamentEnd);
+                translateText("Tournoi terminé !").then((translated) => {
+                    alert("🏆 " + translated);
+                })
 			}
 		};
 
@@ -150,9 +149,16 @@ export default function TournamentBracket(): HTMLElement {
 }
 
 // 🔥 **Dessiner le bracket en `Canvas`**
-export function drawBracket(ctx: CanvasRenderingContext2D, width: number, height: number) {
+export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, height: number) {
     if (!state.tournament) return;
 
+    /*          TRANSLATE TAB          */
+    const textToTranslate = [
+        "En attente..."
+    ];
+    const [
+        translatedWaiting
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     ctx.clearRect(0, 0, width, height);
 
     const bracket = state.tournament.bracket;
