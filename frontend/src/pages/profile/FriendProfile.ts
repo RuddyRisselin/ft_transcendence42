@@ -71,7 +71,10 @@ export default function FriendProfile(friendId: number): HTMLElement {
     // Section History (droite)
     const history = document.createElement("div");
     history.className = "lg:col-span-3 bg-gray-800/50 rounded-lg shadow-lg flex flex-col";
-    history.append(MatchHistory(friendId));
+    MatchHistory().then(container => {
+        history.innerHTML = "";
+        history.append(container);
+    })
 
     topRow.append(profileSection, leaderboard, history);
     

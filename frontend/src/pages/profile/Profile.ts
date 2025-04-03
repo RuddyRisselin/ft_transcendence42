@@ -33,7 +33,10 @@ export default async function Profile(): Promise<HTMLElement> {
 
     const profileSection = document.createElement("div");
     profileSection.className = "lg:col-span-3 bg-gray-800 rounded-lg shadow-lg flex flex-col items-center";
-    profileSection.append(ProfileForm());
+    
+    ProfileForm().then(container => {
+        profileSection.append(container);
+    })
 
     const leaderboard = document.createElement("div");
     leaderboard.className = "lg:col-span-6 bg-gray-800 rounded-lg shadow-lg flex flex-col";
@@ -43,7 +46,10 @@ export default async function Profile(): Promise<HTMLElement> {
     
     const history = document.createElement("div");
     history.className = "lg:col-span-3 bg-gray-800 rounded-lg shadow-lg flex flex-col";
-    history.append(MatchHistory());
+    MatchHistory().then(container => {
+        history.innerHTML = "";
+        history.append(container);
+    })
 
     topRow.append(profileSection, leaderboard, history);
     
