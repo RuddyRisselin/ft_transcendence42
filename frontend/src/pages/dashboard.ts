@@ -60,7 +60,9 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
     `;
 
     if (state.user) {
-        document.body.appendChild(Sidebar());
+        Sidebar().then(container => {
+            document.body.appendChild(container);
+        })
     }
 
     const mainSection = document.createElement("div");
