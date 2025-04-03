@@ -20,7 +20,8 @@ export default async function Sidebar(): Promise<HTMLElement> {
         "Mes Amis",
         "Aucune demande en attente",
         "Aucun ami pour le moment",
-        "Voulez-vous vraiment supprimer cet ami ?"
+        "Voulez-vous vraiment supprimer cet ami ?",
+        "Rechercher un utilisateur..."
     ];
     const [
         translatedGuest,
@@ -34,7 +35,8 @@ export default async function Sidebar(): Promise<HTMLElement> {
         translatedMyFriends,
         translatedNoRequestinWait,
         translatedNoFriendsForNow,
-        translatedNoConfirmDeleteFriend
+        translatedNoConfirmDeleteFriend,
+        translatedSearchUser
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
 
     const sidebar = document.createElement("aside");
@@ -178,7 +180,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
     const searchInput = document.createElement("input");
     searchInput.type = "text";
-    searchInput.placeholder = "Rechercher un utilisateur...";
+    searchInput.placeholder = translatedSearchUser;
     searchInput.className = "flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg border border-purple-500/30 focus:outline-none focus:border-purple-500 transition-colors";
 
     const searchResults = document.createElement("div");
