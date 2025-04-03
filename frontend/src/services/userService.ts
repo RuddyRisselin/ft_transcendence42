@@ -7,7 +7,7 @@ let cachedUsers: any[] = [];
 let lastFetchTime: number = 0;
 
 export async function getUsers() {
-    const now = Date.now();
+    const now: number = Date.now();
     
     // Rafraîchir les données uniquement toutes les 10 secondes
     if (cachedUsers.length > 0 && now - lastFetchTime < 10000) {
@@ -18,7 +18,7 @@ export async function getUsers() {
     console.log("🔹 Envoi de la requête GET vers /users/all...");
 
     try {
-        const response = await fetch("http://localhost:3000/users/all", {
+        const response: Response = await fetch("http://localhost:3000/users/all", {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         });
@@ -43,7 +43,7 @@ export async function getUsers() {
 export async function updateUser(token: string | "", username:string, inputUsername: string, inputEmail: string) {
     try {
         // const response = await fetch("/api/users/update", {
-        const response = await fetch(`http://localhost:3000/users/username/${username}/update`, {
+        const response: Response = await fetch(`http://localhost:3000/users/username/${username}/update`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ inputUsername, inputEmail }),
@@ -64,7 +64,7 @@ export async function updateUser(token: string | "", username:string, inputUsern
 export async function updatePhotoUser(username:string, file: string) {
     try {
         // const response = await fetch("/api/users/update", {
-        const response = await fetch(`http://localhost:3000/users/username/${username}/updatephoto`, {
+        const response: Response = await fetch(`http://localhost:3000/users/username/${username}/updatephoto`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, file }),
@@ -85,7 +85,7 @@ export async function deleteUser(username: string) {
     console.log(`Envoi de la requête DELETE pour : ${username}`);
     try {
         // const response = await fetch(`/api/users/username/${username}`, {
-            const response = await fetch(`http://localhost:3000/users/username/${username}`, {
+            const response: Response = await fetch(`http://localhost:3000/users/username/${username}`, {
             method: "DELETE",
         });
 
@@ -109,7 +109,7 @@ export async function anonymizeUser(username: string, token: string | "") {
 
     try {
         // const response = await fetch(`/api/users/username/${username}/anonymize`, {
-        const response = await fetch(`http://localhost:3000/users/username/${username}/anonymize`, {
+        const response: Response = await fetch(`http://localhost:3000/users/username/${username}/anonymize`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username }),
@@ -133,12 +133,12 @@ export async function anonymizeUser(username: string, token: string | "") {
 }
 
 export async function getAllUsers() {
-    const response = await fetch("/api/users");
+    const response: Response = await fetch("/api/users");
     return response.json();
 }
 
 export async function authenticateUser(username: string, password: string) {
-    const response = await fetch("/api/auth/login", {
+    const response: Response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -174,7 +174,7 @@ export async function update2FAOff(userId : number, username : string)
 export async function getUserById(userId: number) {
     try {
         console.log(`🔹 Récupération de l'utilisateur avec l'ID: ${userId}`);
-        const response = await fetch(`http://localhost:3000/users/${userId}`);
+        const response: Response = await fetch(`http://localhost:3000/users/${userId}`);
         
         if (!response.ok) {
             throw new Error(`Erreur HTTP : ${response.status}`);
