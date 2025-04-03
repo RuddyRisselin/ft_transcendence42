@@ -35,17 +35,16 @@ export function navigateTo(event: Event, path: string) {
 (window as any).navigateTo = navigateTo;
 
 export function setupRouter() {
-  const app = document.getElementById("app");
+  const app: HTMLElement | null = document.getElementById("app");
   if (!app) return;
 
-  const render = async () => {
-    // ✅ Attendre que `loadAuthData()` ait terminé avant de vérifier l'authentification
+  const render: () => Promise<void> = async () => {
     setTimeout(async () => {
-      const path = window.location.pathname;
-      const page = routes[path] || Home;
+      const path: string = window.location.pathname;
+      const page: () => Promise<HTMLElement> | HTMLElement = routes[path] || Home;
       app.innerHTML = "";
       app.appendChild(await page());
-    }, 100); // Laisse 100ms pour s'assurer que `loadAuthData()` s'exécute
+    }, 100);
   };
 
   window.addEventListener("popstate", render);
