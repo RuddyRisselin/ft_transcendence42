@@ -10,7 +10,8 @@ export default async function Register() {
         "Mot de passe",
         "Confirmer mot de passe",
         "S'inscrire",
-        "Déjà inscrit?"
+        "Déjà inscrit?",
+        "Erreur"
     ];
 
     const [
@@ -20,7 +21,8 @@ export default async function Register() {
         translatedPwdInput, 
         translatedConfirmPwdInput, 
         translatedBtnRegister, 
-        translatedAlreadyRegistered
+        translatedAlreadyRegistered,
+        translatedErrorOnly
     ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
 
     if (localStorage.getItem("user"))
@@ -65,12 +67,14 @@ export default async function Register() {
         try {
             if (password.value != confirmPassword.value)
                 throw new Error("Les mots de passe ne sont pas identiques");
+            if (!email.value.includes("@"))
+                throw new Error("L'email n'est pas valide");
             await register(username.value, email.value, password.value);
             await login(username.value, password.value, true);
             navigateTo(new Event("click"), "/dashboard");
             // window.location.href = "/login";
         } catch (error) {
-            errorMsg.innerHTML = "Erreur : " + error.message;
+            errorMsg.innerHTML = `${translatedErrorOnly} :  ${await translateText(error.message)}`;
             errorMsg.classList.remove("hidden");
         }
     };

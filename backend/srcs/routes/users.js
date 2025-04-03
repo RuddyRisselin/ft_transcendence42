@@ -68,8 +68,6 @@ async function userRoutes(fastify) {
     const { username } = request.params;
     const inputUsername = request.body.inputUsername;
     const inputEmail = request.body.inputEmail;
-    console.log ("UPDATE Username = " + inputUsername);
-    console.log ("UPDATE Email = " + inputEmail);
     try
     {
       const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
@@ -182,9 +180,6 @@ async function userRoutes(fastify) {
         .run(username);
         const anonymizeUsername = "anonymize_" + username;
         const anonymizeEmail = "anonymize_" + user.email;
-        console.log("anonymize user = ", anonymizeUsername);
-        console.log("anonymize email = ", anonymizeEmail);
-        console.log("username = ", username);
         db.prepare("UPDATE users SET username = ?, email = ?, avatar = ? WHERE username = ?")
         .run(anonymizeUsername, anonymizeEmail, "default.jpg", username);
         user.username = anonymizeUsername;
