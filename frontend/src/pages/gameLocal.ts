@@ -86,7 +86,7 @@ export default function GameLocal() {
 
     const title = document.createElement("h1");
     title.className = "text-4xl font-bold mb-4 text-purple-400 animate-pulse";
-    title.innerText = `🏓 ${state.localMatch.player1} vs ${state.localMatch.player2}`;
+    title.innerHTML = `🏓 ${state.localMatch.player1} vs ${state.localMatch.player2}`;
 
     const gameCanvas = document.createElement("canvas");
     gameCanvas.width = 1000;
@@ -150,7 +150,6 @@ function endMatch(winner: string) {
         let timeLeft = state.localMatch.target;
         const timerDisplay = document.createElement("div");
         timerDisplay.className = "text-2xl text-yellow-400 mt-4 p-2 bg-gray-700 rounded-lg shadow-md";
-        // timerDisplay.innerText = `⏳ Temps restant: ${timeLeft} sec`;
         translateText(" Temps restant: ").then((translated) => {
             timerDisplay.innerHTML = `⏳ ${translated} ${timeLeft} sec`;
         })
@@ -163,7 +162,6 @@ function endMatch(winner: string) {
             }
 
             timeLeft--;
-            // timerDisplay.innerText = `⏳ Temps restant: ${timeLeft} sec`;
             translateText(" Temps restant: ").then((translated) => {
                 timerDisplay.innerHTML = `⏳ ${translated} ${timeLeft} sec`;
             })

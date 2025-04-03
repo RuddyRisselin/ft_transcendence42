@@ -52,11 +52,11 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
     tabsContainer.className = "flex space-x-2 mb-4 justify-center";
 
     const tabMatches = document.createElement("button");
-    tabMatches.innerText = translatedMatchs;
+    tabMatches.innerHTML = translatedMatchs;
     tabMatches.className = "px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold";
 
     const tabTournaments = document.createElement("button");
-    tabTournaments.innerText = translatedTournament;
+    tabTournaments.innerHTML = translatedTournament;
     tabTournaments.className = "px-4 py-2 text-white bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold";
 
     const historyContainer = document.createElement("div");
@@ -116,18 +116,18 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 matchHeader.className = "flex justify-between items-center";
                 
                 const dateSpan = document.createElement("span");
-                dateSpan.innerText = matchDate;
+                dateSpan.innerHTML = matchDate;
                 dateSpan.className = "text-xs text-white opacity-80";
                 
                 const matchResult = document.createElement("span");
-                matchResult.innerText = isWinner ? translatedYouWin : `${translatedWin}: ${match.winner_name}`;
+                matchResult.innerHTML = isWinner ? translatedYouWin : `${translatedWin}: ${match.winner_name}`;
                 matchResult.className = "text-xs font-semibold";
                 
                 matchHeader.append(dateSpan, matchResult);
                 
                 const matchPlayers = document.createElement("div");
                 matchPlayers.className = "text-sm font-medium mt-1";
-                matchPlayers.innerText = `${match.player1_name} VS ${match.player2_name}`;
+                matchPlayers.innerHTML = `${match.player1_name} VS ${match.player2_name}`;
                 
                 matchItem.append(matchHeader, matchPlayers);
                 historyContainer.appendChild(matchItem);

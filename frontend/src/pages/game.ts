@@ -2,6 +2,7 @@ import Layout from "../components/layout";
 import { startGame } from "../game/engine";
 import { setupControls } from "../game/controls";
 import { paddle1, paddle2, canvasHeight } from "../game/objects";
+import { translateText } from "../translate";
 
 export default function Game() {
     const container = document.createElement("div");
@@ -9,8 +10,9 @@ export default function Game() {
 
     const title = document.createElement("h1");
     title.className = "text-3xl font-bold mb-4";
-    title.innerText = "🏓 Mode Pong";
-
+    translateText("Mode Pong").then((translated) => {
+        title.innerHTML = "🏓 " + translated;
+    })
     const gameCanvas = document.createElement("canvas");
     gameCanvas.width = 1000;
     gameCanvas.height = 500;

@@ -2,8 +2,38 @@ import { state } from "../state";
 import { navigateTo } from "../router";
 import { loginWithoutSession } from "../services/auth"; // ✅ Connexion temporaire du Joueur 2
 import { getUsers } from "../services/userService";
+import { translateText } from "../translate";
 
 export default async function LocalMatch(): Promise<HTMLElement> {
+     /*          TRANSLATE TAB       */
+     const textToTranslate = [
+        "Match Local 1v1",
+        "Se connecter",
+        "Match à durée limitée",
+        "Match en nombre de points",
+        "min",
+        "points",
+        "Commencer la partie",
+        "Veuillez entrer le mot de passe du Joueur 2.",
+        "Connexion réussie pour",
+        "Échec de l'authentification. Vérifiez le mot de passe.",
+        "Mot de passe du Joueur 2"
+    ];
+    const [
+        translatedMatch1v1,
+        translatedConnexion,
+        translatedMatchTime,
+        translatedMatchPoint,
+        translatedMin,
+        translatedPoint,
+        translatedStartGame,
+        translatedAlertEnterPwd,
+        translatedAlertSuccess,
+        translatedAlertFailed,
+        translatedPHpwdPlayer
+
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
+
     if (!state.user) {
         navigateTo(new Event("click"), "/login");
         return document.createElement("div");
@@ -17,7 +47,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     container.className = "flex flex-col items-center min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white p-8 space-y-6";
 
     const title = document.createElement("h1");
-    title.innerText = "🌌 Match Local 1v1";
+    title.innerHTML = "🌌 " + translatedMatch1v1;
     title.className = "text-4xl font-bold text-purple-400 animate-pulse";
 
     // ✅ Sélection du Joueur 2 (liste déroulante)
@@ -28,7 +58,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         if (user.username !== state.user.username) {
             const option = document.createElement("option");
             option.value = user.username;
-            option.innerText = user.username;
+            option.innerHTML = user.username;
             player2Select.appendChild(option);
         }
     });
@@ -36,12 +66,12 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     // ✅ Champ de mot de passe pour le Joueur 2
     const player2Password = document.createElement("input");
     player2Password.type = "password";
-    player2Password.placeholder = "Mot de passe du Joueur 2";
+    player2Password.placeholder = translatedPHpwdPlayer;
     player2Password.className = "mt-2 px-4 py-2 rounded-lg text-black text-center shadow-md border-2 border-gray-400 w-64 hidden";
 
     // ✅ Bouton pour valider la connexion du Joueur 2
     const connectButton = document.createElement("button");
-    connectButton.innerText = "🔑 Se connecter";
+    connectButton.innerHTML = "🔑 " + translatedConnexion;
     connectButton.className = "mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 hidden";
 
     // ✅ Section des paramètres du match (cachée au départ)
@@ -54,11 +84,11 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
     const optionTime = document.createElement("option");
     optionTime.value = "time";
-    optionTime.innerText = "⏳ Match à durée limitée";
+    optionTime.innerHTML = "⏳ " + translatedMatchTime;
 
     const optionPoints = document.createElement("option");
     optionPoints.value = "points";
-    optionPoints.innerText = "🏆 Match en nombre de points";
+    optionPoints.innerHTML = "🏆 " + translatedMatchPoint;
 
     modeSelect.append(optionTime, optionPoints);
 
@@ -69,7 +99,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     [120, 300, 600].forEach(time => {
         const option = document.createElement("option");
         option.value = String(time);
-        option.innerText = `⏳ ${time / 60} min`;
+        option.innerHTML = `⏳ ${time / 60} ${translatedMin}`;
         timeOptions.appendChild(option);
     });
 
@@ -80,13 +110,13 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     [5, 10, 15].forEach(points => {
         const option = document.createElement("option");
         option.value = String(points);
-        option.innerText = `🎯 ${points} points`;
+        option.innerHTML = `🎯 ${points} ${translatedPoint}`;
         pointsOptions.appendChild(option);
     });
 
     // ✅ Bouton pour commencer la partie (caché par défaut)
     const startGameButton = document.createElement("button");
-    startGameButton.innerText = "🚀 Commencer la partie";
+    startGameButton.innerHTML = "🚀 " + translatedStartGame;
     startGameButton.className = "mt-6 px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 hidden";
 
     // ✅ Affichage dynamique des options de match
@@ -120,7 +150,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         const password = player2Password.value.trim();
 
         if (!password) {
-            alert("⚠️ Veuillez entrer le mot de passe du Joueur 2.");
+            alert( translatedAlertEnterPwd);
             return;
         }
 
@@ -129,7 +159,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         try {
             const player2Auth = await loginWithoutSession(player2Username, password);
             console.log(`✅ Connexion réussie pour ${player2Username}`, player2Auth);
-            alert(`✅ Connexion réussie pour ${player2Username} !`);
+            alert(`✅ ${translatedAlertSuccess} ${player2Username}`);
 
             // ✅ Stocker les infos du Joueur 2 sans écraser `state.user`
             if (!state.localMatch) {
@@ -154,7 +184,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
         } catch (error) {
             console.error("❌ Échec de l'authentification :", error);
-            alert("❌ Échec de l'authentification. Vérifiez le mot de passe.");
+            alert("❌ " + translatedAlertFailed);
         }
     };
 
