@@ -1,12 +1,26 @@
 import { state } from "../../state";
 import { translateText } from "../../translate";
 
-export default function Leaderboard(): HTMLElement {
+export default async function Leaderboard(): Promise<HTMLElement> {
+
+    /*          TRANSLATE TAB          */
+    const textToTranslate = [
+    "Classement",
+    "Victoires",
+    "Erreur lors du chargement du classement"
+    ];
+    const [
+        translatedTDS,
+        translatedWin,
+        translatedError
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
+
+
     const container = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 flex flex-col items-center w-full h-full";
 
     const title = document.createElement("h2");
-    title.innerText = "Leaderboard";
+    title.innerHTML = `${translatedTDS}`;
     title.className = "text-2xl font-bold mb-8 text-center";
 
     const podiumContainer = document.createElement("div");
@@ -44,15 +58,15 @@ export default function Leaderboard(): HTMLElement {
                 listItem.className = "flex items-center justify-between py-3 px-4 bg-gray-700 rounded-lg mb-2";
                 
                 const rankElement = document.createElement("span");
-                rankElement.innerText = `#${rank}`;
+                rankElement.innerHTML = `#${rank}`;
                 rankElement.className = "text-gray-400";
                 
                 const username = document.createElement("span");
-                username.innerText = player.username;
+                username.innerHTML = player.username;
                 username.className = "flex-grow mx-4";
                 
                 const wins = document.createElement("span");
-                wins.innerText = `${player.wins} Wins`;
+                wins.innerHTML = `${player.wins} ${translatedWin}`;
                 wins.className = "text-green-400";
                 
                 listItem.append(rankElement, username, wins);
@@ -60,7 +74,7 @@ export default function Leaderboard(): HTMLElement {
             });
         } catch (error) {
             console.error("Error fetching leaderboard:", error);
-            podiumContainer.innerHTML = "<p class='text-red-500'>Error loading leaderboard</p>";
+            podiumContainer.innerHTML = `<p class='text-red-500'>${translatedError}</p>`;
         }
     }
 
@@ -73,7 +87,7 @@ export default function Leaderboard(): HTMLElement {
         rankBadge.className = `absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 
             ${position === 1 ? 'bg-yellow-500' : position === 2 ? 'bg-gray-400' : 'bg-orange-500'} 
             rounded-full w-8 h-8 flex items-center justify-center text-gray-900 font-bold text-xs`;
-        rankBadge.innerText = `#${position}`;
+        rankBadge.innerHTML = `#${position}`;
         
         // Avatar
         const avatar = document.createElement("img");
@@ -83,12 +97,12 @@ export default function Leaderboard(): HTMLElement {
         
         // Nom d'utilisateur
         const username = document.createElement("span");
-        username.innerText = player.username;
+        username.innerHTML = player.username;
         username.className = "text-sm mt-2 font-semibold";
         
         // Nombre de victoires
         const winsCount = document.createElement("span");
-        winsCount.innerText = `${player.wins} Wins`;
+        winsCount.innerHTML = `${player.wins} ${translatedWin}`;
         winsCount.className = "text-xs text-green-400";
         
         playerElement.append(rankBadge, avatar, username, winsCount);

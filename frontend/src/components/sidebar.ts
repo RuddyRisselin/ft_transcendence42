@@ -5,7 +5,37 @@ import { getFriends, getFriendRequests, removeFriend, acceptFriendRequest, rejec
 import FriendProfile from "../pages/profile/FriendProfile";
 import { translateText } from "../translate";
 
-export default function Sidebar(): HTMLElement {
+export default async function Sidebar(): Promise<HTMLElement> {
+
+    /*          TRANSLATE TAB       */
+    const textToTranslate = [
+        "invité",
+        "Amis",
+        "Déconnexion",
+        "Gestion des Amis",
+        "Demande envoyée",
+        "Erreur",
+        "Aucun utilisateur trouvé",
+        "Demandes d'amitié",
+        "Mes Amis",
+        "Aucune demande en attente",
+        "Aucun ami pour le moment",
+        "Voulez-vous vraiment supprimer cet ami ?"
+    ];
+    const [
+        translatedGuest,
+        translatedFriends,
+        translatedDeconnexion,
+        translatedManageFriends,
+        translatedSendFriends,
+        translatedError,
+        translatedNoUserFound,
+        translatedFriendsRequest,
+        translatedMyFriends,
+        translatedNoRequestinWait,
+        translatedNoFriendsForNow,
+        translatedNoConfirmDeleteFriend
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
 
     const sidebar = document.createElement("aside");
     sidebar.className = "fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
@@ -37,9 +67,7 @@ export default function Sidebar(): HTMLElement {
 
     // Nom d'utilisateur
     const username = document.createElement("span");
-    translateText("invité").then((translated) => {
-        username.innerText = `${state.user?.username || translated}`;
-    });
+    username.innerHTML = `${state.user?.username || translatedGuest}`;
     username.className = "text-lg font-semibold mt-3 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
 
     // Statut (Online/Offline)
@@ -58,7 +86,7 @@ export default function Sidebar(): HTMLElement {
         
         if (currentUser) {
             statusIndicator.className = `w-2 h-2 rounded-full mr-2 ${currentUser.status === "online" ? "bg-green-500" : "bg-red-500"}`;
-            statusText.innerText = currentUser.status === "online" ?  (localStorage.getItem("language") == "fr" ? "En ligne" :  await translateText("online")) : (localStorage.getItem("language") == "fr" ? "Hors ligne" :  await translateText("offline"));
+            statusText.innerHTML = currentUser.status === "online" ?  (localStorage.getItem("language") == "fr" ? "En ligne" :  await translateText("online")) : (localStorage.getItem("language") == "fr" ? "Hors ligne" :  await translateText("offline"));
         }
     }
 
@@ -84,12 +112,12 @@ export default function Sidebar(): HTMLElement {
         a.className = "flex items-center p-3 hover:bg-gray-800/50 rounded-lg transition duration-200 group";
 
         const icon = document.createElement("span");
-        icon.innerText = link.icon;
+        icon.innerHTML = link.icon;
         icon.className = "mr-3 text-lg group-hover:scale-110 transition-transform";
 
         const text = document.createElement("span");
         translateText(link.text).then((translated) => {
-            text.innerText = translated;
+            text.innerHTML = translated;
         })
         text.className = "text-gray-300 group-hover:text-white transition-colors";
 
@@ -100,9 +128,7 @@ export default function Sidebar(): HTMLElement {
     // Bouton amis
     const friendsButton = document.createElement("button");
     friendsButton.className = "flex items-center p-3 hover:bg-gray-800/50 rounded-lg transition duration-200 group w-full mt-2";
-    translateText("Amis").then((translated) => {
-            friendsButton.innerHTML = '<span class="mr-3 text-lg group-hover:scale-110 transition-transform">👥</span>' + `<span class="text-gray-300 group-hover:text-white transition-colors">${translated}</span>`;
-    });
+    friendsButton.innerHTML = '<span class="mr-3 text-lg group-hover:scale-110 transition-transform">👥</span>' + `<span class="text-gray-300 group-hover:text-white transition-colors">${translatedFriends}</span>`;
     friendsButton.onclick = () => {
         mainContainer.style.transform = "translateX(-256px)";
         // Recharger les données quand on ouvre le panneau
@@ -115,9 +141,7 @@ export default function Sidebar(): HTMLElement {
     // Bouton de déconnexion
     const logoutButton = document.createElement("button");
     logoutButton.className = "mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
-    translateText(" Déconnexion").then((translated) => {
-        logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒</span>' +  translated;
-    });
+    logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒 </span>' +  translatedDeconnexion;
     logoutButton.onclick = async () => {
         sidebar.remove();
         await logout();
@@ -136,9 +160,7 @@ export default function Sidebar(): HTMLElement {
 
     const friendsTitle = document.createElement("h2");
     friendsTitle.className = "text-lg font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
-    translateText("Gestion des Amis").then((translated) => {
-        friendsTitle.innerText = translated;
-    });
+    friendsTitle.innerHTML = translatedManageFriends;
 
     friendsHeader.append(backButton, friendsTitle);
     friendsContent.appendChild(friendsHeader);
@@ -195,9 +217,7 @@ export default function Sidebar(): HTMLElement {
                         // Feedback visuel
                         const originalContent: string = userItem.innerHTML;
 
-                        translateText("Demande envoyée").then((translated) => {
-                            userItem.innerHTML = "✅ " + translated;
-                        });
+                        userItem.innerHTML = "✅ " + translatedSendFriends;
                         userItem.className += " text-green-400";
                         setTimeout(() => {
                             userItem.innerHTML = originalContent;
@@ -206,9 +226,7 @@ export default function Sidebar(): HTMLElement {
                     } catch (error) {
                         // Feedback d'erreur
                         const originalContent: string = userItem.innerHTML;
-                        translateText("Erreur").then((translated) => {
-                            userItem.innerHTML = "❌ " + translated;
-                        });
+                        userItem.innerHTML = "❌ " +  translatedError;
                         userItem.className += " text-red-400";
                         setTimeout(() => {
                             userItem.innerHTML = originalContent;
@@ -220,9 +238,7 @@ export default function Sidebar(): HTMLElement {
             });
         } else {
             searchResults.className = "flex flex-col gap-1 mt-2";
-            translateText("Aucun utilisateur trouvé").then((translated) => {
-                searchResults.innerHTML = `<div class="text-gray-400 text-sm text-center py-1">${translated}</div>`;
-            });
+            searchResults.innerHTML = `<div class="text-gray-400 text-sm text-center py-1">${translatedNoUserFound}</div>`;
         }
     };
 
@@ -236,9 +252,7 @@ export default function Sidebar(): HTMLElement {
 
     const requestsTitle = document.createElement("h3");
     requestsTitle.className = "text-yellow-300 font-semibold mb-3 flex items-center gap-2";
-    translateText("Demandes d'amitié").then((translated) => {
-        requestsTitle.innerHTML = "📨 " + translated;
-    });
+    requestsTitle.innerHTML = "📨 " + translatedFriendsRequest;
 
     const requestsList = document.createElement("ul");
     requestsList.className = "space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar";
@@ -251,9 +265,7 @@ export default function Sidebar(): HTMLElement {
 
     const friendsListTitle = document.createElement("h3");
     friendsListTitle.className = "text-green-300 font-semibold mb-3 flex items-center gap-2";
-    translateText("Mes Amis").then((translated) => {
-        friendsListTitle.innerHTML = "👥 " + translated;
-    });
+    friendsListTitle.innerHTML = "👥 " + translatedMyFriends;
 
     const friendsUl = document.createElement("ul");
     friendsUl.className = "space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar";
@@ -276,9 +288,7 @@ export default function Sidebar(): HTMLElement {
         requestsList.innerHTML = "";
 
         if (requests.length === 0) {
-            translateText("Aucune demande en attente").then((translated) => {
-                requestsList.innerHTML = `<li class="text-gray-400 text-center py-2">${translated}</li>`;
-            });
+            requestsList.innerHTML = `<li class="text-gray-400 text-center py-2">${translatedNoRequestinWait}</li>`;
             return;
         }
 
@@ -294,7 +304,7 @@ export default function Sidebar(): HTMLElement {
             avatar.className = "w-8 h-8 rounded-full border border-yellow-500/30";
 
             const username = document.createElement("span");
-            username.innerText = request.username;
+            username.innerHTML = request.username;
             username.className = "text-sm";
 
             userInfo.append(avatar, username);
@@ -330,9 +340,7 @@ export default function Sidebar(): HTMLElement {
         friendsUl.innerHTML = "";
 
         if (friends.length === 0) {
-            translateText("Aucun ami pour le moment").then((translated) => {
-                friendsUl.innerHTML = `<li class="text-gray-400 text-center py-2">${translated}</li>`;
-            })
+            friendsUl.innerHTML = `<li class="text-gray-400 text-center py-2">${translatedNoFriendsForNow}</li>`;
             return;
         }
 
@@ -381,7 +389,7 @@ export default function Sidebar(): HTMLElement {
             removeBtn.innerHTML = "🗑️";
             removeBtn.className = "p-1.5 bg-red-600 hover:bg-red-500 rounded-lg transition-all scale-95 group-hover:scale-100";
             removeBtn.onclick = async () => {
-                if (confirm( await translateText("Voulez-vous vraiment supprimer cet ami ?"))) {
+                if (confirm(translatedNoConfirmDeleteFriend)) {
                     await removeFriend(friend.id);
                     loadFriends();
                 }

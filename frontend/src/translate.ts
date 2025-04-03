@@ -26,16 +26,3 @@ export async function translateText(text: string): Promise<string>
         return "Erreur de traduction";
     }
 }
-
-
-export async function getQrcode(userId : number, username : string)
-{
-    return fetch("http://localhost:3000/2FA/generate-2fa", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({userId, username})
-    })
-    .then(response => response.json())
-    .then(data => data.qrCode)
-    .catch(error => console.error("Erreur lors de la récupération du QR Code:", error));    
-}

@@ -1,12 +1,34 @@
 import Chart from "chart.js/auto";
 import { state } from "../../state";
+import { translateText } from "../../translate";
 
-export default function ProfileStats(userId?: number): HTMLElement {
+export default async function ProfileStats(userId?: number): Promise<HTMLElement> {
+
+    /*          TRANSLATE TAB          */
+    const textToTranslate = [
+        "Statistique",
+        "Utilisateur introuvable.",
+        "Aucune statistique disponible.",
+        "Total des jeux :",
+        "Victoires :",
+        "Pertes :",
+        "Taux de victoire :",
+    ];
+    const [
+        translatedStats,
+        translatedUserNotFound,
+        translatedStatsNotFound,
+        translatedTotalGames,
+        translatedWins,
+        translatedLosses,
+        translatedWinRates
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
+
     const container = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-lg shadow-lg p-6 flex flex-col items-center w-full h-full";
 
     const title = document.createElement("h3");
-    title.innerText = "Stats";
+    title.innerHTML = translatedStats;
     title.className = "text-2xl font-bold mb-4 text-center";
 
     const statsContainer = document.createElement("div");
@@ -21,7 +43,7 @@ export default function ProfileStats(userId?: number): HTMLElement {
     async function fetchStats() {
         const targetUserId = userId || state.user?.id;
         if (!targetUserId) {
-            statsList.innerHTML = "<p class='text-red-500 font-semibold'>User not found.</p>";
+            statsList.innerHTML = `<p class='text-red-500 font-semibold'>${translatedUserNotFound}</p>`;
             return;
         }
         try {
@@ -36,7 +58,7 @@ export default function ProfileStats(userId?: number): HTMLElement {
             console.log("Stats received:", stats);
 
             if (!stats || typeof stats.totalGames === "undefined") {
-                statsList.innerHTML = "<p class='text-white text-center py-4'>No stats available.</p>";
+                statsList.innerHTML = `<p class='text-white text-center py-4'>${translatedStatsNotFound}</p>`;
                 return;
             }
 
@@ -52,11 +74,11 @@ export default function ProfileStats(userId?: number): HTMLElement {
                 
                 const labelEl = document.createElement("span");
                 labelEl.className = "text-gray-400 text-sm";
-                labelEl.innerText = label;
+                labelEl.innerHTML = label;
                 
                 const valueEl = document.createElement("span");
                 valueEl.className = `text-xl font-bold ${color}`;
-                valueEl.innerText = value;
+                valueEl.innerHTML = value;
                 
                 statItem.append(labelEl, valueEl);
                 return statItem;
@@ -66,16 +88,16 @@ export default function ProfileStats(userId?: number): HTMLElement {
             statsList.innerHTML = "";
             
             // Total Games
-            statsList.appendChild(createStatItem("Total Games:", totalGames, "text-blue-400"));
+            statsList.appendChild(createStatItem( translatedTotalGames, totalGames, "text-blue-400"));
             
             // Wins
-            statsList.appendChild(createStatItem("Wins:", wins, "text-green-500"));
+            statsList.appendChild(createStatItem(translatedWins, wins, "text-green-500"));
             
             // Losses
-            statsList.appendChild(createStatItem("Losses:", losses, "text-red-500"));
+            statsList.appendChild(createStatItem(translatedLosses, losses, "text-red-500"));
             
             // Win Rate
-            statsList.appendChild(createStatItem("Win Rate:", `${winrate}%`, "text-yellow-400"));
+            statsList.appendChild(createStatItem(translatedWinRates, `${winrate}%`, "text-yellow-400"));
 
             renderChart(wins, losses);
         } catch (error) {
@@ -94,7 +116,7 @@ export default function ProfileStats(userId?: number): HTMLElement {
         new Chart(canvas, {
             type: "doughnut",
             data: {
-                labels: ["Wins", "Losses"],
+                labels: [translatedWins, translatedLosses],
                 datasets: [{
                     data: [wins, losses],
                     backgroundColor: ["#10B981", "#EF4444"], // Vert et rouge
