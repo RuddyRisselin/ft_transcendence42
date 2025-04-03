@@ -27,7 +27,7 @@ async function saveTournamentToHistory() {
     });
 
     // Étape 2 - Le gagnant n'a pas été éliminé, donc on lui attribue le round max + 1
-    const maxRound = bracket.length;
+    const maxRound: number = bracket.length;
     eliminatedInRound[winner] = maxRound;
 
     // Étape 3 - Grouper les joueurs par round d'élimination
@@ -40,15 +40,15 @@ async function saveTournamentToHistory() {
     }
 
     // Étape 4 - Attribuer un classement égal aux joueurs éliminés au même round
-    const sortedRounds = Object.keys(roundGroups)
+    const sortedRounds: number[] = Object.keys(roundGroups)
         .map(Number)
         .sort((a, b) => b - a); // Du gagnant (plus haut round) au premier éliminé
 
     const finalRanking: string[] = [];
 
     for (let i = 0; i < sortedRounds.length; i++) {
-        const round = sortedRounds[i];
-        const playersInRound = roundGroups[round];
+        const round: number = sortedRounds[i];
+        const playersInRound: string[] = roundGroups[round];
         for (const player of playersInRound) {
             if (i === 0) finalRanking.push(`🏆 ${player}`);
             else if (i === 1) finalRanking.push(`🥈 ${player}`);
@@ -86,26 +86,26 @@ export default function GameTournament() {
     let matchEnded = false;
 
     const match = state.tournament.currentMatch;
-    const player1 = match.player1;
-    const player2 = match.player2 ?? "IA"; // Si pas de joueur2, afficher IA (ou laisser vide)
+    const player1: string = match.player1;
+    const player2: string = match.player2 ?? "IA"; // Si pas de joueur2, afficher IA (ou laisser vide)
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-900 text-white";
 
-    const title = document.createElement("h1");
+    const title: HTMLHeadingElement = document.createElement("h1");
     title.className = "text-4xl font-bold mb-4 text-purple-400 animate-pulse";
     title.innerHTML = `🏓 ${player1} vs ${player2}`;
 
-    const gameCanvas = document.createElement("canvas");
+    const gameCanvas: HTMLCanvasElement = document.createElement("canvas");
     gameCanvas.width = 1000;
     gameCanvas.height = 500;
     gameCanvas.className = "border-4 border-white rounded-lg shadow-lg";
 
-    const scoreBoard = document.createElement("div");
+    const scoreBoard: HTMLDivElement = document.createElement("div");
     scoreBoard.className = "text-3xl font-bold mt-4 p-4 rounded bg-gray-800 shadow-md";
     scoreBoard.innerHTML = `<span class="text-green-400">${player1}</span> 0 - 0 <span class="text-red-400">${player2}</span>`;
 
-    const endMessage = document.createElement("div");
+    const endMessage: HTMLDivElement = document.createElement("div");
     endMessage.className = "text-3xl text-green-400 mt-6 hidden transition-opacity duration-500";
 
     container.append(title, gameCanvas, scoreBoard, endMessage);

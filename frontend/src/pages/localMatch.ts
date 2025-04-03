@@ -43,20 +43,20 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     const users = await getUsers();
     console.log("✅ Utilisateurs récupérés :", users);
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white p-8 space-y-6";
 
-    const title = document.createElement("h1");
+    const title: HTMLHeadingElement = document.createElement("h1");
     title.innerHTML = "🌌 " + translatedMatch1v1;
     title.className = "text-4xl font-bold text-purple-400 animate-pulse";
 
     // ✅ Sélection du Joueur 2 (liste déroulante)
-    const player2Select = document.createElement("select");
+    const player2Select: HTMLSelectElement = document.createElement("select");
     player2Select.className = "mt-4 px-4 py-2 rounded-lg text-black text-center shadow-md border-2 border-purple-500 bg-white w-64";
 
     users.forEach(user => {
         if (user.username !== state.user.username) {
-            const option = document.createElement("option");
+            const option: HTMLOptionElement = document.createElement("option");
             option.value = user.username;
             option.innerHTML = user.username;
             player2Select.appendChild(option);
@@ -64,58 +64,58 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     });
 
     // ✅ Champ de mot de passe pour le Joueur 2
-    const player2Password = document.createElement("input");
+    const player2Password: HTMLInputElement = document.createElement("input");
     player2Password.type = "password";
     player2Password.placeholder = translatedPHpwdPlayer;
     player2Password.className = "mt-2 px-4 py-2 rounded-lg text-black text-center shadow-md border-2 border-gray-400 w-64 hidden";
 
     // ✅ Bouton pour valider la connexion du Joueur 2
-    const connectButton = document.createElement("button");
+    const connectButton: HTMLButtonElement = document.createElement("button");
     connectButton.innerHTML = "🔑 " + translatedConnexion;
     connectButton.className = "mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 hidden";
 
     // ✅ Section des paramètres du match (cachée au départ)
-    const matchSettingsContainer = document.createElement("div");
+    const matchSettingsContainer: HTMLDivElement = document.createElement("div");
     matchSettingsContainer.className = "mt-6 space-y-4 hidden"; // Caché tant que le Joueur 2 n'est pas connecté
 
     // ✅ Sélection du mode de jeu
-    const modeSelect = document.createElement("select");
+    const modeSelect: HTMLSelectElement = document.createElement("select");
     modeSelect.className = "px-4 py-2 rounded-lg text-black text-center shadow-md border-2 border-blue-400 bg-white w-64";
 
-    const optionTime = document.createElement("option");
+    const optionTime: HTMLOptionElement = document.createElement("option");
     optionTime.value = "time";
     optionTime.innerHTML = "⏳ " + translatedMatchTime;
 
-    const optionPoints = document.createElement("option");
+    const optionPoints: HTMLOptionElement = document.createElement("option");
     optionPoints.value = "points";
     optionPoints.innerHTML = "🏆 " + translatedMatchPoint;
 
     modeSelect.append(optionTime, optionPoints);
 
     // ✅ Options de durée
-    const timeOptions = document.createElement("select");
+    const timeOptions: HTMLSelectElement = document.createElement("select");
     timeOptions.className = "mt-2 px-4 py-2 rounded-lg text-black shadow-md border-2 border-yellow-400 bg-white w-64 hidden";
 
     [120, 300, 600].forEach(time => {
-        const option = document.createElement("option");
+        const option: HTMLOptionElement = document.createElement("option");
         option.value = String(time);
         option.innerHTML = `⏳ ${time / 60} ${translatedMin}`;
         timeOptions.appendChild(option);
     });
 
     // ✅ Options de points
-    const pointsOptions = document.createElement("select");
+    const pointsOptions: HTMLSelectElement = document.createElement("select");
     pointsOptions.className = "mt-2 px-4 py-2 rounded-lg text-black shadow-md border-2 border-red-400 bg-white w-64 hidden";
 
     [5, 10, 15].forEach(points => {
-        const option = document.createElement("option");
+        const option: HTMLOptionElement = document.createElement("option");
         option.value = String(points);
         option.innerHTML = `🎯 ${points} ${translatedPoint}`;
         pointsOptions.appendChild(option);
     });
 
     // ✅ Bouton pour commencer la partie (caché par défaut)
-    const startGameButton = document.createElement("button");
+    const startGameButton: HTMLButtonElement = document.createElement("button");
     startGameButton.innerHTML = "🚀 " + translatedStartGame;
     startGameButton.className = "mt-6 px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 hidden";
 
@@ -146,8 +146,8 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
     // ✅ Connexion temporaire du Joueur 2
     connectButton.onclick = async () => {
-        const player2Username = player2Select.value;
-        const password = player2Password.value.trim();
+        const player2Username: string = player2Select.value;
+        const password: string = player2Password.value.trim();
 
         if (!password) {
             alert( translatedAlertEnterPwd);

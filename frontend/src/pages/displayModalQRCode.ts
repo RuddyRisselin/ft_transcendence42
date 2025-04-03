@@ -4,7 +4,7 @@ import { translateText } from "../translate";
 
 export async function displayModalQRCode(btnQRCode , userId, username, container)
 {
-    const textsToTranslate = [
+    const textsToTranslate: string[] = [
         "Scanner le QRCODE sur Google Authenticator",
         "Google Authenticator pour Android",
         "Google Authenticator pour IOS",
@@ -24,47 +24,47 @@ export async function displayModalQRCode(btnQRCode , userId, username, container
         {
             try
             {
-                const bigD = document.createElement("div");
+                const bigD: HTMLDivElement = document.createElement("div");
                 bigD.classList.add("bigD");
                 container.appendChild(bigD);
 
-                const divQrcode = document.createElement("div");
+                const divQrcode: HTMLDivElement = document.createElement("div");
                 divQrcode.classList.add("divQrCode")
                 
-                const divCross = document.createElement("div");
+                const divCross: HTMLDivElement = document.createElement("div");
                 divCross.style.textAlign = "right";
                 
-                const btnCross = document.createElement("button");
+                const btnCross: HTMLButtonElement = document.createElement("button");
                 btnCross.innerHTML = "X";
                 btnCross.className = "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-5";
                 
                 divCross.appendChild(btnCross);
                 divQrcode.appendChild(divCross);
                 
-                const   divImageQr = document.createElement("div");
+                const   divImageQr: HTMLDivElement = document.createElement("div");
                 divImageQr.classList.add("divImageQr")
                 
                 
                 divQrcode.appendChild(divImageQr);
                 
-                const image = document.createElement("img");
+                const image: HTMLImageElement = document.createElement("img");
                 getQrcode(userId, username).then((data) => {
                     if (data)
                         image.src = data;
                     divImageQr.append(image);
                 });
 
-                const linkApp = document.createElement("p");
+                const linkApp: HTMLParagraphElement = document.createElement("p");
                 linkApp.innerHTML = translatedScanQRcode;
                 divQrcode.appendChild(linkApp);            
                 
-                const hrefAppAndroid = document.createElement("a");
+                const hrefAppAndroid: HTMLAnchorElement = document.createElement("a");
                 hrefAppAndroid.href = "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=fr";
                 hrefAppAndroid.target = "_blank";
                 hrefAppAndroid.innerHTML = translatedGoogleForAndroid + "<br>";
                 divQrcode.appendChild(hrefAppAndroid);
                 
-                const hrefAppIOS = document.createElement("a");
+                const hrefAppIOS: HTMLAnchorElement = document.createElement("a");
                 hrefAppIOS.href = "https://apps.apple.com/fr/app/google-authenticator/id388497605";
                 hrefAppIOS.target = "_blank";
                 hrefAppIOS.innerHTML = translatedGoogleForIOS;
