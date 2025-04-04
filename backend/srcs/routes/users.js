@@ -37,7 +37,17 @@ async function userRoutes(fastify) {
 
   fastify.get("/users/all", async (request, reply) => {
     try {
-      const users = db.prepare("SELECT id, username, status, anonymize FROM users ORDER BY status DESC").all();
+      const users = db.prepare(`
+        SELECT 
+          u.id, 
+          u.username, 
+          u.status, 
+          u.anonymize,
+          u.avatar,
+          (SELECT COUNT(*) FROM matches WHERE winner_id = u.id) as wins
+        FROM users u
+        ORDER BY status DESC
+      `).all();
       return users;
     } catch (error) {
       console.error("❌ Erreur lors de la récupération des utilisateurs :", error);
