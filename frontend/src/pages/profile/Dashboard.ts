@@ -6,7 +6,7 @@ import StarsBackground from "./StarsBackground";
 import ProfileStats from "./ProfileStats";
 import Sidebar from "../../components/sidebar";
 
-export default async function Profile(): Promise<HTMLElement> {
+export default async function Dashboard(): Promise<HTMLElement> {
     if (!state.user) {
         window.location.href = "/login";
         return document.createElement("div");

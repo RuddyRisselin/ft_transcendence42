@@ -104,8 +104,8 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
     const navLinks = [
         { icon: "🏠", text: "Tableau de bord", href: "/dashboard" },
-        { icon: "👤", text: "Profile", href: "/profile" },
-        //{ icon: "📜", text: "Règles", href: "/rules" }
+        { icon: "🎮", text: "Matches", href: "/matches" },
+        { icon: "📜", text: "Règles", href: "/rules" }
     ];
 
     navLinks.forEach(link => {

@@ -4,7 +4,7 @@ import { navigateTo } from "../router";
 import Sidebar from "../components/sidebar";
 import { translateText } from "../translate";
 
-export default async function Dashboard() : Promise<HTMLDivElement> {
+export default async function Matches() : Promise<HTMLDivElement> {
 
     const textsToTranslate: string[] = [
         "Modes de jeu",

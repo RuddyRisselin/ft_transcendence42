@@ -26,7 +26,7 @@ export default async function Register() {
     ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
 
     if (localStorage.getItem("user"))
-        window.location.href = "/dashboard";
+        window.location.href = "/matches";
     const form: HTMLFormElement = document.createElement("form");
     form.className = "flex flex-col items-center p-6 bg-gray-900 text-white rounded-xl shadow-lg w-96 mx-auto mt-20 border border-gray-700";
 
@@ -74,7 +74,7 @@ export default async function Register() {
             if (!langue)
                 langue = "fr";
             await login(username.value, password.value, true, langue);
-            navigateTo(new Event("click"), "/dashboard");
+            navigateTo(new Event("click"), "/matches");
         } catch (error) {
             errorMsg.innerHTML = `${translatedErrorOnly} :  ${await translateText(error.message)}`;
             errorMsg.classList.remove("hidden");
