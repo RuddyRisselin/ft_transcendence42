@@ -1,7 +1,6 @@
 import { state } from "../state";
 import { connectToWebSocket } from "../services/auth";
 import { navigateTo } from "../router";
-import Sidebar from "../components/sidebar";
 
 export default function Dashboard(): HTMLElement {
     if (!state.user) {
@@ -21,10 +20,6 @@ export default function Dashboard(): HTMLElement {
     <div class="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black"></div>
     <div class="absolute inset-0 bg-stars animate-twinkling"></div>
     `;
-
-    if (state.user) {
-        document.body.appendChild(Sidebar());
-    }
 
     const mainSection = document.createElement("div");
     mainSection.className = "relative z-10 flex w-full h-screen pl-[250px]";
@@ -153,9 +148,15 @@ export default function Dashboard(): HTMLElement {
 
     const difficultyButtons = difficultyMenu.querySelectorAll('.difficulty-btn');
     difficultyButtons.forEach(button => {
-        button.onclick = (e: Event) => {
+        (button as HTMLButtonElement).onclick = (e: Event) => {
             const difficulty = (e.currentTarget as HTMLElement).dataset.difficulty;
-            navigateTo(e, `/local-ai-match?difficulty=${difficulty}`);
+            // Cacher le menu avant de naviguer
+            difficultyMenu.classList.add('fade-out');
+            setTimeout(() => {
+                difficultyMenu.classList.add('hidden');
+                difficultyMenu.classList.remove('fade-out');
+                navigateTo(e, `/game-ai?difficulty=${difficulty}`);
+            }, 300);
         };
     });
 

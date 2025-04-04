@@ -5,8 +5,14 @@ import { getFriends, getFriendRequests, removeFriend, acceptFriendRequest, rejec
 import FriendProfile from "../pages/profile/FriendProfile";
 
 export default function Sidebar(): HTMLElement {
+    // Vérifier si la sidebar existe déjà
+    const existingSidebar = document.querySelector(".sidebar-component");
+    if (existingSidebar) {
+        return existingSidebar as HTMLElement;
+    }
+
     const sidebar = document.createElement("aside");
-    sidebar.className = "fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
+    sidebar.className = "sidebar-component fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
 
     // Conteneur principal avec animation
     const mainContainer = document.createElement("div");
@@ -109,7 +115,12 @@ export default function Sidebar(): HTMLElement {
     logoutButton.className = "mt-auto mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
     logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒</span> Déconnexion';
     logoutButton.onclick = async () => {
-        sidebar.remove();
+        // Suppression de la sidebar du DOM
+        const sidebarContainer = document.querySelector(".sidebar-container");
+        if (sidebarContainer) {
+            sidebarContainer.remove();
+        }
+        
         await logout();
     };
 

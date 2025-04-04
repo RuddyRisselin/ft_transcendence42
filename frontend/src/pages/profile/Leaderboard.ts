@@ -1,50 +1,47 @@
 import { state } from "../../state";
-import { getUserById } from "../../services/userService";
+import { translateText } from "../../translate";
+import { getUsers, refreshUserCache } from "../../services/userService";
 
-export default function Leaderboard(): HTMLElement {
-    const container = document.createElement("div");
+// Variables pour les traductions
+//let translatedTDS: string = "Classement";
+let translatedWin: string = "Victoires";
+let translatedError: string = "Erreur lors du chargement du classement";
+
+export default async function Leaderboard(): Promise<HTMLElement> {
+    // Initialiser les traductions
+    [translatedWin, translatedError] = await Promise.all([
+        translateText("Victoires"),
+        translateText("Erreur lors du chargement du classement")
+    ]);
+
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 flex flex-col items-center w-full h-full";
 
-    const title = document.createElement("h2");
-    title.innerText = "Leaderboard";
+    const title: HTMLHeadingElement = document.createElement("h2");
     title.className = "text-2xl font-bold mb-8 text-center";
 
-    const podiumContainer = document.createElement("div");
+    const podiumContainer: HTMLDivElement = document.createElement("div");
     podiumContainer.className = "relative flex justify-center items-end mb-10 w-full h-64";
 
-    const leadersContainer = document.createElement("div");
+    const leadersContainer: HTMLDivElement = document.createElement("div");
     leadersContainer.className = "w-full max-w-lg mb-4";
 
     async function fetchLeaderboard() {
         try {
-            const response = await fetch("http://localhost:3000/leaderboard");
-            let leaderboardData = await response.json();
+            // Vider les conteneurs avant de recharger
+            podiumContainer.innerHTML = '';
+            leadersContainer.innerHTML = '';
 
-            // Récupérer les détails complets de chaque utilisateur
-            const userPromises = leaderboardData.map(async (player: any) => {
-                const userDetails = await getUserById(player.id);
-                return {
-                    ...player,
-                    avatar: userDetails?.avatar || null
-                };
-            });
-
-            leaderboardData = await Promise.all(userPromises);
+            // Récupérer tous les utilisateurs
+            const users = await getUsers();
+            
+            // Trier les utilisateurs par nombre de victoires
+            const leaderboardData = users
+                .sort((a, b) => b.wins - a.wins)
+                .slice(0, 6); // Prendre les 6 premiers
 
             // Afficher le podium (top 3)
             if (leaderboardData.length >= 3) {
-                // Position #1 (au milieu)
-                const winner = leaderboardData[0];
-                const winnerElement = createPodiumPlayer(winner, 1, "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2", "120px");
-                
-                // Position #2 (à gauche)
-                const second = leaderboardData[1];
-                const secondElement = createPodiumPlayer(second, 2, "absolute left-1/4 transform -translate-x-1/2 translate-y-4", "100px");
-                
-                // Position #3 (à droite)
-                const third = leaderboardData[2];
-                const thirdElement = createPodiumPlayer(third, 3, "absolute right-1/4 transform translate-x-1/2 translate-y-8", "90px");
-                
                 // Créer les podiums
                 const podiumSteps = document.createElement("div");
                 podiumSteps.className = "absolute bottom-0 left-0 right-0 flex justify-center items-end h-32";
@@ -59,6 +56,19 @@ export default function Leaderboard(): HTMLElement {
                 step3.className = "w-32 h-20 bg-orange-500/20 rounded-t-lg mx-2";
                 
                 podiumSteps.append(step2, step1, step3);
+
+                // Position #1 (au milieu)
+                const winner = leaderboardData[0];
+                const winnerElement = createPodiumPlayer(winner, 1, "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2", "120px");
+                
+                // Position #2 (à gauche)
+                const second = leaderboardData[1];
+                const secondElement = createPodiumPlayer(second, 2, "absolute left-1/4 transform -translate-x-1/2 translate-y-4", "100px");
+                
+                // Position #3 (à droite)
+                const third = leaderboardData[2];
+                const thirdElement = createPodiumPlayer(third, 3, "absolute right-1/4 transform translate-x-1/2 translate-y-8", "90px");
+                
                 podiumContainer.append(podiumSteps, winnerElement, secondElement, thirdElement);
             }
 
@@ -76,8 +86,11 @@ export default function Leaderboard(): HTMLElement {
                 rankElement.className = "text-gray-400 font-medium";
                 
                 const playerAvatar = document.createElement("img");
-                playerAvatar.src = player.avatar ? `http://localhost:3000/images/${player.avatar}` : "http://localhost:3000/images/default.jpg";
-                playerAvatar.className = "w-8 h-8 rounded-full border border-gray-600";
+                playerAvatar.src = player.avatar || "http://localhost:3000/images/default.jpg";
+                playerAvatar.className = "w-8 h-8 rounded-full border border-gray-600 object-cover";
+                playerAvatar.onerror = () => {
+                    playerAvatar.src = "http://localhost:3000/images/default.jpg";
+                };
                 
                 const username = document.createElement("span");
                 username.innerText = player.username;
@@ -86,7 +99,7 @@ export default function Leaderboard(): HTMLElement {
                 leftSection.append(rankElement, playerAvatar, username);
                 
                 const wins = document.createElement("span");
-                wins.innerText = `${player.wins} Wins`;
+                wins.innerText = `${player.wins} ${translatedWin}`;
                 wins.className = "text-green-400 font-medium";
                 
                 listItem.append(leftSection, wins);
@@ -94,11 +107,11 @@ export default function Leaderboard(): HTMLElement {
             });
         } catch (error) {
             console.error("Error fetching leaderboard:", error);
-            podiumContainer.innerHTML = "<p class='text-red-500'>Error loading leaderboard</p>";
+            podiumContainer.innerHTML = `<p class='text-red-500'>${translatedError}</p>`;
         }
     }
 
-    function createPodiumPlayer(player, position, positionClass, size) {
+    function createPodiumPlayer(player: any, position: number, positionClass: string, size: string): HTMLDivElement {
         const playerElement = document.createElement("div");
         playerElement.className = `flex flex-col items-center ${positionClass}`;
         
@@ -121,10 +134,13 @@ export default function Leaderboard(): HTMLElement {
         
         // Avatar
         const avatar = document.createElement("img");
-        avatar.src = player.avatar ? `http://localhost:3000/images/${player.avatar}` : "http://localhost:3000/images/default.jpg";
+        avatar.src = player.avatar || "http://localhost:3000/images/default.jpg";
         avatar.className = "rounded-full object-cover";
         avatar.style.width = `calc(${size} - 16px)`;
         avatar.style.height = `calc(${size} - 16px)`;
+        avatar.onerror = () => {
+            avatar.src = "http://localhost:3000/images/default.jpg";
+        };
         
         avatarContainer.append(avatar, rankBadge);
         
@@ -135,14 +151,26 @@ export default function Leaderboard(): HTMLElement {
         
         // Nombre de victoires
         const winsCount = document.createElement("span");
-        winsCount.innerText = `${player.wins} Wins`;
+        winsCount.innerText = `${player.wins} ${translatedWin}`;
         winsCount.className = "text-green-400 text-sm";
         
         playerElement.append(avatarContainer, username, winsCount);
         return playerElement;
     }
 
-    fetchLeaderboard();
+    // Rafraîchir le leaderboard toutes les 10 secondes
+    const refreshInterval = setInterval(async () => {
+        await refreshUserCache();
+        await fetchLeaderboard();
+    }, 10000);
+
+    // Nettoyer l'intervalle quand le composant est démonté
+    window.addEventListener('beforeunload', () => {
+        clearInterval(refreshInterval);
+    });
+
+    // Charger le leaderboard initial
+    await fetchLeaderboard();
 
     container.append(title, podiumContainer, leadersContainer);
     return container;

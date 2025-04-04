@@ -3,15 +3,57 @@ import { updatePhotoUser, updateUser, deleteUser, anonymizeUser, getQrcode } fro
 import { uploadFile } from "../../services/uploadFile";
 import { logout } from "../../services/auth";
 import { displayModalQRCode } from "../displayModalQRCode";
+import { translateText } from "../../translate";
 
-export default function ProfileForm(): HTMLElement {
-    const container = document.createElement("div");
-    container.className = "flex flex-col items-center p-6 bg-gray-800 text-white rounded-xl shadow-lg w-full h-full";
+export default async function ProfileForm(): Promise<HTMLDivElement> {
+    const textsToTranslate = [
+        "Gestion de profil",
+        "Changer de photo",
+        "Choisir la photo",
+        "Mettre la photo à jour",
+        "Votre compte doit être en publique !",
+        "Image non valide",
+        "Mettre le profil à jour",
+        "Se mettre en privé",
+        "Se mettre en publique",
+        "êtes-vous sûr ?",
+        "Supprimer mon compte",
+        "Activer 2FA",
+        "Echec du téléchargement de l'image",
+        "Erreur de mise à jour du profil",
+        "Erreur de la requête du profil",
+        "Une erreur est survenue",
+        "Erreur lors de la suppression du profil",
 
+    ];
+
+    const [
+        translatedProfilGes,
+        translatedChangeAvatar, 
+        translatedChooseAvatar, 
+        translatedUpdateAvatar, 
+        translatedNeedPublicAccount, 
+        translatedNotValidAvatar, 
+        translatedUpdateProfil,
+        translatedGoingPrivate,
+        translatedGoingPublic,
+        translatedAreYouSure,
+        translatedDeleteAccount,
+        transletedActivate2FA,
+        translatedErrorDownloadAvatar,
+        translatedErrorUpdateProfil,
+        translatedErrorRequestProfil,
+        translatedError,
+        translatedErrorDeleteProfil
+    ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
+
+    const container: HTMLDivElement = document.createElement("div");
+    container.className = "flex flex-col items-center p-6 bg-gray-800 text-white rounded-xl shadow-lg w-full h-full test";
+    
     const title: HTMLHeadingElement = document.createElement("h2");
-    title.innerText = "Profile Management";
+    title.innerHTML = translatedProfilGes;
     title.className = "text-2xl text-blue-400 font-bold mb-6";
-
+    
     const divAvatar: HTMLDivElement = document.createElement("div");
     divAvatar.className = "flex flex-col items-center justify-center w-full mb-6";
     
@@ -21,7 +63,7 @@ export default function ProfileForm(): HTMLElement {
     divAvatar.appendChild(avatar);
     
     const btnRequestPhoto: HTMLButtonElement = document.createElement("button");
-    btnRequestPhoto.innerHTML = "Change photo";
+    btnRequestPhoto.innerHTML = translatedChangeAvatar;
     btnRequestPhoto.className = "bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2 font-semibold text-sm";
     divAvatar.appendChild(btnRequestPhoto);
     
@@ -32,14 +74,14 @@ export default function ProfileForm(): HTMLElement {
     form.enctype = "multipart/form-data";
     form.className = "w-full";
     const labelFile: HTMLLabelElement = document.createElement("label");
-    labelFile.innerHTML = "Choose profile picture : ";
+    labelFile.innerHTML = translatedChooseAvatar;
     labelFile.className = "mb-3 text-sm";
     const inputFile: HTMLInputElement = document.createElement("input");
     inputFile.type = "file";
     inputFile.accept = ".png, .jpeg, .jpg";
     inputFile.className = "text-sm w-full mb-2";
     const submitFile: HTMLButtonElement = document.createElement("button");
-    submitFile.innerHTML = "Update picture";
+    submitFile.innerHTML = translatedUpdateAvatar;
     submitFile.className = "w-full bg-blue-500 hover:bg-blue-600 rounded py-2 px-4 text-sm";
     form.appendChild(labelFile);
     form.appendChild(inputFile);
@@ -49,22 +91,21 @@ export default function ProfileForm(): HTMLElement {
 
     btnRequestPhoto.onclick = () => {
         if (state.user.anonymize)
-            return alert("Your account must be in public !");
+            return alert(translatedNeedPublicAccount);
         divUpdatePhoto.classList.remove("hidden");
         btnRequestPhoto.classList.add("hidden");
     }
     submitFile.onclick = async (e) => {
         e.preventDefault();
         if (!inputFile.files?.length)
-            return alert("Image not valid");
+            return alert(translatedNotValidAvatar);
 
         const formData: FormData = new FormData();
         formData.append('image', inputFile.files[0]);
-        console.log("FORMDATA : ", typeof formData);
         const response = await uploadFile(formData);
         if (!response || !response.filename)
-            return alert("Echec du telechargement de l'image");
-        const success = await updatePhotoUser(state.user.username, response.filename);
+            return alert(translatedErrorDownloadAvatar);
+        const success: boolean = await updatePhotoUser(state.user.username, response.filename);
         if (success) {
             state.user.avatar = response.filename;
             localStorage.setItem("user", JSON.stringify(state.user));
@@ -72,20 +113,20 @@ export default function ProfileForm(): HTMLElement {
             btnRequestPhoto.classList.remove("hidden");
             window.location.reload();
         } else {
-            alert("Error profile update impossible");
+            alert(translatedErrorUpdateProfil);
         }
     };
 
     // Conteneur pour les entrées de formulaire
-    const formFieldsContainer = document.createElement("div");
+    const formFieldsContainer: HTMLDivElement = document.createElement("div");
     formFieldsContainer.className = "w-full space-y-4";
 
-    const username = document.createElement("input");
+    const username: HTMLInputElement = document.createElement("input");
     username.type = "text";
     username.value = state.user.username;
     username.className = "w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-blue-500";
 
-    const email = document.createElement("input");
+    const email: HTMLInputElement = document.createElement("input");
     email.type = "email";
     email.value = state.user.email;
     email.className = "w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:outline-none focus:border-blue-500";
@@ -98,12 +139,25 @@ export default function ProfileForm(): HTMLElement {
         email.disabled = true;
     }
 
-    // Conteneur de boutons
-    const buttonsContainer = document.createElement("div");
+    const buttonsContainer: HTMLDivElement = document.createElement("div");
     buttonsContainer.className = "w-full space-y-3 mt-4";
 
-    const saveBtn = document.createElement("button");
-    saveBtn.innerText = "Update profile";
+    const saveBtn: HTMLButtonElement = document.createElement("button");
+    saveBtn.innerHTML = translatedUpdateProfil;
+    saveBtn.disabled = true;
+    username.onchange = () => {
+        if (!(username.value.length == 0) || username.value == state.user.username)
+            saveBtn.disabled = false;
+        else
+            saveBtn.disabled = true;
+    }
+    email.onchange = () => {
+        if (!(email.value.length == 0) && !(email.value == state.user.email) && email.value.includes("@"))
+            saveBtn.disabled = false;
+        else
+            email.disabled = true;
+    }
+
     saveBtn.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded";
     if (anonymize === 1)
         saveBtn.disabled = true;
@@ -111,82 +165,88 @@ export default function ProfileForm(): HTMLElement {
         let token = state.token;
         if (!token)
             token = "";
-        const success = await updateUser(token, state.user.username, username.value, email.value);
-        if (success) {
-            state.user.username = username.value;
-            state.user.email = email.value;
-        } else {
-            alert("Error profile update impossible");
+        const value: boolean = confirm(translatedAreYouSure);
+        if (value)
+        {
+            const success: boolean = await updateUser(token, state.user.username, username.value, email.value);
+            if (success) {
+                state.user.username = username.value;
+                state.user.email = email.value;
+                window.location.reload();
+            } else {
+                alert(translatedErrorUpdateProfil);
+            }
         }
     };
 
-    const anonymizeBtn = document.createElement("button");
+    const anonymizeBtn: HTMLButtonElement = document.createElement("button");
     let token = state.token;
     if (!token)
         token = "";
     if (state.user.anonymize === 0)
-        anonymizeBtn.innerText = "Going private";
+        anonymizeBtn.innerHTML = translatedGoingPrivate;
     else
-        anonymizeBtn.innerText = "Going public";
+        anonymizeBtn.innerHTML = translatedGoingPublic;
     anonymizeBtn.className = "w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded";
     anonymizeBtn.onclick = async () => {
         try {
-            const value = confirm("Are you sure ?");
+            const value: boolean = confirm(translatedAreYouSure);
             if (value) {
-                const success = await anonymizeUser(state.user.username, token);
-                if (success && anonymizeBtn.textContent === "Going private")
-                    anonymizeBtn.innerText = "Going public";
-                else if (success && anonymizeBtn.textContent === "Going public")
-                    anonymizeBtn.innerText = "Going private";
+                const success: boolean = await anonymizeUser(state.user.username, token);
+                if (success && anonymizeBtn.textContent?.includes("priv"))
+                        anonymizeBtn.innerHTML = translatedGoingPublic;
+                else if (success && anonymizeBtn.textContent?.includes("bli"))
+                        anonymizeBtn.innerHTML = translatedGoingPrivate;
                 else
-                    alert("Error request profil");
+                    alert(translatedErrorRequestProfil);
                 window.location.reload();
             }
         } catch (error) {
             console.error("❌ Erreur inattendue :", error);
-            alert("Une erreur est survenue !");
+            alert(translatedError);
         }
     };
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.innerText = "Delete account";
+    const deleteBtn: HTMLButtonElement = document.createElement("button");
+    deleteBtn.innerHTML = translatedDeleteAccount;
     deleteBtn.className = "w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded";
     deleteBtn.onclick = async () => {
         try {
-            const value = confirm("Are you sure ?");
+            const value: boolean = confirm(translatedAreYouSure);
             if (value) {
-                const success = await deleteUser(state.user.username);
+                const success: boolean = await deleteUser(state.user.username);
                 if (success) {
                     await logout();
                 } else {
-                    alert("Error delete profil");
+                    alert(translatedErrorDeleteProfil);
                 }
             }
         } catch (error) {
             console.error("❌ Erreur inattendue :", error);
+            alert(translatedError);
         }
     };
 
     // Activation 2FA
-    const div2FA = document.createElement("div");
+    const div2FA: HTMLDivElement = document.createElement("div");
     div2FA.className = "flex items-center justify-between w-full mt-4";
     
-    const span2FA = document.createElement("span");
-    span2FA.innerHTML = "Activate 2FA";
+    const span2FA: HTMLSpanElement = document.createElement("span");
+    span2FA.innerHTML = transletedActivate2FA;
     span2FA.className = "text-sm";
     
-    const toggleContainer = document.createElement("div");
+    const toggleContainer: HTMLDivElement = document.createElement("div");
     toggleContainer.className = "flex";
 
-    const labelBtn = document.createElement("label");
+    const labelBtn: HTMLLabelElement = document.createElement("label");
     labelBtn.className = "switch";
     
-    const btnQRCode = document.createElement("input");
+    const btnQRCode: HTMLInputElement = document.createElement("input");
     btnQRCode.type = "checkbox";
     if (state.user.is2FAEnabled == 1)
         btnQRCode.checked = true;
     
-    const spanQrcode = document.createElement("span");
+    const spanQrcode: HTMLSpanElement = document.createElement("span");
     spanQrcode.className = "slider round";
     
     labelBtn.appendChild(btnQRCode);

@@ -9,20 +9,34 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         return document.createElement("div");
     }
 
+    // ✅ NOUVEAU: Stocker la page actuelle dans localStorage pour les redirections
+    localStorage.setItem('currentPage', 'local-match');
+
     console.log("🔍 Chargement des utilisateurs...");
     const users = await getUsers();
     console.log("✅ Utilisateurs récupérés :", users);
 
     const container = document.createElement("div");
-    container.className = "flex flex-col items-center min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white p-8 space-y-6";
+    container.className = "flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-950 via-blue-700 to-blue-950 text-white p-8 space-y-6";
 
     const title = document.createElement("h1");
-    title.innerText = "🌌 Match Local 1v1";
-    title.className = "text-4xl font-bold text-purple-400 animate-pulse";
+    title.innerText = "🏓 Match Local 1v1";
+    title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100 text-center";
+
+    // Section principale avec effet glassmorphism
+    const mainSection = document.createElement("div");
+    mainSection.className = "w-full max-w-xl bg-black bg-opacity-40 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-blue-500/30 flex flex-col items-center space-y-6";
 
     // ✅ Sélection du Joueur 2 (liste déroulante)
+    const playerSelectionContainer = document.createElement("div");
+    playerSelectionContainer.className = "w-full space-y-3";
+    
+    const playerSelectLabel = document.createElement("div");
+    playerSelectLabel.className = "text-xl font-medium text-blue-200";
+    playerSelectLabel.innerText = "Sélectionner votre adversaire";
+    
     const player2Select = document.createElement("select");
-    player2Select.className = "mt-4 px-4 py-2 rounded-lg text-black text-center shadow-md border-2 border-purple-500 bg-white w-64";
+    player2Select.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
 
     users.forEach(user => {
         if (user.username !== state.user.username) {
@@ -33,24 +47,42 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         }
     });
 
+    playerSelectionContainer.append(playerSelectLabel, player2Select);
+
     // ✅ Champ de mot de passe pour le Joueur 2
+    const passwordContainer = document.createElement("div");
+    passwordContainer.className = "w-full space-y-3 hidden";
+    
+    const passwordLabel = document.createElement("div");
+    passwordLabel.className = "text-xl font-medium text-blue-200";
+    passwordLabel.innerText = "Mot de passe de l'adversaire";
+    
     const player2Password = document.createElement("input");
     player2Password.type = "password";
-    player2Password.placeholder = "Mot de passe du Joueur 2";
-    player2Password.className = "mt-2 px-4 py-2 rounded-lg text-black text-center shadow-md border-2 border-gray-400 w-64 hidden";
+    player2Password.placeholder = "Entrez le mot de passe...";
+    player2Password.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all placeholder-blue-300/70";
+
+    passwordContainer.append(passwordLabel, player2Password);
 
     // ✅ Bouton pour valider la connexion du Joueur 2
     const connectButton = document.createElement("button");
-    connectButton.innerText = "🔑 Se connecter";
-    connectButton.className = "mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 hidden";
+    connectButton.innerText = "🔑 Connecter l'adversaire";
+    connectButton.className = "w-full px-6 py-3 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-600 hover:to-blue-400 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 font-bold text-lg hidden";
 
     // ✅ Section des paramètres du match (cachée au départ)
     const matchSettingsContainer = document.createElement("div");
-    matchSettingsContainer.className = "mt-6 space-y-4 hidden"; // Caché tant que le Joueur 2 n'est pas connecté
+    matchSettingsContainer.className = "w-full space-y-6 hidden"; // Caché tant que le Joueur 2 n'est pas connecté
 
     // ✅ Sélection du mode de jeu
+    const modeContainer = document.createElement("div");
+    modeContainer.className = "w-full space-y-3";
+    
+    const modeLabel = document.createElement("div");
+    modeLabel.className = "text-xl font-medium text-blue-200";
+    modeLabel.innerText = "Mode de jeu";
+    
     const modeSelect = document.createElement("select");
-    modeSelect.className = "px-4 py-2 rounded-lg text-black text-center shadow-md border-2 border-blue-400 bg-white w-64";
+    modeSelect.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
 
     const optionTime = document.createElement("option");
     optionTime.value = "time";
@@ -61,21 +93,38 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     optionPoints.innerText = "🏆 Match en nombre de points";
 
     modeSelect.append(optionTime, optionPoints);
+    modeContainer.append(modeLabel, modeSelect);
 
     // ✅ Options de durée
+    const timeContainer = document.createElement("div");
+    timeContainer.className = "w-full space-y-3";
+    
+    const timeLabel = document.createElement("div");
+    timeLabel.className = "text-xl font-medium text-blue-200";
+    timeLabel.innerText = "Durée du match";
+    
     const timeOptions = document.createElement("select");
-    timeOptions.className = "mt-2 px-4 py-2 rounded-lg text-black shadow-md border-2 border-yellow-400 bg-white w-64 hidden";
+    timeOptions.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
 
     [120, 300, 600].forEach(time => {
         const option = document.createElement("option");
         option.value = String(time);
-        option.innerText = `⏳ ${time / 60} min`;
+        option.innerText = `⏳ ${Math.floor(time / 60)} min ${time % 60 ? (time % 60) + ' sec' : ''}`;
         timeOptions.appendChild(option);
     });
+    
+    timeContainer.append(timeLabel, timeOptions);
 
     // ✅ Options de points
+    const pointsContainer = document.createElement("div");
+    pointsContainer.className = "w-full space-y-3 hidden";
+    
+    const pointsLabel = document.createElement("div");
+    pointsLabel.className = "text-xl font-medium text-blue-200";
+    pointsLabel.innerText = "Nombre de points à atteindre";
+    
     const pointsOptions = document.createElement("select");
-    pointsOptions.className = "mt-2 px-4 py-2 rounded-lg text-black shadow-md border-2 border-red-400 bg-white w-64 hidden";
+    pointsOptions.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
 
     [5, 10, 15].forEach(points => {
         const option = document.createElement("option");
@@ -83,29 +132,31 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         option.innerText = `🎯 ${points} points`;
         pointsOptions.appendChild(option);
     });
+    
+    pointsContainer.append(pointsLabel, pointsOptions);
 
-    // ✅ Bouton pour commencer la partie (caché par défaut)
+    // ✅ Bouton pour commencer la partie
     const startGameButton = document.createElement("button");
     startGameButton.innerText = "🚀 Commencer la partie";
-    startGameButton.className = "mt-6 px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 hidden";
+    startGameButton.className = "w-full px-6 py-4 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-600 hover:to-blue-400 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 font-bold text-xl";
 
     // ✅ Affichage dynamique des options de match
     function updateMatchOptions() {
         if (modeSelect.value === "time") {
-            timeOptions.style.display = "block";
-            pointsOptions.style.display = "none";
+            timeContainer.classList.remove("hidden");
+            pointsContainer.classList.add("hidden");
         } else {
-            timeOptions.style.display = "none";
-            pointsOptions.style.display = "block";
+            timeContainer.classList.add("hidden");
+            pointsContainer.classList.remove("hidden");
         }
     }
     modeSelect.addEventListener("change", updateMatchOptions);
     updateMatchOptions();
 
-    // ✅ Affichage du mot de passe et du bouton après la sélection d’un joueur
+    // ✅ Affichage du mot de passe et du bouton après la sélection d'un joueur
     function showLoginFields() {
         console.log(`🎯 Joueur 2 sélectionné : ${player2Select.value}`);
-        player2Password.classList.remove("hidden");
+        passwordContainer.classList.remove("hidden");
         connectButton.classList.remove("hidden");
     }
 
@@ -120,7 +171,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         const password = player2Password.value.trim();
 
         if (!password) {
-            alert("⚠️ Veuillez entrer le mot de passe du Joueur 2.");
+            alert("⚠️ Veuillez entrer le mot de passe de l'adversaire.");
             return;
         }
 
@@ -129,29 +180,26 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         try {
             const player2Auth = await loginWithoutSession(player2Username, password);
             console.log(`✅ Connexion réussie pour ${player2Username}`, player2Auth);
-            alert(`✅ Connexion réussie pour ${player2Username} !`);
 
             // ✅ Stocker les infos du Joueur 2 sans écraser `state.user`
             if (!state.localMatch) {
-				state.localMatch = {
-					player1: state.user.username,
-					player2: "",
-					player2Auth: null,
-					mode: "points",
-					target: 10
-				};
-			}
-			state.localMatch.player2Auth = player2Auth;
-			
+                state.localMatch = {
+                    player1: state.user.username,
+                    player2: "",
+                    player2Auth: null,
+                    mode: "points",
+                    target: 10
+                };
+            }
+            state.localMatch.player2Auth = player2Auth;
 
             // ✅ Cacher les champs après connexion
+            playerSelectionContainer.classList.add("hidden");
+            passwordContainer.classList.add("hidden");
             connectButton.classList.add("hidden");
-            player2Password.classList.add("hidden");
 
             // ✅ Afficher les paramètres du match et le bouton de démarrage
             matchSettingsContainer.classList.remove("hidden");
-            startGameButton.classList.remove("hidden");
-
         } catch (error) {
             console.error("❌ Échec de l'authentification :", error);
             alert("❌ Échec de l'authentification. Vérifiez le mot de passe.");
@@ -160,24 +208,23 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
     // ✅ Démarrer le match
     startGameButton.onclick = () => {
-		if (!state.localMatch) {
-			console.error("❌ Erreur : `state.localMatch` est null !");
-			return;
-		}
-	
-		state.localMatch.player1 = state.user.username;
-		state.localMatch.player2 = player2Select.value;
-		state.localMatch.mode = modeSelect.value as "time" | "points";
-		state.localMatch.target = modeSelect.value === "time" ? parseInt(timeOptions.value) : parseInt(pointsOptions.value);
-	
-		navigateTo(new Event("click"), "/game-local");
-	};
-	
+        if (!state.localMatch) {
+            console.error("❌ Erreur : `state.localMatch` est null !");
+            return;
+        }
+    
+        state.localMatch.player1 = state.user.username;
+        state.localMatch.player2 = player2Select.value;
+        state.localMatch.mode = modeSelect.value as "time" | "points";
+        state.localMatch.target = modeSelect.value === "time" ? parseInt(timeOptions.value) : parseInt(pointsOptions.value);
+    
+        navigateTo(new Event("click"), "/game-local");
+    };
 
-    // ✅ Ajout des paramètres de match au container après connexion
-    matchSettingsContainer.append(modeSelect, timeOptions, pointsOptions, startGameButton);
-
-    // ✅ Ajout des éléments au container
-    container.append(title, player2Select, player2Password, connectButton, matchSettingsContainer);
+    // Assembler tous les éléments
+    matchSettingsContainer.append(modeContainer, timeContainer, pointsContainer, startGameButton);
+    mainSection.append(playerSelectionContainer, passwordContainer, connectButton, matchSettingsContainer);
+    container.append(title, mainSection);
+    
     return container;
 }
