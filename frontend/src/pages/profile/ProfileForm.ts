@@ -144,6 +144,19 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
 
     const saveBtn: HTMLButtonElement = document.createElement("button");
     saveBtn.innerHTML = translatedUpdateProfil;
+    saveBtn.disabled = true;
+    username.onchange = () => {
+        if (!(username.value.length == 0) || username.value == state.user.username)
+            saveBtn.disabled = false;
+        else
+            saveBtn.disabled = true;
+    }
+    email.onchange = () => {
+        if (!(email.value.length == 0) && !(email.value == state.user.email) && email.value.includes("@"))
+            saveBtn.disabled = false;
+        else
+            email.disabled = true;
+    }
 
     saveBtn.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded";
     if (anonymize === 1)
