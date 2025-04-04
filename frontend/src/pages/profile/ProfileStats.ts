@@ -5,7 +5,7 @@ import { translateText } from "../../translate";
 export default async function ProfileStats(userId?: number): Promise<HTMLElement> {
 
     /*          TRANSLATE TAB          */
-    const textToTranslate = [
+    const textToTranslate: string[] = [
         "Statistique",
         "Utilisateur introuvable.",
         "Aucune statistique disponible.",
@@ -24,20 +24,20 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
         translatedWinRates
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-lg shadow-lg p-6 flex flex-col items-center w-full h-full";
 
-    const title = document.createElement("h3");
+    const title: HTMLHeadingElement = document.createElement("h3");
     title.innerHTML = translatedStats;
     title.className = "text-2xl font-bold mb-4 text-center";
 
-    const statsContainer = document.createElement("div");
+    const statsContainer: HTMLDivElement = document.createElement("div");
     statsContainer.className = "flex flex-col lg:flex-row items-center justify-center w-full gap-8";
 
-    const statsList = document.createElement("div");
+    const statsList: HTMLDivElement = document.createElement("div");
     statsList.className = "text-white flex flex-col space-y-3 w-full max-w-md";
 
-    const chartContainer = document.createElement("div");
+    const chartContainer: HTMLDivElement = document.createElement("div");
     chartContainer.className = "w-48 h-48";
 
     async function fetchStats() {
@@ -49,7 +49,7 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
         try {
             console.log(`Fetching stats for user ID: ${targetUserId}`);
 
-            const response = await fetch(`/api/user/stats?userId=${targetUserId}`);
+            const response: Response = await fetch(`/api/user/stats?userId=${targetUserId}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch user stats.");
             }
@@ -65,18 +65,18 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
             const totalGames = stats.totalGames || 0;
             const wins = stats.wins || 0;
             const losses = stats.losses || 0;
-            const winrate = totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
+            const winrate: number = totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
 
             // Créer un élément d'info statistique stylé
             function createStatItem(label, value, color) {
-                const statItem = document.createElement("div");
+                const statItem: HTMLDivElement = document.createElement("div");
                 statItem.className = "flex flex-col";
                 
-                const labelEl = document.createElement("span");
+                const labelEl: HTMLSpanElement = document.createElement("span");
                 labelEl.className = "text-gray-400 text-sm";
                 labelEl.innerHTML = label;
                 
-                const valueEl = document.createElement("span");
+                const valueEl: HTMLSpanElement = document.createElement("span");
                 valueEl.className = `text-xl font-bold ${color}`;
                 valueEl.innerHTML = value;
                 
@@ -108,7 +108,7 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
 
     function renderChart(wins, losses) {
         chartContainer.innerHTML = "";
-        const canvas = document.createElement("canvas");
+        const canvas: HTMLCanvasElement = document.createElement("canvas");
         canvas.width = 200;
         canvas.height = 200;
         chartContainer.appendChild(canvas);

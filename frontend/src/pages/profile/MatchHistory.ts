@@ -3,7 +3,7 @@ import { translateText } from "../../translate";
 
 export default async function MatchHistory(userId?: number): Promise<HTMLElement> {
 
-        const textsToTranslate = [
+        const textsToTranslate: string[] = [
             "Historique",
             "Matchs",
             "Tournoi",
@@ -39,27 +39,27 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             translatedErrorLoadingTournament
         ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 flex flex-col h-full";
 
-    const title = document.createElement("h2");
+    const title: HTMLHeadingElement = document.createElement("h2");
     title.innerHTML = translatedHistory;
     title.className = "text-2xl font-bold mb-4 text-center";
 
     let activeTab: "matches" | "tournaments" = "matches";
 
-    const tabsContainer = document.createElement("div");
+    const tabsContainer: HTMLDivElement = document.createElement("div");
     tabsContainer.className = "flex space-x-2 mb-4 justify-center";
 
-    const tabMatches = document.createElement("button");
+    const tabMatches: HTMLButtonElement = document.createElement("button");
     tabMatches.innerHTML = translatedMatchs;
     tabMatches.className = "px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold";
 
-    const tabTournaments = document.createElement("button");
+    const tabTournaments: HTMLButtonElement = document.createElement("button");
     tabTournaments.innerHTML = translatedTournament;
     tabTournaments.className = "px-4 py-2 text-white bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold";
 
-    const historyContainer = document.createElement("div");
+    const historyContainer: HTMLDivElement = document.createElement("div");
     historyContainer.className = "flex flex-col gap-2 overflow-y-auto max-h-64 scrollbar-thin scrollbar-thumb-gray-700";
 
     const targetUserId = userId || state.user?.id;
@@ -95,7 +95,7 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
     async function fetchMatchHistory() {
         try {
             historyContainer.innerHTML = `<p class='text-white text-center py-2'>${translatedLoading}</p>`;
-            const response = await fetch(`/api/matches?userId=${targetUserId}`);
+            const response: Response = await fetch(`/api/matches?userId=${targetUserId}`);
             if (!response.ok) throw new Error("Erreur API");
             const matches = await response.json();
 
@@ -106,26 +106,26 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             }
 
             matches.forEach(match => {
-                const isWinner = match.winner_name === (userId ? match.player1_name === userId ? match.player1_name : match.player2_name : state.user.username);
-                const matchItem = document.createElement("div");
+                const isWinner: boolean = match.winner_name === (userId ? match.player1_name === userId ? match.player1_name : match.player2_name : state.user.username);
+                const matchItem: HTMLDivElement = document.createElement("div");
                 matchItem.className = `p-3 rounded-lg flex flex-col ${isWinner ? "bg-blue-600" : "bg-red-600"}`;
 
-                const matchDate = new Date(match.played_at).toLocaleDateString();
+                const matchDate: string = new Date(match.played_at).toLocaleDateString();
                 
-                const matchHeader = document.createElement("div");
+                const matchHeader: HTMLDivElement = document.createElement("div");
                 matchHeader.className = "flex justify-between items-center";
                 
-                const dateSpan = document.createElement("span");
+                const dateSpan: HTMLSpanElement = document.createElement("span");
                 dateSpan.innerHTML = matchDate;
                 dateSpan.className = "text-xs text-white opacity-80";
                 
-                const matchResult = document.createElement("span");
+                const matchResult: HTMLSpanElement = document.createElement("span");
                 matchResult.innerHTML = isWinner ? translatedYouWin : `${translatedWin}: ${match.winner_name}`;
                 matchResult.className = "text-xs font-semibold";
                 
                 matchHeader.append(dateSpan, matchResult);
                 
-                const matchPlayers = document.createElement("div");
+                const matchPlayers: HTMLDivElement = document.createElement("div");
                 matchPlayers.className = "text-sm font-medium mt-1";
                 matchPlayers.innerHTML = `${match.player1_name} VS ${match.player2_name}`;
                 
@@ -141,7 +141,7 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
         try {
             historyContainer.innerHTML = `<p class='text-white'>${translatedLoading}</p>`;
     
-            const response = await fetch(`/api/tournaments?userId=${targetUserId}`);
+            const response: Response = await fetch(`/api/tournaments?userId=${targetUserId}`);
             if (!response.ok) throw new Error("Erreur API");
     
             const tournaments: { 
@@ -174,7 +174,7 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             
             if (allPlayerIds.size > 0) {
                 try {
-                    const userResponse = await fetch(`/api/users?ids=${Array.from(allPlayerIds).join(",")}`);
+                    const userResponse: Response = await fetch(`/api/users?ids=${Array.from(allPlayerIds).join(",")}`);
                     if (userResponse.ok) {
                         const users: { id: number; username: string }[] = await userResponse.json();
                         users.forEach(user => userMap.set(user.id, user.username));
@@ -185,10 +185,10 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             }
     
             tournaments.forEach(tournament => {
-                const tournamentItem = document.createElement("div");
+                const tournamentItem: HTMLDivElement = document.createElement("div");
                 tournamentItem.className = "p-3 rounded-lg text-white text-sm flex flex-col bg-gray-900 border border-gray-700 shadow-lg";
     
-                const date = new Date(tournament.created_at).toLocaleDateString();
+                const date: string = new Date(tournament.created_at).toLocaleDateString();
     
                 const players = typeof tournament.players === "string"
                     ? JSON.parse(tournament.players)
@@ -214,7 +214,7 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                     let userEntry: string | null = null;
                     
                     for (let i = 0; i < ranking.length; i++) {
-                        const entry = String(ranking[i]);
+                        const entry: string = String(ranking[i]);
                         if (entry === username || entry.indexOf(` ${username}`) >= 0 || entry.endsWith(username)) {
                             userEntry = entry;
                             break;
@@ -232,7 +232,7 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                             positionText = "🥉 3e";
                             positionColor = "bg-orange-500";
                         } else {
-                            const position = Math.floor(ranking.indexOf(userEntry) / (players.length / 4)) + 4;
+                            const position: number = Math.floor(ranking.indexOf(userEntry) / (players.length / 4)) + 4;
                             positionText = `${position}${translatedPos}`;
                             positionColor = "bg-gray-700";
                         }

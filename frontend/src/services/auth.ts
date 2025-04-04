@@ -86,7 +86,7 @@ export async function logout() {
 // Gère la connexion utilisateur
 export async function login(username: string, password: string, redirection: boolean) {
     try {
-        const response = await fetch("http://localhost:3000/login", {
+        const response: Response = await fetch("http://localhost:3000/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password}),
@@ -99,7 +99,7 @@ export async function login(username: string, password: string, redirection: boo
         if (data.requires2FA)
         {
             const codeOTP: string | null = prompt("Code 2FA :");
-            const response = await fetch("http://localhost:3000/validate-2fa", {
+            const response: Response = await fetch("http://localhost:3000/validate-2fa", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password, codeOTP }),
@@ -134,7 +134,7 @@ export async function login(username: string, password: string, redirection: boo
 // Inscription d'un utilisateur
 export async function register(username: string, email: string, password: string) {
     try {
-        const response = await fetch("http://localhost:3000/register", {
+        const response: Response = await fetch("http://localhost:3000/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email, password }),
@@ -153,7 +153,7 @@ export async function register(username: string, email: string, password: string
 }
 
 export async function loginWithoutSession(username: string, password: string) {
-    const response = await fetch("http://localhost:3000/login", { 
+    const response: Response = await fetch("http://localhost:3000/login", { 
         method: "POST",
         body: JSON.stringify({ username, password }),
         headers: { "Content-Type": "application/json" },

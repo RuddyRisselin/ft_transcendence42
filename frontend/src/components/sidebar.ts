@@ -8,7 +8,7 @@ import { translateText } from "../translate";
 export default async function Sidebar(): Promise<HTMLElement> {
 
     /*          TRANSLATE TAB       */
-    const textToTranslate = [
+    const textToTranslate: string[] = [
         "invité",
         "Amis",
         "Déconnexion",
@@ -39,47 +39,47 @@ export default async function Sidebar(): Promise<HTMLElement> {
         translatedSearchUser
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
 
-    const sidebar = document.createElement("aside");
+    const sidebar: HTMLElement = document.createElement("aside");
     sidebar.className = "fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
 
     // Conteneur principal avec animation
-    const mainContainer = document.createElement("div");
+    const mainContainer: HTMLDivElement = document.createElement("div");
     mainContainer.className = "flex w-[calc(200%)] h-full transition-transform duration-300";
 
     // Conteneur de la sidebar principale
-    const sidebarContent = document.createElement("div");
+    const sidebarContent: HTMLDivElement = document.createElement("div");
     sidebarContent.className = "w-64 flex-shrink-0 flex flex-col h-full";
 
     // Conteneur de la gestion des amis
-    const friendsContent = document.createElement("div");
+    const friendsContent: HTMLDivElement = document.createElement("div");
     friendsContent.className = "w-64 flex-shrink-0 flex flex-col h-full bg-gray-900";
 
     // Conteneur de l'utilisateur connecté
-    const userContainer = document.createElement("div");
+    const userContainer: HTMLDivElement = document.createElement("div");
     userContainer.className = "flex flex-col items-center p-6 border-b border-gray-700/50 bg-gray-800/30";
 
     // Avatar avec bordure animée
-    const avatarContainer = document.createElement("div");
+    const avatarContainer: HTMLDivElement = document.createElement("div");
     avatarContainer.className = "relative p-1 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500";
     
-    const avatar = document.createElement("img");
+    const avatar: HTMLImageElement = document.createElement("img");
     avatar.src = "http://localhost:3000/images/" + state.user.avatar || "http://localhost:3000/images/default.jpg";
     avatar.className = "w-16 h-16 rounded-full border-2 border-gray-900";
     avatarContainer.appendChild(avatar);
 
     // Nom d'utilisateur
-    const username = document.createElement("span");
+    const username: HTMLSpanElement = document.createElement("span");
     username.innerHTML = `${state.user?.username || translatedGuest}`;
     username.className = "text-lg font-semibold mt-3 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
 
     // Statut (Online/Offline)
-    const statusContainer = document.createElement("div");
+    const statusContainer: HTMLDivElement = document.createElement("div");
     statusContainer.className = "flex items-center mt-2";
 
-    const statusIndicator = document.createElement("span");
+    const statusIndicator: HTMLSpanElement = document.createElement("span");
     statusIndicator.className = "w-2 h-2 rounded-full mr-2";
 
-    const statusText = document.createElement("span");
+    const statusText: HTMLSpanElement = document.createElement("span");
     statusText.className = "text-sm text-gray-400";
 
     async function updateStatus() {
@@ -98,7 +98,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     userContainer.append(avatarContainer, username, statusContainer);
 
     // Navigation
-    const nav = document.createElement("nav");
+    const nav: HTMLElement = document.createElement("nav");
     nav.className = "flex flex-col mt-4 px-4 space-y-2";
 
     const navLinks = [
@@ -109,15 +109,15 @@ export default async function Sidebar(): Promise<HTMLElement> {
     ];
 
     navLinks.forEach(link => {
-        const a = document.createElement("a");
+        const a: HTMLAnchorElement = document.createElement("a");
         a.href = link.href;
         a.className = "flex items-center p-3 hover:bg-gray-800/50 rounded-lg transition duration-200 group";
 
-        const icon = document.createElement("span");
+        const icon: HTMLSpanElement = document.createElement("span");
         icon.innerHTML = link.icon;
         icon.className = "mr-3 text-lg group-hover:scale-110 transition-transform";
 
-        const text = document.createElement("span");
+        const text: HTMLSpanElement = document.createElement("span");
         translateText(link.text).then((translated) => {
             text.innerHTML = translated;
         })
@@ -128,7 +128,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     });
 
     // Bouton amis
-    const friendsButton = document.createElement("button");
+    const friendsButton: HTMLButtonElement = document.createElement("button");
     friendsButton.className = "flex items-center p-3 hover:bg-gray-800/50 rounded-lg transition duration-200 group w-full mt-2";
     friendsButton.innerHTML = '<span class="mr-3 text-lg group-hover:scale-110 transition-transform">👥</span>' + `<span class="text-gray-300 group-hover:text-white transition-colors">${translatedFriends}</span>`;
     friendsButton.onclick = () => {
@@ -141,7 +141,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     nav.appendChild(friendsButton);
 
     // Bouton de déconnexion
-    const logoutButton = document.createElement("button");
+    const logoutButton: HTMLButtonElement = document.createElement("button");
     logoutButton.className = "mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
     logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒 </span>' +  translatedDeconnexion;
     logoutButton.onclick = async () => {
@@ -150,17 +150,17 @@ export default async function Sidebar(): Promise<HTMLElement> {
     };
 
     // Construction de la section amis
-    const friendsHeader = document.createElement("div");
+    const friendsHeader: HTMLDivElement = document.createElement("div");
     friendsHeader.className = "p-6 border-b border-gray-700/50 bg-gray-800/30 flex items-center";
     
-    const backButton = document.createElement("button");
+    const backButton: HTMLButtonElement = document.createElement("button");
     backButton.className = "mr-3 text-gray-400 hover:text-white transition-colors";
     backButton.innerHTML = "◀";
     backButton.onclick = () => {
         mainContainer.style.transform = "translateX(0)";
     };
 
-    const friendsTitle = document.createElement("h2");
+    const friendsTitle: HTMLHeadingElement = document.createElement("h2");
     friendsTitle.className = "text-lg font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
     friendsTitle.innerHTML = translatedManageFriends;
 
@@ -168,26 +168,26 @@ export default async function Sidebar(): Promise<HTMLElement> {
     friendsContent.appendChild(friendsHeader);
 
     // Contenu de la gestion des amis
-    const friendsManager = document.createElement("div");
+    const friendsManager: HTMLDivElement = document.createElement("div");
     friendsManager.className = "p-4 space-y-6 overflow-y-auto custom-scrollbar h-[calc(100vh-64px)]";
 
     // Recherche d'amis avec autocomplétion
-    const searchSection = document.createElement("div");
+    const searchSection: HTMLDivElement = document.createElement("div");
     searchSection.className = "bg-gray-800/50 p-4 rounded-lg border border-purple-500/20";
 
-    const searchForm = document.createElement("form");
+    const searchForm: HTMLFormElement = document.createElement("form");
     searchForm.className = "flex flex-col gap-2";
 
-    const searchInput = document.createElement("input");
+    const searchInput: HTMLInputElement = document.createElement("input");
     searchInput.type = "text";
     searchInput.placeholder = translatedSearchUser;
     searchInput.className = "flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg border border-purple-500/30 focus:outline-none focus:border-purple-500 transition-colors";
 
-    const searchResults = document.createElement("div");
+    const searchResults: HTMLDivElement = document.createElement("div");
     searchResults.className = "hidden flex-col gap-1 mt-2 max-h-32 overflow-y-auto custom-scrollbar";
 
     searchInput.oninput = async () => {
-        const searchTerm = searchInput.value.trim().toLowerCase();
+        const searchTerm: string = searchInput.value.trim().toLowerCase();
         if (searchTerm.length < 2) {
             searchResults.innerHTML = "";
             searchResults.className = "hidden flex-col gap-1 mt-2";
@@ -203,7 +203,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
         if (filteredUsers.length > 0) {
             searchResults.className = "flex flex-col gap-1 mt-2 max-h-32 overflow-y-auto custom-scrollbar";
             filteredUsers.forEach(user => {
-                const userItem = document.createElement("button");
+                const userItem: HTMLButtonElement = document.createElement("button");
                 userItem.type = "button";
                 userItem.className = "flex items-center gap-2 p-2 hover:bg-gray-700/50 rounded-lg transition-colors";
                 userItem.innerHTML = `
@@ -249,27 +249,27 @@ export default async function Sidebar(): Promise<HTMLElement> {
     searchSection.appendChild(searchForm);
 
     // Section demandes d'amitié
-    const requestsSection = document.createElement("div");
+    const requestsSection: HTMLDivElement = document.createElement("div");
     requestsSection.className = "bg-gray-800/50 p-4 rounded-lg border border-yellow-500/20";
 
-    const requestsTitle = document.createElement("h3");
+    const requestsTitle: HTMLHeadingElement = document.createElement("h3");
     requestsTitle.className = "text-yellow-300 font-semibold mb-3 flex items-center gap-2";
     requestsTitle.innerHTML = "📨 " + translatedFriendsRequest;
 
-    const requestsList = document.createElement("ul");
+    const requestsList: HTMLUListElement = document.createElement("ul");
     requestsList.className = "space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar";
 
     requestsSection.append(requestsTitle, requestsList);
 
     // Section liste d'amis
-    const friendsList = document.createElement("div");
+    const friendsList: HTMLDivElement = document.createElement("div");
     friendsList.className = "bg-gray-800/50 p-4 rounded-lg border border-green-500/20";
 
-    const friendsListTitle = document.createElement("h3");
+    const friendsListTitle: HTMLHeadingElement = document.createElement("h3");
     friendsListTitle.className = "text-green-300 font-semibold mb-3 flex items-center gap-2";
     friendsListTitle.innerHTML = "👥 " + translatedMyFriends;
 
-    const friendsUl = document.createElement("ul");
+    const friendsUl: HTMLUListElement = document.createElement("ul");
     friendsUl.className = "space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar";
 
     friendsList.append(friendsListTitle, friendsUl);
@@ -295,26 +295,26 @@ export default async function Sidebar(): Promise<HTMLElement> {
         }
 
         requests.forEach((request: any) => {
-            const li = document.createElement("li");
+            const li: HTMLLIElement = document.createElement("li");
             li.className = "flex items-center justify-between p-2 bg-gray-700/50 rounded-lg";
 
-            const userInfo = document.createElement("div");
+            const userInfo: HTMLDivElement = document.createElement("div");
             userInfo.className = "flex items-center gap-2";
 
-            const avatar = document.createElement("img");
+            const avatar: HTMLImageElement = document.createElement("img");
             avatar.src = `http://localhost:3000/images/${request.avatar}`;
             avatar.className = "w-8 h-8 rounded-full border border-yellow-500/30";
 
-            const username = document.createElement("span");
+            const username: HTMLSpanElement = document.createElement("span");
             username.innerHTML = request.username;
             username.className = "text-sm";
 
             userInfo.append(avatar, username);
 
-            const buttons = document.createElement("div");
+            const buttons: HTMLDivElement = document.createElement("div");
             buttons.className = "flex gap-1";
 
-            const acceptBtn = document.createElement("button");
+            const acceptBtn: HTMLButtonElement = document.createElement("button");
             acceptBtn.innerHTML = "✅";
             acceptBtn.className = "p-1.5 bg-green-600 hover:bg-green-500 rounded-lg transition-colors";
             acceptBtn.onclick = async () => {
@@ -323,7 +323,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
                 loadFriends();
             };
 
-            const rejectBtn = document.createElement("button");
+            const rejectBtn: HTMLButtonElement = document.createElement("button");
             rejectBtn.innerHTML = "❌";
             rejectBtn.className = "p-1.5 bg-red-600 hover:bg-red-500 rounded-lg transition-colors";
             rejectBtn.onclick = async () => {
@@ -349,18 +349,18 @@ export default async function Sidebar(): Promise<HTMLElement> {
         friends.sort((a: any, b: any) => (a.status === "online" ? -1 : 1));
 
         friends.forEach(async (friend: any) => {
-            const li = document.createElement("li");
+            const li: HTMLLIElement = document.createElement("li");
             li.id = `friend-${friend.id}`;
             li.className = `flex items-center justify-between p-2 ${friend.status === "online" ? "bg-green-900/30" : "bg-gray-700/50"} rounded-lg group`;
 
-            const userInfo = document.createElement("div");
+            const userInfo: HTMLDivElement = document.createElement("div");
             userInfo.className = "flex items-center gap-2";
 
-            const avatar = document.createElement("img");
+            const avatar: HTMLImageElement = document.createElement("img");
             avatar.src = `http://localhost:3000/images/${friend.avatar}`;
             avatar.className = "w-8 h-8 rounded-full border border-green-500/30";
 
-            const username = document.createElement("div");
+            const username: HTMLDivElement = document.createElement("div");
             username.className = "flex flex-col";
             
             //ICII
@@ -373,10 +373,10 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
             userInfo.append(avatar, username);
 
-            const buttonsContainer = document.createElement("div");
+            const buttonsContainer: HTMLDivElement = document.createElement("div");
             buttonsContainer.className = "flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity";
 
-            const viewProfileBtn = document.createElement("button");
+            const viewProfileBtn: HTMLButtonElement = document.createElement("button");
             viewProfileBtn.innerHTML = "👤";
             viewProfileBtn.className = "p-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors";
             viewProfileBtn.onclick = () => {
@@ -389,7 +389,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
                 }
             };
 
-            const removeBtn = document.createElement("button");
+            const removeBtn: HTMLButtonElement = document.createElement("button");
             removeBtn.innerHTML = "🗑️";
             removeBtn.className = "p-1.5 bg-red-600 hover:bg-red-500 rounded-lg transition-all scale-95 group-hover:scale-100";
             removeBtn.onclick = async () => {
@@ -422,12 +422,12 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
 
     
-    const languageDiv = document.createElement("div");
+    const languageDiv: HTMLDivElement = document.createElement("div");
     languageDiv.className = "mt-auto mb-4 flex p-3 flex-row flex-wrap justify-around items-center";
     // languageDiv.className = "mt-auto mb-4 mx-4 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20"
-    const btnEN = document.createElement("button");
-    const btnES = document.createElement("button");
-    const btnFR = document.createElement("button");
+    const btnEN: HTMLButtonElement = document.createElement("button");
+    const btnES: HTMLButtonElement = document.createElement("button");
+    const btnFR: HTMLButtonElement = document.createElement("button");
     btnEN.innerHTML = "🇺🇸";
     btnEN.className = "px-1 m-1 border-2 border-red-500/75 rounded hover:bg-red-700 duration-500";
     
@@ -441,17 +441,17 @@ export default async function Sidebar(): Promise<HTMLElement> {
     languageDiv.appendChild(btnFR);
 
     btnEN.onclick = async () => {
-        const langue = "en";
+        const langue: string = "en";
         localStorage.setItem("language", langue);
         window.location.reload();
     };
     btnES.onclick = async () => {
-        const langue = "es";
+        const langue: string = "es";
         localStorage.setItem("language", langue);
         window.location.reload();
     };
     btnFR.onclick = async () => {
-        const langue = "fr";
+        const langue: string = "fr";
         localStorage.setItem("language", langue);
         window.location.reload();
     };

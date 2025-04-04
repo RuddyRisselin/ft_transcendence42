@@ -1,5 +1,5 @@
-export const canvasWidth = 1000;
-export const canvasHeight = 500;
+export const canvasWidth:number = 1000;
+export const canvasHeight:number = 500;
 
 export const paddle1 = {
     x: 20,
@@ -30,8 +30,8 @@ export const ball = {
 };
 
 // ✅ Correction : `let` pour modifier les scores
-let score1 = 0;
-let score2 = 0;
+let score1:number = 0;
+let score2:number = 0;
 
 export function getScores() {
     return { score1, score2 };

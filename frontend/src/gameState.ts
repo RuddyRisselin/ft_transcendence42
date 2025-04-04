@@ -20,7 +20,7 @@ export const gameState = {
 		console.log("✅ Match sauvegardé :", this.match);
 	},	
 	loadMatch() {
-		const storedMatch = localStorage.getItem("match");
+		const storedMatch: string | null = localStorage.getItem("match");
 	
 		if (!storedMatch || storedMatch === "undefined") {
 			console.warn("⚠️ Aucun match valide trouvé dans localStorage.");
@@ -42,11 +42,11 @@ export const gameState = {
     },
 
     loadFromStorage() {
-        const storedUser = localStorage.getItem("gameUser");
+        const storedUser: string | null = localStorage.getItem("gameUser");
         if (storedUser) {
             this.user = JSON.parse(storedUser);
         }
-        const storedMatch = localStorage.getItem("gameMatch");
+        const storedMatch: string | null = localStorage.getItem("gameMatch");
         if (storedMatch) {
             this.match = JSON.parse(storedMatch);
         }

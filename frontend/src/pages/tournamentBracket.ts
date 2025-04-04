@@ -62,7 +62,7 @@ function getNextMatch() {
 // 🔥 **Mélanger aléatoirement un tableau (Fisher-Yates)**
 function shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j: number = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
@@ -71,7 +71,7 @@ function shuffleArray(array: any[]) {
 export default async function TournamentBracket(): Promise<HTMLElement> {
 
      /*          TRANSLATE TAB          */
-     const textToTranslate = [
+     const textToTranslate: string[] = [
         "Vainqueur du Tournoi :"
     ];
     const [
@@ -83,10 +83,10 @@ export default async function TournamentBracket(): Promise<HTMLElement> {
         return document.createElement("div");
     }
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-black text-white p-8";
 
-    const title = document.createElement("h1");
+    const title: HTMLHeadingElement = document.createElement("h1");
     translateText("Bracket du Tournoi").then((translated) => {
         title.innerHTML = "🏆 " + translated;
     })
@@ -97,34 +97,34 @@ export default async function TournamentBracket(): Promise<HTMLElement> {
     }
 
     // 📌 Détermination dynamique de la taille du canvas
-    const rounds = state.tournament.bracket.length;
-    const totalPlayers = state.tournament.players.length;
-    const matchHeight = 50;
-    const verticalSpacing = 40;
-    const horizontalSpacing = 200;
+    const rounds: number = state.tournament.bracket.length;
+    const totalPlayers: number = state.tournament.players.length;
+    const matchHeight: number = 50;
+    const verticalSpacing: number = 40;
+    const horizontalSpacing: number = 200;
 
-    const canvasWidth = rounds * horizontalSpacing + 200;
-    const canvasHeight = Math.max(400, totalPlayers * (matchHeight + verticalSpacing));
+    const canvasWidth: number = rounds * horizontalSpacing + 200;
+    const canvasHeight: number = Math.max(400, totalPlayers * (matchHeight + verticalSpacing));
 
     // Création du Canvas
-    const canvas = document.createElement("canvas");
+    const canvas: HTMLCanvasElement = document.createElement("canvas");
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     canvas.className = "border border-gray-500 bg-gray-900 rounded-lg";
 
-    const ctx = canvas.getContext("2d");
+    const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
     if (ctx) {
         drawBracket(ctx, canvas.width, canvas.height);
     }
 	if (state.tournament.winner) {
-        const winnerText = document.createElement("h2");
+        const winnerText: HTMLHeadingElement = document.createElement("h2");
         winnerText.innerText = `🏆 ${translatedWinner} ${state.tournament.winner}`;
         winnerText.className = "text-2xl text-yellow-400 font-bold mt-6";
         container.append(winnerText);
     } else {
 		// ✅ Bouton pour lancer le match
-		const startNextMatchButton = document.createElement("button");
+		const startNextMatchButton: HTMLButtonElement = document.createElement("button");
         translateText("Lancer le prochain match").then((translated) => {
             startNextMatchButton.innerHTML = "🚀 " + translated;
         })
@@ -153,7 +153,7 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
     if (!state.tournament) return;
 
     /*          TRANSLATE TAB          */
-    const textToTranslate = [
+    const textToTranslate: string[] = [
         "En attente..."
     ];
     const [
@@ -162,17 +162,17 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
     ctx.clearRect(0, 0, width, height);
 
     const bracket = state.tournament.bracket;
-    const rounds = bracket.length;
-    const matchHeight = 50;
-    const matchWidth = 150;
-    const verticalSpacing = 40;
-    const horizontalSpacing = 200;
+    const rounds: number = bracket.length;
+    const matchHeight: number = 50;
+    const matchWidth: number = 150;
+    const verticalSpacing: number = 40;
+    const horizontalSpacing: number = 200;
 
     let positions: { x: number; y: number }[][] = [];
 
     for (let roundIndex = 0; roundIndex < rounds; roundIndex++) {
         const round = bracket[roundIndex];
-        const matchesInRound = round.matchups.length;
+        const matchesInRound: number = round.matchups.length;
 
         positions[roundIndex] = [];
 

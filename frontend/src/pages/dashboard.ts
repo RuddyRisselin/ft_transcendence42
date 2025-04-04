@@ -6,7 +6,7 @@ import { translateText } from "../translate";
 
 export default async function Dashboard() : Promise<HTMLDivElement> {
 
-    const textsToTranslate = [
+    const textsToTranslate: string[] = [
         "Modes de jeu",
         "Local 1v1",
         "Affrontez un ami en local sur le même écran dans un duel épique de Pong !",
@@ -51,7 +51,7 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
         return document.createElement("div");
     }
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-black text-white relative overflow-hidden";
     
     container.innerHTML = `
@@ -65,23 +65,23 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
         })
     }
 
-    const mainSection = document.createElement("div");
+    const mainSection: HTMLDivElement = document.createElement("div");
     mainSection.className = "relative z-10 flex w-full h-screen pl-[250px]";
 
     // Section centrale (modes de jeu)
-    const gameSection = document.createElement("div");
+    const gameSection: HTMLDivElement = document.createElement("div");
     gameSection.className = "flex-1 p-8 overflow-y-auto custom-scrollbar";
 
-    const gameSectionTitle = document.createElement("h2");
+    const gameSectionTitle: HTMLHeadingElement = document.createElement("h2");
     gameSectionTitle.className = "text-4xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text mb-12";
     gameSectionTitle.innerHTML = "🎮 " + `<span class="text-transparent">${translatedTitle}</span>`;
 
     // Conteneur pour les cartes de jeu
-    const gameCardsContainer = document.createElement("div");
+    const gameCardsContainer: HTMLDivElement = document.createElement("div");
     gameCardsContainer.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto";
 
     // Mode Local 1v1
-    const localGameCard = document.createElement("div");
+    const localGameCard: HTMLDivElement = document.createElement("div");
     localGameCard.className = "game-card bg-gray-800/50 p-8 rounded-xl shadow-lg backdrop-blur-sm border border-blue-500/20 hover:border-blue-500/50 transition-all transform hover:scale-105 group";
     
     localGameCard.innerHTML = `
@@ -97,7 +97,7 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
     `;
 
     // Mode Local vs IA
-    const localAICard = document.createElement("div");
+    const localAICard: HTMLDivElement = document.createElement("div");
     localAICard.className = "game-card bg-gray-800/50 p-8 rounded-xl shadow-lg backdrop-blur-sm border border-green-500/20 hover:border-green-500/50 transition-all transform hover:scale-105 group";
     localAICard.setAttribute("data-mode", "ai");
     
@@ -114,7 +114,7 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
     `;
 
     // Menu de sélection de difficulté
-    const difficultyMenu = document.createElement("div") as HTMLDivElement;
+    const difficultyMenu: HTMLDivElement = document.createElement("div") as HTMLDivElement;
     difficultyMenu.className = "fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden";
     difficultyMenu.innerHTML = `
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800/90 p-8 rounded-xl border border-green-500/30 shadow-2xl w-96">
@@ -141,7 +141,7 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
     document.body.appendChild(difficultyMenu);
 
     // Mode Tournoi
-    const tournamentCard = document.createElement("div");
+    const tournamentCard: HTMLDivElement = document.createElement("div");
     tournamentCard.className = "game-card bg-gray-800/50 p-8 rounded-xl shadow-lg backdrop-blur-sm border border-purple-500/20 hover:border-purple-500/50 transition-all transform hover:scale-105 group";
     
     tournamentCard.innerHTML = `
@@ -181,7 +181,7 @@ export default async function Dashboard() : Promise<HTMLDivElement> {
     }
 
     // Gestionnaires d'événements pour le menu de difficulté
-    const closeMenuButton = difficultyMenu.querySelector('.close-menu') as HTMLButtonElement;
+    const closeMenuButton: HTMLButtonElement = difficultyMenu.querySelector('.close-menu') as HTMLButtonElement;
     if (closeMenuButton) {
         closeMenuButton.onclick = () => {
             difficultyMenu.classList.add('fade-out');

@@ -81,23 +81,23 @@ export default function GameLocal() {
     let player2Score = 0;
     let matchEnded = false;
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-900 text-white overflow-hidden";
 
-    const title = document.createElement("h1");
+    const title: HTMLHeadingElement = document.createElement("h1");
     title.className = "text-4xl font-bold mb-4 text-purple-400 animate-pulse";
     title.innerHTML = `🏓 ${state.localMatch.player1} vs ${state.localMatch.player2}`;
 
-    const gameCanvas = document.createElement("canvas");
+    const gameCanvas: HTMLCanvasElement = document.createElement("canvas");
     gameCanvas.width = 1000;
     gameCanvas.height = 500;
     gameCanvas.className = "border-4 border-white rounded-lg shadow-lg";
 
-    const scoreBoard = document.createElement("div");
+    const scoreBoard: HTMLDivElement = document.createElement("div");
     scoreBoard.className = "text-3xl font-bold mt-4 p-4 rounded bg-gray-800 shadow-md";
     scoreBoard.innerHTML = `<span class="text-green-400">${state.localMatch.player1}</span> 0 - 0 <span class="text-red-400">${state.localMatch.player2}</span>`;
 
-    const endMessage = document.createElement("div");
+    const endMessage: HTMLDivElement = document.createElement("div");
     endMessage.className = "text-3xl text-green-400 mt-6 hidden transition-opacity duration-500";
 
     container.append(title, gameCanvas, scoreBoard, endMessage);
@@ -148,7 +148,7 @@ function endMatch(winner: string) {
     // ✅ Mode "temps limité"
     if (state.localMatch.mode === "time") {
         let timeLeft = state.localMatch.target;
-        const timerDisplay = document.createElement("div");
+        const timerDisplay: HTMLDivElement = document.createElement("div");
         timerDisplay.className = "text-2xl text-yellow-400 mt-4 p-2 bg-gray-700 rounded-lg shadow-md";
         translateText(" Temps restant: ").then((translated) => {
             timerDisplay.innerHTML = `⏳ ${translated} ${timeLeft} sec`;

@@ -15,16 +15,16 @@ export default function Home(): HTMLElement {
         navigateTo(new Event("click"), "/login");
     }
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-black text-white p-8";
 
-    const title = document.createElement("h1");
+    const title: HTMLHeadingElement = document.createElement("h1");
     translateText("Bienvenue sur Ft Transcendence").then((translated) => {
         title.innerHTML = "🚀 " + translated;
     })
     title.className = "text-4xl font-bold text-purple-400";
 
-    const loginButton = document.createElement("button");
+    const loginButton: HTMLButtonElement = document.createElement("button");
     translateText("Se Connecter").then((translated) => {
         loginButton.innerHTML = "🔑 " + translated;
     })

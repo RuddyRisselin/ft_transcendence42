@@ -4,8 +4,7 @@ import { getUserById } from "../../services/userService";
 
 export default async function Leaderboard(): Promise<HTMLElement> {
 
-    /*          TRANSLATE TAB          */
-    const textToTranslate = [
+    const textToTranslate: string[] = [
     "Classement",
     "Victoires",
     "Erreur lors du chargement du classement"
@@ -17,17 +16,19 @@ export default async function Leaderboard(): Promise<HTMLElement> {
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
 
 
-    const container = document.createElement("div");
+    const container: HTMLDivElement = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 flex flex-col items-center w-full h-full";
 
-    const title = document.createElement("h2");
+    const title: HTMLHeadingElement = document.createElement("h2");
     title.innerHTML = `${translatedTDS}`;
     title.className = "text-2xl font-bold mb-8 text-center";
 
-    const podiumContainer = document.createElement("div");
-    podiumContainer.className = "relative flex justify-center items-end mb-10 w-full h-64";
+    // const podiumContainer = document.createElement("div");
+    // podiumContainer.className = "relative flex justify-center items-end mb-10 w-full h-64";
+    const podiumContainer: HTMLDivElement = document.createElement("div");
+    podiumContainer.className = "relative flex justify-center items-end mb-10 w-full h-48";
 
-    const leadersContainer = document.createElement("div");
+    const leadersContainer: HTMLDivElement = document.createElement("div");
     leadersContainer.className = "w-full max-w-lg mb-4";
 
     async function fetchLeaderboard() {
@@ -86,7 +87,7 @@ export default async function Leaderboard(): Promise<HTMLElement> {
                 const leftSection = document.createElement("div");
                 leftSection.className = "flex items-center gap-3";
                 
-                const rankElement = document.createElement("span");
+                const rankElement: HTMLSpanElement = document.createElement("span");
                 rankElement.innerHTML = `#${rank}`;
                 rankElement.className = "text-gray-400 font-medium";
                 
@@ -94,13 +95,13 @@ export default async function Leaderboard(): Promise<HTMLElement> {
                 playerAvatar.src = player.avatar ? `http://localhost:3000/images/${player.avatar}` : "http://localhost:3000/images/default.jpg";
                 playerAvatar.className = "w-8 h-8 rounded-full border border-gray-600";
                 
-                const username = document.createElement("span");
+                const username: HTMLSpanElement = document.createElement("span");
                 username.innerHTML = player.username;
                 username.className = "text-white";
                 
                 leftSection.append(rankElement, playerAvatar, username);
                 
-                const wins = document.createElement("span");
+                const wins: HTMLSpanElement = document.createElement("span");
                 wins.innerHTML = `${player.wins} ${translatedWin}`;
                 wins.className = "text-green-400 font-medium";
                 
@@ -143,13 +144,11 @@ export default async function Leaderboard(): Promise<HTMLElement> {
         
         avatarContainer.append(avatar, rankBadge);
         
-        // Nom d'utilisateur
-        const username = document.createElement("span");
+        const username: HTMLSpanElement = document.createElement("span");
         username.innerHTML = player.username;
         username.className = "text-white font-semibold mt-2 text-center";
         
-        // Nombre de victoires
-        const winsCount = document.createElement("span");
+        const winsCount: HTMLSpanElement = document.createElement("span");
         winsCount.innerHTML = `${player.wins} ${translatedWin}`;
         winsCount.className = "text-green-400 text-sm";
         
