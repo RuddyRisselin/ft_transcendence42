@@ -109,7 +109,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     nav.className = "flex flex-col mt-4 px-4 space-y-2";
 
     const navLinks = [
-        { icon: "🏠", text: "Tableau de bord", href: "/profile" },
+        { icon: "🏠", text: "Tableau de bord", href: "/dashboard" },
         { icon: "🎮", text: "Matches", href: "/matches" },
         { icon: "📜", text: "Règles", href: "/rules" }
     ];
