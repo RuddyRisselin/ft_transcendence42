@@ -10,6 +10,7 @@ import TournamentSettings from "./pages/tournamentSettings";
 import TournamentBracket from "./pages/tournamentBracket";
 import GameTournament from "./pages/gameTournament";
 import { isAuthenticated } from "./services/auth";
+import Rules from "./pages/rules";
 //import Match from "./pages/match";
 
 const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
@@ -23,7 +24,8 @@ const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
   "/tournament-game": () => GameTournament(),
   "/local-match": LocalMatch,
   "/game-local": GameLocal,
-  "/register": Register
+  "/register": Register,
+  "/rules": async () => await Rules()
 };
 
 export function navigateTo(event: Event, path: string) {
