@@ -1,9 +1,9 @@
 import Home from "./pages/home";
 import Game from "./pages/game";
-import Profile from "./pages/profile/Profile";
+import Dashboard from "./pages/profile/Dashboard";
 import Login from "./pages/login";
 import Register from "./pages/register";
-import Dashboard from "./pages/dashboard";
+import Matches from "./pages/matches";
 import LocalMatch from "./pages/localMatch"
 import GameLocal from "./pages/gameLocal"
 import TournamentSettings from "./pages/tournamentSettings";
@@ -15,9 +15,9 @@ import { isAuthenticated } from "./services/auth";
 const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
   "/": Home,
   "/game": Game,
-  "/profile": async () => (isAuthenticated() ? await Profile() : await Login()),
-  "/login": Login,
   "/dashboard": async () => (isAuthenticated() ? await Dashboard() : await Login()),
+  "/login": Login,
+  "/matches": async () => (isAuthenticated() ? await Matches() : await Login()),
   "/tournament": () => TournamentSettings(),
   "/tournament-bracket": () => TournamentBracket(),
   "/tournament-game": () => GameTournament(),

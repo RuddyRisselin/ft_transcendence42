@@ -7,7 +7,7 @@ export default function Home(): HTMLElement {
 
     // ✅ Vérification : si l'utilisateur est connecté, on le redirige immédiatement
     if (state.user) {
-        navigateTo(new Event("click"), "/dashboard");
+        navigateTo(new Event("click"), "/matches");
         return document.createElement("div");
     }
     else

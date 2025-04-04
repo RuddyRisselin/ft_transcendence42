@@ -4,7 +4,7 @@ import { translateText } from "../translate";
 
 export default async function Login() {
     if (localStorage.getItem("user"))
-        window.location.href = "/dashboard";
+        window.location.href = "/matches";
     // 🔴 Suppression immédiate de la sidebar si elle est présente
     const existingSidebar = document.querySelector(".sidebar");
     if (existingSidebar) {
@@ -64,7 +64,7 @@ export default async function Login() {
                 langue = "fr";
             await login(username.value, password.value, true, langue);
 
-            navigateTo(new Event("click"), "/dashboard");
+            navigateTo(new Event("click"), "/matches");
         } catch (error) {
             errorMsg.innerHTML = `${translatedOnlyError} : ${await translateText(error.message)}`;
             errorMsg.classList.remove("hidden");

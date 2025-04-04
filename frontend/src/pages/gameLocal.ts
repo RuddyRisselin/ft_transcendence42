@@ -71,7 +71,7 @@ export default function GameLocal() {
         document.body.style.overflow = "hidden"; // Désactive le scroll sur le body
     }); 
     if (!state.localMatch) {
-        navigateTo(new Event("click"), "/dashboard");
+        navigateTo(new Event("click"), "/matches");
         return document.createElement("div");
     }
 
@@ -120,7 +120,7 @@ function endMatch(winner: string) {
     endMessage.classList.remove("hidden");
     endMessage.classList.add("animate-bounce");
 
-    setTimeout(() => navigateTo(new Event("click"), "/dashboard"), 5000);
+    setTimeout(() => navigateTo(new Event("click"), "/matches"), 5000);
 }
 
 

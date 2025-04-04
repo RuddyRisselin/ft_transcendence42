@@ -117,7 +117,7 @@ export async function login(username: string, password: string, redirection: boo
                 console.log("📩 Message WebSocket reçu :", message);
             });
             if (redirection)
-                window.location.href = "/dashboard";
+                window.location.href = "/matches";
             return ;
         }
         saveAuthData(data.token, data.user);
@@ -125,7 +125,7 @@ export async function login(username: string, password: string, redirection: boo
             console.log("📩 Message WebSocket reçu :", message);
         });
         if (redirection)
-            window.location.href = "/dashboard";
+            window.location.href = "/matches";
     } catch (error) {
         console.error("❌ Échec de la connexion :", error);
         throw error;
