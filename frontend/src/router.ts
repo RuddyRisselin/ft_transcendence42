@@ -114,7 +114,30 @@ export function initRouter() {
   const render: () => Promise<void> = async () => {
     setTimeout(async () => {
       const path: string = window.location.pathname;
-      const page: () => Promise<HTMLElement> | HTMLElement = routes[path] || Home;
+      
+      // ✅ NOUVEAU: Redirection intelligente en cas de rechargement de page
+      const currentPage = localStorage.getItem('currentPage');
+      if (path === '/' && currentPage) {
+        // Si nous sommes à la racine mais qu'une page était précédemment enregistrée,
+        // nous pouvons supposer que c'est un rechargement de page
+        console.log("🔄 Détection d'un rechargement de page, redirection vers:", currentPage);
+        
+        if (currentPage === 'game-local' && state.localMatch) {
+          console.log("🎮 Restauration du match local en cours...");
+          window.history.replaceState({}, "", "/game-local");
+        } 
+        else if (currentPage === 'tournament-game' && state.tournament && state.tournament.currentMatch) {
+          console.log("🏆 Restauration du match de tournoi en cours...");
+          window.history.replaceState({}, "", "/tournament-game");
+        }
+        else if (currentPage === 'game-ai' && state.aiMatch) {
+          console.log("🤖 Restauration du match contre l'IA en cours...");
+          window.history.replaceState({}, "", "/game-ai");
+        }
+      }
+      
+      const newPath = window.location.pathname;
+      const page: () => Promise<HTMLElement> | HTMLElement = routes[newPath] || Home;
       app.innerHTML = "";
       app.appendChild(await page());
 

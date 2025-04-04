@@ -128,6 +128,24 @@ export default function GameLocal() {
             console.error("❌ Erreur lors de la restauration des scores:", error);
         }
     }
+    
+    // ✅ NOUVEAU: Ajouter un événement pour détecter les rechargements de page
+    window.addEventListener('beforeunload', (event) => {
+        // Sauvegarder les données de jeu avant le rechargement
+        localStorage.setItem('localGameScores', JSON.stringify({
+            player1: player1Score,
+            player2: player2Score,
+            timestamp: Date.now()
+        }));
+
+        // Sauvegarder l'état des raquettes et de la balle
+        localStorage.setItem('gameState', JSON.stringify({
+            paddle1: { y: paddle1.y },
+            paddle2: { y: paddle2.y },
+            ball: { x: ball.x, y: ball.y, speedX: ball.speedX, speedY: ball.speedY },
+            timestamp: Date.now()
+        }));
+    });
 
     const container = document.createElement("div");
     container.className = "absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-blue-950 via-blue-700 to-blue-950 text-white";

@@ -145,6 +145,24 @@ export default function GameTournament() {
             console.error("❌ Erreur lors de la restauration des scores du tournoi:", error);
         }
     }
+    
+    // ✅ NOUVEAU: Ajouter un événement pour détecter les rechargements de page
+    window.addEventListener('beforeunload', (event) => {
+        // Empêcher la perte des scores pendant le rechargement
+        localStorage.setItem('tournamentGameScores', JSON.stringify({
+            player1: player1Score,
+            player2: player2Score,
+            timestamp: Date.now()
+        }));
+
+        // Sauvegarder l'état des raquettes et de la balle
+        localStorage.setItem('tournamentGameState', JSON.stringify({
+            paddle1: { y: paddle1.y },
+            paddle2: { y: paddle2.y },
+            ball: { x: ball.x, y: ball.y, speedX: ball.speedX, speedY: ball.speedY },
+            timestamp: Date.now()
+        }));
+    });
 
     const match = state.tournament.currentMatch;
     const player1: string = match.player1;

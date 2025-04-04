@@ -18,6 +18,16 @@ export const state = {
         mode?: "time" | "points"; // Mode de jeu (temps ou points)
         target?: number; // Objectif (temps ou points)
     } | null,
+    
+    // ✅ AJOUT: Structure pour le match contre l'IA actif
+    aiMatch: null as {
+        player: string;
+        level: string; // Niveau de difficulté de l'IA (easy, medium, hard)
+        mode: "time" | "points"; // Mode de jeu (temps ou points)
+        target: number; // Objectif (temps ou points)
+        scoreHuman: number; // Score du joueur humain
+        scoreAI: number; // Score de l'IA
+    } | null,
 
     // ✅ Tournoi avec gestion des joueurs et du bracket
     tournament: null as {
