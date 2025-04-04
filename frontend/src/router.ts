@@ -13,6 +13,7 @@ import GameTournament from "./pages/gameTournament";
 import { isAuthenticated } from "./services/auth";
 import { state } from "./state";
 import Sidebar from "./components/sidebar";
+import Rules from "./pages/rules";
 //import Match from "./pages/match";
 
 // ✅ NOUVEAU: Fonction pour restaurer l'état depuis localStorage au chargement
@@ -66,7 +67,8 @@ const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
   "/local-match": LocalMatch,
   "/game-local": GameLocal,
   "/game-ai": GameAI,
-  "/register": Register
+  "/register": Register,
+  "/rules": async () => await Rules()
 };
 
 export function navigateTo(event: Event, path: string, popstate: boolean = false) {
