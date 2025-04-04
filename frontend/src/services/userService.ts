@@ -1,4 +1,3 @@
-// import { log } from "console";
 import { saveAuthData } from "./auth";
 import { state } from "../../src/state";
 
@@ -239,5 +238,17 @@ export async function getUserById(userId: number): Promise<User | null> {
     const users = await getUsers();
     const user = users.find(u => u.id === userId);
     return user || null;
+}
+
+export async function updateLanguage(userId : number, language : string)
+{
+    return fetch(`http://localhost:3000/users/language`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({userId, language})
+    })
+    .then(response => response.json())
+    .catch(error => console.error("Erreur lors de l'update de la langue", error));
+    
 }
 

@@ -4,6 +4,7 @@ import { getUsers } from "../services/userService";
 import { getFriends, getFriendRequests, removeFriend, acceptFriendRequest, rejectFriendRequest, addFriend } from "../services/friendService";
 import FriendProfile from "../pages/profile/FriendProfile";
 import { translateText } from "../translate";
+import { updateLanguage } from "../services/userService";
 
 export default async function Sidebar(): Promise<HTMLElement> {
 
@@ -424,7 +425,6 @@ export default async function Sidebar(): Promise<HTMLElement> {
     
     const languageDiv: HTMLDivElement = document.createElement("div");
     languageDiv.className = "mt-auto mb-4 flex p-3 flex-row flex-wrap justify-around items-center";
-    // languageDiv.className = "mt-auto mb-4 mx-4 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20"
     const btnEN: HTMLButtonElement = document.createElement("button");
     const btnES: HTMLButtonElement = document.createElement("button");
     const btnFR: HTMLButtonElement = document.createElement("button");
@@ -443,19 +443,30 @@ export default async function Sidebar(): Promise<HTMLElement> {
     btnEN.onclick = async () => {
         const langue: string = "en";
         localStorage.setItem("language", langue);
+        updateLanguage(state.user.id, langue);
         window.location.reload();
+
     };
     btnES.onclick = async () => {
         const langue: string = "es";
         localStorage.setItem("language", langue);
+        updateLanguage(state.user.id, langue);
         window.location.reload();
+
     };
     btnFR.onclick = async () => {
         const langue: string = "fr";
         localStorage.setItem("language", langue);
+        updateLanguage(state.user.id, langue);
         window.location.reload();
     };
 
+    if (localStorage.getItem("language") == "en")
+        btnEN.classList.add("bg-red-700");
+    else if (localStorage.getItem("language") == "es")
+        btnES.classList.add("bg-yellow-700");
+    else
+        btnFR.classList.add("bg-blue-700");
 
     // Assemblage final    
     sidebarContent.append(userContainer, nav, languageDiv, logoutButton);

@@ -37,7 +37,7 @@ async function authRoutes(fastify) {
 
   // 🔹 Route de connexion
   fastify.post("/login", async (request, reply) => {
-    const { username, password, codeOTP } = request.body;
+    const { username, password, language } = request.body;
 
     // Recherche de l'utilisateur
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
@@ -45,6 +45,7 @@ async function authRoutes(fastify) {
       return reply.status(401).send({ error: "Utilisateur introuvable." });
     }
 
+    
     // Vérification du mot de passe
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
@@ -54,6 +55,17 @@ async function authRoutes(fastify) {
     if (user.is2FAEnabled) {
       return reply.send({ requires2FA: true, userId: user.id });
     }
+
+    console.log("USER.LANGUAGE = ", user.language);
+    if (!user.language)
+      {
+      console.log("USER.LANGUAGE NULL = ", user.language);
+      // const insert = db.prepare("INSERT INTO users (language) VALUES (?) WHERE username = ?").run(language, username);
+      db.prepare("UPDATE users SET language = ? WHERE username = ?").run(language, username);
+      user.language = language;
+      console.log("USER.LANGUAGE PAS NULL = ", user.language);
+    }
+    console.log("USER.LANGUAGE 2= ", user.language);
 
     // Génération du token JWT
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET);

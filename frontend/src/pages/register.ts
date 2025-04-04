@@ -70,9 +70,11 @@ export default async function Register() {
             if (!email.value.includes("@"))
                 throw new Error("L'email n'est pas valide");
             await register(username.value, email.value, password.value);
-            await login(username.value, password.value, true);
+            let langue: string | null = localStorage.getItem("language");
+            if (!langue)
+                langue = "fr";
+            await login(username.value, password.value, true, langue);
             navigateTo(new Event("click"), "/dashboard");
-            // window.location.href = "/login";
         } catch (error) {
             errorMsg.innerHTML = `${translatedErrorOnly} :  ${await translateText(error.message)}`;
             errorMsg.classList.remove("hidden");
@@ -89,7 +91,6 @@ export default async function Register() {
 
     const languageDiv: HTMLDivElement = document.createElement("div");
     languageDiv.className = "mt-auto mb-4 flex p-3 flex-row flex-wrap justify-around items-center";
-    // languageDiv.className = "mt-auto mb-4 mx-4 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20"
     const btnEN: HTMLButtonElement = document.createElement("button");
     const btnES: HTMLButtonElement = document.createElement("button");
     const btnFR: HTMLButtonElement = document.createElement("button");
