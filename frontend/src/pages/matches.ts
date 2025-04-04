@@ -194,9 +194,15 @@ export default async function Matches() : Promise<HTMLDivElement> {
 
     const difficultyButtons = difficultyMenu.querySelectorAll('.difficulty-btn');
     difficultyButtons.forEach(button => {
-        button.onclick = (e: Event) => {
+        (button as HTMLButtonElement).onclick = (e: Event) => {
             const difficulty = (e.currentTarget as HTMLElement).dataset.difficulty;
-            navigateTo(e, `/local-ai-match?difficulty=${difficulty}`);
+            // Cacher le menu avant de naviguer
+            difficultyMenu.classList.add('fade-out');
+            setTimeout(() => {
+                difficultyMenu.classList.add('hidden');
+                difficultyMenu.classList.remove('fade-out');
+                navigateTo(e, `/game-ai?difficulty=${difficulty}`);
+            }, 300);
         };
     });
 
