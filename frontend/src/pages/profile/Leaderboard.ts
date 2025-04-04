@@ -3,14 +3,13 @@ import { translateText } from "../../translate";
 import { getUsers, refreshUserCache } from "../../services/userService";
 
 // Variables pour les traductions
-let translatedTDS: string = "Classement";
+//let translatedTDS: string = "Classement";
 let translatedWin: string = "Victoires";
 let translatedError: string = "Erreur lors du chargement du classement";
 
 export default async function Leaderboard(): Promise<HTMLElement> {
     // Initialiser les traductions
-    [translatedTDS, translatedWin, translatedError] = await Promise.all([
-        translateText("Classement"),
+    [translatedWin, translatedError] = await Promise.all([
         translateText("Victoires"),
         translateText("Erreur lors du chargement du classement")
     ]);
@@ -19,7 +18,6 @@ export default async function Leaderboard(): Promise<HTMLElement> {
     container.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 flex flex-col items-center w-full h-full";
 
     const title: HTMLHeadingElement = document.createElement("h2");
-    title.innerText = translatedTDS;
     title.className = "text-2xl font-bold mb-8 text-center";
 
     const podiumContainer: HTMLDivElement = document.createElement("div");
