@@ -11,7 +11,9 @@ export default function Layout(pageContent: HTMLElement) {
     if (!document.querySelector(".sidebar-container")) {
       const sidebarContainer = document.createElement("div");
       sidebarContainer.className = "sidebar-container";
-      sidebarContainer.appendChild(Sidebar());
+      Sidebar().then(container => {
+        sidebarContainer.appendChild(container);
+      })
       document.body.appendChild(sidebarContainer);
     }
 

@@ -152,7 +152,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒 </span>' +  translatedDeconnexion;
     logoutButton.onclick = async () => {
         // Suppression de la sidebar du DOM
-        const sidebarContainer = document.querySelector(".sidebar-container");
+        const sidebarContainer = document.querySelector(".sidebar-component");
         if (sidebarContainer) {
             sidebarContainer.remove();
         }

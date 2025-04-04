@@ -58,7 +58,7 @@ export async function logout() {
         if (state.socket) {
             state.socket.send(JSON.stringify({ type: "user_status", userId: state.user.id, status: "offline" }));
         }
-
+        window.location.reload();
     } catch (error) {
         console.error("❌ Erreur lors de la déconnexion :", error);
     }

@@ -48,8 +48,6 @@ export default async function Rules()
         translatedFooter
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     
-    const BigDiv: HTMLDivElement = document.createElement("div");
-    
     if (state.user) {
             Sidebar().then(container => {
                 document.body.appendChild(container);
