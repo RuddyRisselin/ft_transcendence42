@@ -7,6 +7,12 @@ import { translateText } from "../translate";
 import { updateLanguage } from "../services/userService";
 
 export default async function Sidebar(): Promise<HTMLElement> {
+    // Vérifier si la sidebar existe déjà
+    const existingSidebar = document.querySelector(".sidebar-component");
+    if (existingSidebar) {
+        return existingSidebar as HTMLElement;
+    }
+
 
     /*          TRANSLATE TAB       */
     const textToTranslate: string[] = [
@@ -41,7 +47,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
 
     const sidebar: HTMLElement = document.createElement("aside");
-    sidebar.className = "fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
+    sidebar.className = "sidebar-component fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
 
     // Conteneur principal avec animation
     const mainContainer: HTMLDivElement = document.createElement("div");
@@ -145,7 +151,12 @@ export default async function Sidebar(): Promise<HTMLElement> {
     logoutButton.className = "mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
     logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒 </span>' +  translatedDeconnexion;
     logoutButton.onclick = async () => {
-        sidebar.remove();
+        // Suppression de la sidebar du DOM
+        const sidebarContainer = document.querySelector(".sidebar-container");
+        if (sidebarContainer) {
+            sidebarContainer.remove();
+        }
+        
         await logout();
     };
 
