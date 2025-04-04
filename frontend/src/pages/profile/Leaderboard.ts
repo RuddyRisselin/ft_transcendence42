@@ -33,7 +33,7 @@ export default async function Leaderboard(): Promise<HTMLElement> {
 
     async function fetchLeaderboard() {
         try {
-            const response = await fetch("http://localhost:3000/leaderboard");
+            const response: Response = await fetch("http://localhost:3000/leaderboard");
             let leaderboardData = await response.json();
 
             // Récupérer les détails complets de chaque utilisateur
@@ -51,27 +51,27 @@ export default async function Leaderboard(): Promise<HTMLElement> {
             if (leaderboardData.length >= 3) {
                 // Position #1 (au milieu)
                 const winner = leaderboardData[0];
-                const winnerElement = createPodiumPlayer(winner, 1, "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2", "120px");
+                const winnerElement: HTMLDivElement = createPodiumPlayer(winner, 1, "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2", "120px");
                 
                 // Position #2 (à gauche)
                 const second = leaderboardData[1];
-                const secondElement = createPodiumPlayer(second, 2, "absolute left-1/4 transform -translate-x-1/2 translate-y-4", "100px");
+                const secondElement: HTMLDivElement = createPodiumPlayer(second, 2, "absolute left-1/4 transform -translate-x-1/2 translate-y-4", "100px");
                 
                 // Position #3 (à droite)
                 const third = leaderboardData[2];
-                const thirdElement = createPodiumPlayer(third, 3, "absolute right-1/4 transform translate-x-1/2 translate-y-8", "90px");
+                const thirdElement: HTMLDivElement = createPodiumPlayer(third, 3, "absolute right-1/4 transform translate-x-1/2 translate-y-8", "90px");
                 
                 // Créer les podiums
-                const podiumSteps = document.createElement("div");
+                const podiumSteps: HTMLDivElement = document.createElement("div");
                 podiumSteps.className = "absolute bottom-0 left-0 right-0 flex justify-center items-end h-32";
                 
-                const step1 = document.createElement("div");
+                const step1: HTMLDivElement = document.createElement("div");
                 step1.className = "w-32 h-32 bg-yellow-500/20 rounded-t-lg mx-2";
                 
-                const step2 = document.createElement("div");
+                const step2: HTMLDivElement = document.createElement("div");
                 step2.className = "w-32 h-24 bg-gray-400/20 rounded-t-lg mx-2";
                 
-                const step3 = document.createElement("div");
+                const step3: HTMLDivElement = document.createElement("div");
                 step3.className = "w-32 h-20 bg-orange-500/20 rounded-t-lg mx-2";
                 
                 podiumSteps.append(step2, step1, step3);
@@ -81,17 +81,17 @@ export default async function Leaderboard(): Promise<HTMLElement> {
             // Afficher les joueurs #4-6 sous forme de liste
             leaderboardData.slice(3, 6).forEach((player, index) => {
                 const rank = index + 4;
-                const listItem = document.createElement("div");
+                const listItem: HTMLDivElement = document.createElement("div");
                 listItem.className = "flex items-center justify-between py-3 px-4 bg-gray-700/50 rounded-lg mb-2 hover:bg-gray-700 transition-colors";
                 
-                const leftSection = document.createElement("div");
+                const leftSection: HTMLDivElement = document.createElement("div");
                 leftSection.className = "flex items-center gap-3";
                 
                 const rankElement: HTMLSpanElement = document.createElement("span");
                 rankElement.innerHTML = `#${rank}`;
                 rankElement.className = "text-gray-400 font-medium";
                 
-                const playerAvatar = document.createElement("img");
+                const playerAvatar: HTMLImageElement = document.createElement("img");
                 playerAvatar.src = player.avatar ? `http://localhost:3000/images/${player.avatar}` : "http://localhost:3000/images/default.jpg";
                 playerAvatar.className = "w-8 h-8 rounded-full border border-gray-600";
                 
@@ -115,11 +115,11 @@ export default async function Leaderboard(): Promise<HTMLElement> {
     }
 
     function createPodiumPlayer(player, position, positionClass, size) {
-        const playerElement = document.createElement("div");
+        const playerElement: HTMLDivElement = document.createElement("div");
         playerElement.className = `flex flex-col items-center ${positionClass}`;
         
         // Conteneur de l'avatar avec bordure
-        const avatarContainer = document.createElement("div");
+        const avatarContainer: HTMLDivElement = document.createElement("div");
         avatarContainer.className = `relative rounded-full border-4 
             ${position === 1 ? 'border-yellow-500' : position === 2 ? 'border-gray-400' : 'border-orange-500'}
             ${position === 1 ? 'bg-yellow-500/10' : position === 2 ? 'bg-gray-400/10' : 'bg-orange-500/10'}
@@ -128,7 +128,7 @@ export default async function Leaderboard(): Promise<HTMLElement> {
         avatarContainer.style.height = size;
         
         // Badge de position (#1, #2, #3)
-        const rankBadge = document.createElement("div");
+        const rankBadge: HTMLDivElement = document.createElement("div");
         rankBadge.className = `absolute -top-2 -right-2 z-10 
             ${position === 1 ? 'bg-yellow-500' : position === 2 ? 'bg-gray-400' : 'bg-orange-500'} 
             rounded-full w-8 h-8 flex items-center justify-center text-gray-900 font-bold text-sm
@@ -136,7 +136,7 @@ export default async function Leaderboard(): Promise<HTMLElement> {
         rankBadge.innerHTML = `#${position}`;
         
         // Avatar
-        const avatar = document.createElement("img");
+        const avatar: HTMLImageElement = document.createElement("img");
         avatar.src = player.avatar ? `http://localhost:3000/images/${player.avatar}` : "http://localhost:3000/images/default.jpg";
         avatar.className = "rounded-full object-cover";
         avatar.style.width = `calc(${size} - 16px)`;
