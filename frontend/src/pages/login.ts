@@ -59,7 +59,11 @@ export default async function Login() {
         errorMsg.classList.add("hidden");
 
         try {
-            await login(username.value, password.value, true);
+            let langue: string | null = localStorage.getItem("language");
+            if (!langue)
+                langue = "fr";
+            await login(username.value, password.value, true, langue);
+
             navigateTo(new Event("click"), "/dashboard");
         } catch (error) {
             errorMsg.innerHTML = `${translatedOnlyError} : ${await translateText(error.message)}`;

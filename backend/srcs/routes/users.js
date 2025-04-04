@@ -343,6 +343,21 @@ async function userRoutes(fastify) {
       return reply.status(500).send({ error: "Erreur serveur" });
     }
   });
-}
 
+  fastify.post("/users/language", async (request, reply) => {
+    const  userID = request.body.userId;
+    const  language = request.body.language;
+
+    try {
+        const user = db.prepare("SELECT * FROM users WHERE id = ?").get(userID);
+        db.prepare("UPDATE users SET language = ? WHERE id = ?").run(language, userID);
+        return reply.status(200).send({msg: "l'update de la langue c'est bien passer.", user});
+    }
+    catch(error) {
+      console.error("Erreur lors de l'update de la langue", error);
+      return reply.status(500).send({ error: "Erreur serveur" });
+    }
+  });
+
+}
 module.exports = userRoutes;

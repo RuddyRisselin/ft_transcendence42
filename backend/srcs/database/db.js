@@ -89,6 +89,17 @@ try {
     console.log("ℹLa colonne 'twoFASecret' existe déjà.");
 
   console.log("✅ Base de données connectée et initialisée.");
+
+  const language = db
+  .prepare("PRAGMA table_info(users);")
+  .all()
+  .some(column => column.name === "language");
+  
+  if (!language)
+    db.exec(`ALTER TABLE users ADD COLUMN language TEXT;`);
+  else
+    console.log("La colonne 'language' existe déjà.");
+
   module.exports = db;
 } catch (error) {
   console.error("❌ Erreur lors de la connexion à SQLite:", error);

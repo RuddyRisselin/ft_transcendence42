@@ -6,6 +6,7 @@ export function saveAuthData(token: string, user: any) {
     state.user = user;
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("language", user.language);
 }
 
 // Récupère les données d'authentification
@@ -84,12 +85,12 @@ export async function logout() {
 }
 
 // Gère la connexion utilisateur
-export async function login(username: string, password: string, redirection: boolean) {
+export async function login(username: string, password: string, redirection: boolean, language : string) {
     try {
         const response: Response = await fetch("http://localhost:3000/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password}),
+            body: JSON.stringify({ username, password, language}),
         });
 
         const data = await response.json();
