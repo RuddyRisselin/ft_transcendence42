@@ -66,7 +66,18 @@ async function getUserId(username: string) {
     return user ? user.id : null;
 }
 
-export default function GameLocal() {
+export default async function GameLocal() {
+    const textToTranslate: string[] = [
+        "Match Local",
+        " a gagné la partie",
+        "Retour au tableau de bord dans quelques secondes...",
+    ];
+
+    const [
+        translatedLocalMatch,
+        translatedWinParty,
+        translatedReturnToDashboard
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     document.addEventListener("DOMContentLoaded", () => {
         document.documentElement.style.overflow = "hidden"; // Désactive le scroll globalement
         document.body.style.overflow = "hidden"; // Désactive le scroll sur le body
@@ -155,23 +166,24 @@ export default function GameLocal() {
     
     const title = document.createElement("h1");
     title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-blue-200 text-center";
-    title.innerText = `🏓 Match Local`;
-    
+    title.innerHTML = `🏓 ${translatedLocalMatch}`;
+
+
     // Sous-titre avec les noms des joueurs
     const subtitle = document.createElement("div");
     subtitle.className = "mt-2 text-2xl text-center";
     
     const player1Span = document.createElement("span");
     player1Span.className = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-500 font-bold";
-    player1Span.innerText = state.localMatch.player1;
+    player1Span.innerHTML = state.localMatch.player1;
     
     const vsSpan = document.createElement("span");
     vsSpan.className = "text-blue-200 mx-3";
-    vsSpan.innerText = "vs";
+    vsSpan.innerHTML = "vs";
     
     const player2Span = document.createElement("span");
     player2Span.className = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-500 font-bold";
-    player2Span.innerText = state.localMatch.player2;
+    player2Span.innerHTML = state.localMatch.player2;
     
     subtitle.append(player1Span, vsSpan, player2Span);
     header.append(title, subtitle);
@@ -210,28 +222,28 @@ export default function GameLocal() {
     
     const player1Name = document.createElement("div");
     player1Name.className = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-500 font-medium mb-2";
-    player1Name.innerText = state.localMatch.player1;
+    player1Name.innerHTML = state.localMatch.player1;
     
     const player1ScoreDisplay = document.createElement("div");
     player1ScoreDisplay.className = "text-4xl font-bold bg-black/50 w-16 h-16 flex items-center justify-center rounded-xl border border-blue-500/30";
-    player1ScoreDisplay.innerText = "0";
+    player1ScoreDisplay.innerHTML = "0";
     
     player1Container.append(player1Name, player1ScoreDisplay);
     
     const versus = document.createElement("div");
     versus.className = "text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-blue-200 font-bold";
-    versus.innerText = "VS";
+    versus.innerHTML = "VS";
     
     const player2Container = document.createElement("div");
     player2Container.className = "flex flex-col items-center";
     
     const player2Name = document.createElement("div");
     player2Name.className = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-500 font-medium mb-2";
-    player2Name.innerText = state.localMatch.player2;
+    player2Name.innerHTML = state.localMatch.player2;
     
     const player2ScoreDisplay = document.createElement("div");
     player2ScoreDisplay.className = "text-4xl font-bold bg-black/50 w-16 h-16 flex items-center justify-center rounded-xl border border-blue-500/30";
-    player2ScoreDisplay.innerText = "0";
+    player2ScoreDisplay.innerHTML = "0";
     
     player2Container.append(player2Name, player2ScoreDisplay);
     
@@ -241,8 +253,8 @@ export default function GameLocal() {
     container.append(header, gameContainer);
 
     function updateScoreBoard() {
-        player1ScoreDisplay.innerText = String(player1Score);
-        player2ScoreDisplay.innerText = String(player2Score);
+        player1ScoreDisplay.innerHTML = String(player1Score);
+        player2ScoreDisplay.innerHTML = String(player2Score);
 
         // ✅ NOUVEAU: Sauvegarder les scores dans localStorage
         localStorage.setItem('localGameScores', JSON.stringify({
@@ -257,13 +269,13 @@ export default function GameLocal() {
         matchEnded = true;
 
         cleanupControls(); // ✅ Désactive proprement les touches après la partie
-        
+
         // Création d'un message de victoire animé
         victoryContent.innerHTML = `
             <div class="text-7xl mb-6">🏆</div>
             <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-4">${winner}</h2>
-            <p class="text-xl text-white/90 mb-2">a gagné la partie !</p>
-            <div class="mt-6 text-blue-200/80 text-sm">Retour au tableau de bord dans quelques secondes...</div>
+            <p class="text-xl text-white/90 mb-2">${translatedWinParty}</p>
+            <div class="mt-6 text-blue-200/80 text-sm">${translatedReturnToDashboard}</div>
         `;
         
         // Afficher le message avec une animation
@@ -342,7 +354,7 @@ export default function GameLocal() {
         const timerDisplay: HTMLDivElement = document.createElement("div");
         timerDisplay.className = "text-2xl font-bold mt-6 p-4 rounded-xl bg-black/40 border border-blue-500/30 text-blue-200";
         translateText(" Temps restant: ").then((translated) => {
-            timerDisplay.innerText = `⏳ ${translated} ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+            timerDisplay.innerHTML = `⏳ ${translated} ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
         })
 
         container.appendChild(timerDisplay);

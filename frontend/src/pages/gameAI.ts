@@ -4,13 +4,34 @@ import { setupControls, cleanupControls } from "../game/controls";
 import { setAIDifficulty, AIDifficulty, updateAI, resetAI, onAILoss, onAIWin } from "../game/ai";
 import { navigateTo } from "../router";
 import { state } from "../state";
+import { translateText } from "../translate";
 
 let animationId: number | null = null;
 let gameStarted = false;
 let gameCanvas: HTMLCanvasElement;
 let scoreInterval: number | null = null;
 
-export default function GameAI(): HTMLElement {
+export default async function GameAI(): Promise<HTMLElement> {
+    const textToTranslate: string[] = [
+        "Match contre l'IA",
+        "Tu",
+        " a gagné la partie",
+        "Le jeu se terminera automatiquement...",
+        "Novice Bot",
+        "Master Bot",
+        "Advanced Bot"
+    ];
+
+    const [
+        translatedTitleMatchIA,
+        translatedYou,
+        translatedWinParty,
+        translatedEndGameAuto,
+        translatedNoviceBot,
+        translatedMasterBot,
+        translatedAdvancedBot,
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
+    
     // Stopper le jeu précédent si nécessaire
     if (animationId) {
         cancelAnimationFrame(animationId);
@@ -108,7 +129,7 @@ export default function GameAI(): HTMLElement {
     
     const title = document.createElement("h1");
     title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r text-center";
-    title.innerText = `🏓 Match contre l'IA`;
+    title.innerHTML = `🏓 ${translatedTitleMatchIA}`;
     
     // Adapter les couleurs du titre en fonction de la difficulté
     switch(difficulty) {
@@ -128,7 +149,8 @@ export default function GameAI(): HTMLElement {
     
     const player1Span = document.createElement("span");
     player1Span.className = "text-transparent bg-clip-text bg-gradient-to-r font-bold";
-    player1Span.innerText = "Vous";
+    player1Span.innerText = translatedYou;
+    
     
     // Adapter les couleurs du nom du joueur en fonction de la difficulté
     switch(difficulty) {
@@ -157,12 +179,12 @@ export default function GameAI(): HTMLElement {
             vsSpan.classList.add("text-yellow-300");
     }
     
-    vsSpan.innerText = "vs";
+    vsSpan.innerHTML = "vs";
     
     const player2Span = document.createElement("span");
     player2Span.className = "text-transparent bg-clip-text bg-gradient-to-r font-bold";
-    const aiName = difficulty === 'easy' ? 'Novice Bot' : (difficulty === 'hard' ? 'Master Bot' : 'Advanced Bot');
-    player2Span.innerText = aiName;
+    const aiName = difficulty === 'easy' ? translatedNoviceBot : (difficulty === 'hard' ? translatedMasterBot : translatedAdvancedBot);
+    player2Span.innerHTML = aiName;
     
     // Adapter les couleurs du nom de l'IA en fonction de la difficulté
     switch(difficulty) {
@@ -262,7 +284,7 @@ export default function GameAI(): HTMLElement {
     
     const player1Name = document.createElement("div");
     player1Name.className = "text-transparent bg-clip-text bg-gradient-to-r font-medium mb-2";
-    player1Name.innerText = "Vous";
+    player1Name.innerHTML = translatedYou;
     
     // Adapter les couleurs du nom du joueur en fonction de la difficulté
     switch(difficulty) {
@@ -291,14 +313,14 @@ export default function GameAI(): HTMLElement {
             player1ScoreDisplay.classList.add("border-yellow-500/30");
     }
     
-    player1ScoreDisplay.innerText = "0";
+    player1ScoreDisplay.innerHTML = "0";
     player1ScoreDisplay.id = "player1-score";
     
     player1Container.append(player1Name, player1ScoreDisplay);
     
     const versus = document.createElement("div");
     versus.className = "text-transparent bg-clip-text bg-gradient-to-r font-bold";
-    versus.innerText = "VS";
+    versus.innerHTML = "VS";
     
     // Adapter les couleurs du VS en fonction de la difficulté
     switch(difficulty) {
@@ -317,7 +339,7 @@ export default function GameAI(): HTMLElement {
     
     const player2Name = document.createElement("div");
     player2Name.className = "text-transparent bg-clip-text bg-gradient-to-r font-medium mb-2";
-    player2Name.innerText = aiName;
+    player2Name.innerHTML = aiName;
     
     // Adapter les couleurs du nom de l'IA en fonction de la difficulté
     switch(difficulty) {
@@ -333,7 +355,7 @@ export default function GameAI(): HTMLElement {
     
     const player2ScoreDisplay = document.createElement("div");
     player2ScoreDisplay.className = "text-4xl font-bold bg-black/50 w-16 h-16 flex items-center justify-center rounded-xl border";
-    player2ScoreDisplay.innerText = "0";
+    player2ScoreDisplay.innerHTML = "0";
     player2ScoreDisplay.id = "player2-score";
     
     // Adapter les couleurs du score de l'IA en fonction de la difficulté
@@ -358,8 +380,8 @@ export default function GameAI(): HTMLElement {
         const player1ScoreElement = document.getElementById("player1-score");
         const player2ScoreElement = document.getElementById("player2-score");
         
-        if (player1ScoreElement) player1ScoreElement.innerText = score1.toString();
-        if (player2ScoreElement) player2ScoreElement.innerText = score2.toString();
+        if (player1ScoreElement) player1ScoreElement.innerHTML = score1.toString();
+        if (player2ScoreElement) player2ScoreElement.innerHTML = score2.toString();
         
         // ✅ NOUVEAU: Sauvegarder les scores dans localStorage
         localStorage.setItem('aiGameScores', JSON.stringify({
@@ -371,7 +393,7 @@ export default function GameAI(): HTMLElement {
         
         // Vérifier si un joueur a gagné (5 points)
         if (score1 >= 5) {
-            endMatch("Vous");
+            endMatch(translatedYou);
         } else if (score2 >= 5) {
             endMatch(aiName);
         }
@@ -398,7 +420,7 @@ export default function GameAI(): HTMLElement {
         }, 1000);
         
         // Adapter l'IA si elle a perdu
-        if (winner === "Vous") {
+        if (winner === translatedYou) {
             // L'IA a perdu, on l'améliore
             onAILoss();
         } else {
@@ -408,7 +430,7 @@ export default function GameAI(): HTMLElement {
         
         // Préparer les classes CSS pour le texte du gagnant selon la difficulté
         let gradientClasses = "";
-        if (winner === "Vous") {
+        if (winner === translatedYou) {
             gradientClasses = "from-green-400 to-emerald-500";
         } else {
             switch(difficulty) {
@@ -427,10 +449,10 @@ export default function GameAI(): HTMLElement {
         victoryContent.innerHTML = `
             <div class="text-7xl mb-6">🏆</div>
             <h2 class="text-4xl font-bold bg-gradient-to-r ${gradientClasses} bg-clip-text text-transparent mb-4">${winner}</h2>
-            <p class="text-xl text-white/90 mb-2">a gagné la partie !</p>
-            <div class="mt-6 text-white/80 text-sm">Le jeu se terminera automatiquement...</div>
+            <p class="text-xl text-white/90 mb-2">${translatedWinParty}</p>
+            <div class="mt-6 text-white/80 text-sm">${translatedEndGameAuto}</div>
         `;
-        
+
         // Afficher le message avec une animation
         endMessage.classList.remove("hidden");
         endMessage.classList.add("animate-fadeIn");

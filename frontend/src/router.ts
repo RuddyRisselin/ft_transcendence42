@@ -61,14 +61,14 @@ const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
   "/dashboard": async () => (isAuthenticated() ? await Dashboard() : await Login()),
   "/login": Login,
   "/matches": async () => (isAuthenticated() ? await Matches() : await Login()),
-  "/tournament": () => TournamentSettings(),
-  "/tournament-bracket": () => TournamentBracket(),
-  "/tournament-game": () => GameTournament(),
+  "/tournament": async () => TournamentSettings(),
+  "/tournament-bracket": async () => (isAuthenticated() ? await TournamentBracket() : await Login()),
+  "/tournament-game": async () => (isAuthenticated() ? await GameTournament() : await Login()),
   "/local-match": LocalMatch,
-  "/game-local": GameLocal,
-  "/game-ai": GameAI,
+  "/game-local": async () => GameLocal(),
+  "/game-ai": async () => (isAuthenticated() ? GameAI() : await Login()),
   "/register": Register,
-  "/rules": async () => await Rules()
+  "/rules": async () => (isAuthenticated() ? await Rules() : await Login())
 };
 
 export function navigateTo(event: Event, path: string, popstate: boolean = false) {

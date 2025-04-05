@@ -417,7 +417,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     }
 
     // Mise à jour du statut des amis via WebSocket avec notification
-    connectToWebSocket(String(state.user.id), (message) => {
+    connectToWebSocket(String(state.user.id), async (message) => {
         if (message.type === "user_status") {
             const friendElement = document.getElementById(`friend-${message.userId}`);
             if (friendElement) {
@@ -425,7 +425,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
                 const statusSpan = friendElement.querySelector(".text-xs");
                 if (statusSpan) {
                     statusSpan.className = `text-xs ${message.status === "online" ? "text-green-400" : "text-gray-400"}`;
-                    statusSpan.innerHTML = message.status === "online" ? "🟢 En ligne" : "⭘ Hors ligne";
+                    statusSpan.innerHTML = message.status === "online" ? (localStorage.getItem("language") == "fr" ? "🟢 En ligne" :  "🟢 " + await translateText("online")) : (localStorage.getItem("language") == "fr" ? "⭘ Hors ligne" :  "⭘ " + await translateText("offline"));
                 }
             }
         }

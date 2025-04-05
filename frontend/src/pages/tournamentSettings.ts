@@ -11,8 +11,6 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         "Nombre de joueurs :",
         "joueurs",
         "Suivant",
-        "Pseudo du Joueur",
-        "Mot de Passe",
         "Se connecter",
         "connecté",
         "Match à durée limitée",
@@ -23,14 +21,18 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         "Connexion échouée !",
         "Remplissez les champs !",
         "Ce joueur est déjà connecté !",
+        "Hôte du tournoi",
+        "Option de jeu",
+        "Mode de jeu",
+        "Objectif",
+        "temps",
+        "points"
     ];
     const [
         translatedParam,
         translatedNb,
         translatedPlayer,
         translatedNext,
-        translatedPseudo,
-        translatedPwd,
         translatedConnexion,
         translatedConnected,
         translatedMatchTime,
@@ -40,7 +42,13 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         translatedStartTournament,
         translatedFailedConnexion,
         translatedAlertFillUpForm,
-        translatedAlertUserConnected
+        translatedAlertUserConnected,
+        translatedHoteTournament,
+        translatedGameOption,
+        translatedGameMode,
+        translatedObjectif,
+        translatedTime,
+        translatedPoints
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     
     if (!state.user) {
@@ -62,7 +70,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     header.className = "w-full max-w-3xl bg-black bg-opacity-40 backdrop-blur-sm p-6 rounded-2xl shadow-2xl border border-purple-500/30 mb-8";
     
     const title = document.createElement("h1");
-    title.innerText = "🏆 Paramètres du Tournoi";
+    title.innerText = `🏆 ${translatedParam}`;
     title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 text-center";
     
     header.appendChild(title);
@@ -72,7 +80,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     step1.className = "w-full max-w-2xl bg-black bg-opacity-30 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-indigo-500/30 space-y-6";
 
     const playersCountLabel = document.createElement("p");
-    playersCountLabel.innerText = "👥 Nombre de joueurs";
+    playersCountLabel.innerText = `👥 ${translatedNb}`;
     playersCountLabel.className = "text-xl font-medium text-purple-200";
 
     const playersCountSelect = document.createElement("select");
@@ -85,7 +93,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     });
 
     const nextStepButton1 = document.createElement("button");
-    nextStepButton1.innerText = "Suivant";
+    nextStepButton1.innerText = translatedNext;
     nextStepButton1.className = "w-full mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white rounded-xl shadow-lg transition-all font-medium flex items-center justify-center space-x-2";
     
     const arrowIcon = document.createElement("span");
@@ -134,7 +142,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     
     const hostPlayerLabel = document.createElement("div");
     hostPlayerLabel.className = "text-green-300 font-medium mb-2";
-    hostPlayerLabel.innerText = "Hôte du tournoi";
+    hostPlayerLabel.innerText = translatedHoteTournament;
     
     const hostPlayerName = document.createElement("div");
     hostPlayerName.className = "text-white font-bold text-lg flex items-center";
@@ -162,7 +170,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
 
             const playerLabel = document.createElement("div");
             playerLabel.className = "text-indigo-300 font-medium";
-            playerLabel.innerText = `Joueur ${i + 2}`;
+            playerLabel.innerText = `${translatedPlayer} ${i + 2}`;
             playerContainer.appendChild(playerLabel);
 
             const inputGroup = document.createElement("div");
@@ -182,7 +190,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
             playerContainer.appendChild(inputGroup);
 
             const loginButton = document.createElement("button");
-            loginButton.innerText = "Se connecter";
+            loginButton.innerText = translatedConnexion;
             loginButton.className = "w-full px-4 py-2 bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg shadow transition-colors flex items-center justify-center";
             
             const keyIcon = document.createElement("span");
@@ -211,7 +219,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
                     const checkmarkIcon = document.createElement("span");
                     checkmarkIcon.innerText = "✓";
                     loginButton.appendChild(checkmarkIcon);
-                    loginButton.innerHTML += ` ${username} connecté`;
+                    loginButton.innerHTML += ` ${username} ${translatedConnected}`;
                     loginButton.disabled = true;
                     loginButton.className = "w-full px-4 py-2 bg-green-700 text-white rounded-lg shadow flex items-center justify-center";
                     usernameInput.disabled = true;
@@ -232,7 +240,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     generatePlayerInputs();
 
     const nextStepButton2 = document.createElement("button");
-    nextStepButton2.innerText = "Suivant";
+    nextStepButton2.innerText = translatedNext;
     nextStepButton2.className = "w-full mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 text-white rounded-xl shadow-lg transition-all font-medium flex items-center justify-center space-x-2 hidden";
     
     const arrowIcon2 = document.createElement("span");
@@ -259,7 +267,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     step3.className = "w-full max-w-2xl bg-black bg-opacity-30 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-indigo-500/30 space-y-6 hidden";
 
     const optionsTitle = document.createElement("h2");
-    optionsTitle.innerText = "Options de jeu";
+    optionsTitle.innerText = translatedGameOption;
     optionsTitle.className = "text-2xl font-bold text-purple-200 mb-4";
     step3.appendChild(optionsTitle);
 
@@ -267,18 +275,18 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     modeContainer.className = "space-y-2";
     
     const modeLabel = document.createElement("label");
-    modeLabel.innerText = "Mode de jeu";
+    modeLabel.innerText = translatedGameMode;
     modeLabel.className = "text-lg font-medium text-purple-200";
     
     const modeSelect = document.createElement("select");
     modeSelect.className = "w-full px-4 py-3 rounded-xl text-white bg-indigo-900/70 border-2 border-indigo-600 shadow-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none transition-all";
     
     const optionTime: HTMLOptionElement = document.createElement("option");
-    optionTime.value = "time";
+    optionTime.value = translatedTime;
     optionTime.innerHTML = "⏳ " +  translatedMatchTime;
 
     const optionPoints: HTMLOptionElement = document.createElement("option");
-    optionPoints.value = "points";
+    optionPoints.value = translatedPoints;
     optionPoints.innerHTML = "🏆 " + translatedMatchPoint;
 
     modeSelect.append(optionTime, optionPoints);
@@ -289,7 +297,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     targetContainer.className = "space-y-2 mt-4";
     
     const targetLabel = document.createElement("label");
-    targetLabel.innerText = "Objectif";
+    targetLabel.innerText = translatedObjectif;
     targetLabel.className = "text-lg font-medium text-purple-200";
     
     const targetSelect = document.createElement("select");
@@ -321,9 +329,9 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     startTournamentButton.appendChild(rocketIcon);
     
     const buttonText = document.createElement("span");
-    buttonText.innerText = "Lancer le tournoi";
+    buttonText.innerText = translatedStartTournament;
     startTournamentButton.appendChild(buttonText);
-
+    
     startTournamentButton.onclick = () => {
         state.tournament = {
             players: Array.from(connectedPlayers),

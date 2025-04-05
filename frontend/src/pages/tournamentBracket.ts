@@ -68,7 +68,39 @@ function shuffleArray(array: any[]) {
 }
 
 
-export default function TournamentBracket(): HTMLElement {
+export default async function TournamentBracket(): Promise<HTMLElement> {
+
+
+const textToTranslate: string[] = [
+    "Champion du tournoi",
+    "Bracket du Tournoi",
+    "Format",
+    "joueurs",
+    "Mode",
+    "Matchs",
+    "Terminé",
+    "restant",
+    "Lancer le prochain match",
+    "Tournoi terminé",
+    "minutes",
+    "points"
+];
+
+const [
+    translatedWinnerOfTournament,
+    translatedBracketOfTournament,
+    translatedFormat,
+    translatedPlayers,
+    translatedMode,
+    translatedMatchs,
+    translatedFinish,
+    translatedRest,
+    translatedStartNextMatch,
+    translatedTournamentFinished,
+    translatedMinutes,
+    translatedPoints
+] = await Promise.all(textToTranslate.map(text => translateText(text)));
+
     // ✅ NOUVEAU: Vérifier et restaurer les données du tournoi si nécessaire
     if (!state.tournament && localStorage.getItem('tournamentData')) {
         try {
@@ -105,27 +137,27 @@ export default function TournamentBracket(): HTMLElement {
         winnerBadge.className = "flex items-center justify-center mb-3 bg-gradient-to-r from-yellow-900/40 to-amber-800/40 rounded-lg border border-yellow-500/40 py-3 px-5";
         
         const trophyIcon = document.createElement("span");
-        trophyIcon.innerText = "🏆";
+        trophyIcon.innerHTML = "🏆";
         trophyIcon.className = "text-2xl mr-3";
         
-        const winnerText = document.createElement("div");
-        winnerText.className = "flex flex-col";
+        const winnerHTML = document.createElement("div");
+        winnerHTML.className = "flex flex-col";
         
         const winnerLabel = document.createElement("span");
-        winnerLabel.innerText = "Champion du tournoi";
+        winnerLabel.innerHTML = translatedWinnerOfTournament;
         winnerLabel.className = "text-sm text-yellow-300";
         
         const winnerName = document.createElement("span");
-        winnerName.innerText = state.tournament.winner;
+        winnerName.innerHTML = state.tournament.winner;
         winnerName.className = "text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-500";
         
-        winnerText.append(winnerLabel, winnerName);
-        winnerBadge.append(trophyIcon, winnerText);
+        winnerHTML.append(winnerLabel, winnerName);
+        winnerBadge.append(trophyIcon, winnerHTML);
         headerContent.appendChild(winnerBadge);
     }
     
     const title = document.createElement("h1");
-    title.innerText = "🏆 Bracket du Tournoi";
+    title.innerHTML = `🏆 ${translatedBracketOfTournament}`;
     title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 text-center";
 
     headerContent.appendChild(title);
@@ -250,15 +282,14 @@ export default function TournamentBracket(): HTMLElement {
     
     const formatIcon = document.createElement("div");
     formatIcon.className = "text-2xl mb-2 text-purple-300";
-    formatIcon.innerText = "🏠";
+    formatIcon.innerHTML = "🏠";
     
     const formatTitle = document.createElement("div");
     formatTitle.className = "text-sm text-indigo-300 mb-1";
-    formatTitle.innerText = "Format";
-    
+    formatTitle.innerHTML = translatedFormat;
     const formatValue = document.createElement("div");
     formatValue.className = "text-lg font-medium text-white";
-    formatValue.innerText = `${state.tournament.players.length} joueurs`;
+    formatValue.innerHTML = `${state.tournament.players.length} ${translatedPlayers}`;
     
     formatInfo.append(formatIcon, formatTitle, formatValue);
     
@@ -268,17 +299,17 @@ export default function TournamentBracket(): HTMLElement {
     
     const modeIcon = document.createElement("div");
     modeIcon.className = "text-2xl mb-2 text-purple-300";
-    modeIcon.innerText = state.tournament.mode === "time" ? "⏱️" : "🎯";
+    modeIcon.innerHTML = state.tournament.mode === "time" ? "⏱️" : "🎯";
     
     const modeTitle = document.createElement("div");
     modeTitle.className = "text-sm text-indigo-300 mb-1";
-    modeTitle.innerText = "Mode";
+    modeTitle.innerHTML = translatedMode;
     
     const modeValue = document.createElement("div");
     modeValue.className = "text-lg font-medium text-white";
-    modeValue.innerText = state.tournament.mode === "time" 
-        ? `${state.tournament.target / 60} minutes` 
-        : `${state.tournament.target} points`;
+    modeValue.innerHTML = state.tournament.mode === "time" 
+        ? `${state.tournament.target / 60} ${translatedMinutes}` 
+        : `${state.tournament.target} ${translatedPoints}`;
     
     modeInfo.append(modeIcon, modeTitle, modeValue);
     
@@ -288,12 +319,11 @@ export default function TournamentBracket(): HTMLElement {
     
     const matchesIcon = document.createElement("div");
     matchesIcon.className = "text-2xl mb-2 text-purple-300";
-    matchesIcon.innerText = "🎮";
+    matchesIcon.innerHTML = "🎮";
     
     const matchesTitle = document.createElement("div");
     matchesTitle.className = "text-sm text-indigo-300 mb-1";
-    matchesTitle.innerText = "Matchs";
-    
+    matchesTitle.innerHTML = translatedMatchs;
     // Calculer le nombre de matchs restants
     let matchesRemaining = 0;
     state.tournament.bracket.forEach(round => {
@@ -306,10 +336,10 @@ export default function TournamentBracket(): HTMLElement {
     
     const matchesValue = document.createElement("div");
     matchesValue.className = "text-lg font-medium text-white";
-    matchesValue.innerText = state.tournament.winner 
-        ? "Terminé"
-        : `${matchesRemaining} restant${matchesRemaining > 1 ? 's' : ''}`;
-    
+    matchesValue.innerHTML = state.tournament.winner 
+        ? translatedFinish
+        : `${matchesRemaining} ${translatedRest}${matchesRemaining > 1 ? 's' : ''}`;
+
     matchesInfo.append(matchesIcon, matchesTitle, matchesValue);
     
     infoContainer.append(formatInfo, modeInfo, matchesInfo);
@@ -322,7 +352,7 @@ export default function TournamentBracket(): HTMLElement {
         const playNextMatchButton = document.createElement("button");
         playNextMatchButton.className = "px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-500 hover:to-indigo-600 text-white rounded-xl shadow-xl transition-all font-medium flex items-center";
         playNextMatchButton.innerHTML = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-Lancer le prochain match`;
+        ${translatedStartNextMatch}`;
 
         playNextMatchButton.onclick = () => {
             const nextMatch = getNextMatch();
@@ -334,10 +364,9 @@ Lancer le prochain match`;
                 
                 navigateTo(new Event("click"), "/tournament-game");
             } else {
-                alert("🏆 Tournoi terminé !");
+                alert(`🏆 ${translatedTournamentFinished}`);
             }
         };
-
         buttonContainer.appendChild(playNextMatchButton);
         container.appendChild(buttonContainer);
     }

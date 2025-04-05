@@ -14,6 +14,7 @@ import { finishMatch as finishTournamentMatch } from "../game/multiplayers";
 let redirectionInProgress = false;
 
 async function saveTournamentToHistory() {
+
     if (!state.tournament || !state.tournament.winner) return;
 
     const { bracket, winner, players } = state.tournament;
@@ -79,7 +80,18 @@ async function saveTournamentToHistory() {
 }
 
 
-export default function GameTournament() {
+export default async function GameTournament() {
+    const textToTranslate: string[] = [
+        "Match de Tournoi",
+        " a gagné la partie",
+        "Mise à jour du bracket..."
+    ];
+
+    const [
+        translatedTournamentMatch,
+        translatedWinParty,
+        translatedUpdateBracket
+    ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     // ✅ NOUVEAU: Vérifier et restaurer les données du tournoi si nécessaire
     if (!state.tournament && localStorage.getItem('tournamentData')) {
         try {
@@ -176,23 +188,25 @@ export default function GameTournament() {
     
     const title = document.createElement("h1");
     title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 text-center";
-    title.innerText = `🏓 Match de Tournoi`;
+    title.innerHTML = `🏓 ${translatedTournamentMatch}`;
     
+
+
     // Sous-titre avec les noms des joueurs
     const subtitle = document.createElement("div");
     subtitle.className = "mt-2 text-2xl text-center";
     
     const player1Span = document.createElement("span");
     player1Span.className = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-bold";
-    player1Span.innerText = player1;
+    player1Span.innerHTML = player1;
     
     const vsSpan = document.createElement("span");
     vsSpan.className = "text-purple-300 mx-3";
-    vsSpan.innerText = "vs";
+    vsSpan.innerHTML = "vs";
     
     const player2Span = document.createElement("span");
     player2Span.className = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-bold";
-    player2Span.innerText = player2;
+    player2Span.innerHTML = player2;
     
     subtitle.append(player1Span, vsSpan, player2Span);
     header.append(title, subtitle);
@@ -230,28 +244,28 @@ export default function GameTournament() {
     
     const player1Name = document.createElement("div");
     player1Name.className = "text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 font-medium mb-2";
-    player1Name.innerText = player1;
+    player1Name.innerHTML = player1;
     
     const player1ScoreDisplay = document.createElement("div");
     player1ScoreDisplay.className = "text-4xl font-bold bg-black/50 w-16 h-16 flex items-center justify-center rounded-xl border border-indigo-500/30";
-    player1ScoreDisplay.innerText = "0";
+    player1ScoreDisplay.innerHTML = "0";
     
     player1Container.append(player1Name, player1ScoreDisplay);
     
     const versus = document.createElement("div");
     versus.className = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-bold";
-    versus.innerText = "VS";
+    versus.innerHTML = "VS";
     
     const player2Container = document.createElement("div");
     player2Container.className = "flex flex-col items-center";
     
     const player2Name = document.createElement("div");
     player2Name.className = "text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 font-medium mb-2";
-    player2Name.innerText = player2;
+    player2Name.innerHTML = player2;
     
     const player2ScoreDisplay = document.createElement("div");
     player2ScoreDisplay.className = "text-4xl font-bold bg-black/50 w-16 h-16 flex items-center justify-center rounded-xl border border-indigo-500/30";
-    player2ScoreDisplay.innerText = "0";
+    player2ScoreDisplay.innerHTML = "0";
     
     player2Container.append(player2Name, player2ScoreDisplay);
     
@@ -261,8 +275,8 @@ export default function GameTournament() {
     container.append(header, gameContainer);
 
     function updateScoreBoard() {
-        player1ScoreDisplay.innerText = String(player1Score);
-        player2ScoreDisplay.innerText = String(player2Score);
+        player1ScoreDisplay.innerHTML = String(player1Score);
+        player2ScoreDisplay.innerHTML = String(player2Score);
 
         // ✅ NOUVEAU: Sauvegarder les scores dans localStorage
         localStorage.setItem('tournamentGameScores', JSON.stringify({
@@ -290,10 +304,13 @@ export default function GameTournament() {
         victoryContent.innerHTML = `
             <div class="text-7xl mb-6">🏆</div>
             <h2 class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent mb-4">${winner}</h2>
-            <p class="text-xl text-white/90 mb-2">a gagné la partie !</p>
-            <div class="mt-6 text-indigo-300/80 text-sm">Mise à jour du bracket...</div>
+            <p class="text-xl text-white/90 mb-2"> ${translatedWinParty}</p>
+            <div class="mt-6 text-indigo-300/80 text-sm">${translatedUpdateBracket}</div>
         `;
         
+       
+
+
         // Afficher le message avec une animation
         endMessage.classList.remove("hidden");
         

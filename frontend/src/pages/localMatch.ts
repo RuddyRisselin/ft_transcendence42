@@ -1,6 +1,6 @@
 import { state } from "../state";
 import { navigateTo } from "../router";
-import { loginWithoutSession } from "../services/auth"; // ✅ Connexion temporaire du Joueur 2
+import { loginWithoutSession } from "../services/auth";
 import { getUsers } from "../services/userService";
 import { translateText } from "../translate";
 
@@ -8,29 +8,36 @@ export default async function LocalMatch(): Promise<HTMLElement> {
      /*          TRANSLATE TAB       */
      const textToTranslate = [
         "Match Local 1v1",
-        "Se connecter",
         "Match à durée limitée",
         "Match en nombre de points",
-        "min",
         "points",
-        "Commencer la partie",
         "Veuillez entrer le mot de passe du Joueur 2.",
-        "Connexion réussie pour",
         "Échec de l'authentification. Vérifiez le mot de passe.",
-        "Mot de passe du Joueur 2"
+        "Sélectionner votre adversaire",
+        "Mot de passe de l'adversaire",
+        "Connecter l'adversaire",
+        "Durée du match",
+        "Nombre de points à atteindre",
+        "Commencer la partie",
+        "Entrez le mot de passe...",
+        "min"
+
     ];
     const [
         translatedMatch1v1,
-        translatedConnexion,
         translatedMatchTime,
         translatedMatchPoint,
-        translatedMin,
         translatedPoint,
-        translatedStartGame,
         translatedAlertEnterPwd,
-        translatedAlertSuccess,
         translatedAlertFailed,
-        translatedPHpwdPlayer
+        translatedChooseAgainst,
+        translatedPwdAgainst,
+        translatedConnectAgainst,
+        translatedTimingMatch,
+        translatedNumberOfPoints,
+        translatedStartParty,
+        translatedEnterPwd,
+        translatedMinute
 
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
 
@@ -50,7 +57,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     container.className = "flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-950 via-blue-700 to-blue-950 text-white p-8 space-y-6";
 
     const title = document.createElement("h1");
-    title.innerText = "🏓 Match Local 1v1";
+    title.innerHTML = `🏓 ${translatedMatch1v1}`;
     title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100 text-center";
 
     // Section principale avec effet glassmorphism
@@ -63,7 +70,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     
     const playerSelectLabel = document.createElement("div");
     playerSelectLabel.className = "text-xl font-medium text-blue-200";
-    playerSelectLabel.innerText = "Sélectionner votre adversaire";
+    playerSelectLabel.innerHTML = translatedChooseAgainst;
     
     const player2Select = document.createElement("select");
     player2Select.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
@@ -85,18 +92,18 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     
     const passwordLabel = document.createElement("div");
     passwordLabel.className = "text-xl font-medium text-blue-200";
-    passwordLabel.innerText = "Mot de passe de l'adversaire";
+    passwordLabel.innerHTML = translatedPwdAgainst;
     
     const player2Password = document.createElement("input");
     player2Password.type = "password";
-    player2Password.placeholder = "Entrez le mot de passe...";
+    player2Password.placeholder = translatedEnterPwd;
     player2Password.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all placeholder-blue-300/70";
 
     passwordContainer.append(passwordLabel, player2Password);
 
     // ✅ Bouton pour valider la connexion du Joueur 2
     const connectButton = document.createElement("button");
-    connectButton.innerText = "🔑 Connecter l'adversaire";
+    connectButton.innerHTML = `🔑 ${translatedConnectAgainst}`;
     connectButton.className = "w-full px-6 py-3 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-600 hover:to-blue-400 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 font-bold text-lg hidden";
 
     // ✅ Section des paramètres du match (cachée au départ)
@@ -109,8 +116,8 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     
     const modeLabel = document.createElement("div");
     modeLabel.className = "text-xl font-medium text-blue-200";
-    modeLabel.innerText = "Mode de jeu";
-    
+    modeLabel.innerHTML = "";
+
     const modeSelect = document.createElement("select");
     modeSelect.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
 
@@ -131,15 +138,15 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     
     const timeLabel = document.createElement("div");
     timeLabel.className = "text-xl font-medium text-blue-200";
-    timeLabel.innerText = "Durée du match";
-    
+    timeLabel.innerHTML = translatedTimingMatch;
+
     const timeOptions = document.createElement("select");
     timeOptions.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
 
     [120, 300, 600].forEach(time => {
         const option: HTMLOptionElement = document.createElement("option");
         option.value = String(time);
-        option.innerText = `⏳ ${Math.floor(time / 60)} min ${time % 60 ? (time % 60) + ' sec' : ''}`;
+        option.innerHTML = `⏳ ${Math.floor(time / 60)} ${translatedMinute} ${time % 60 ? (time % 60) + ' sec' : ''}`;
         timeOptions.appendChild(option);
     });
     
@@ -151,8 +158,8 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     
     const pointsLabel = document.createElement("div");
     pointsLabel.className = "text-xl font-medium text-blue-200";
-    pointsLabel.innerText = "Nombre de points à atteindre";
-    
+    pointsLabel.innerHTML = translatedNumberOfPoints;
+
     const pointsOptions = document.createElement("select");
     pointsOptions.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
 
@@ -167,7 +174,8 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
     // ✅ Bouton pour commencer la partie
     const startGameButton = document.createElement("button");
-    startGameButton.innerText = "🚀 Commencer la partie";
+    startGameButton.innerHTML = `🚀 ${translatedStartParty}`;
+
     startGameButton.className = "w-full px-6 py-4 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-600 hover:to-blue-400 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 font-bold text-xl";
 
     // ✅ Affichage dynamique des options de match
