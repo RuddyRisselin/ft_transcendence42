@@ -5,6 +5,8 @@ import { getFriends, getFriendRequests, removeFriend, acceptFriendRequest, rejec
 import FriendProfile from "../pages/profile/FriendProfile";
 import { translateText } from "../translate";
 import { updateLanguage } from "../services/userService";
+import { navigateTo } from "../router";
+import API_CONFIG from "../config/apiConfig";
 
 export default async function Sidebar(): Promise<HTMLElement> {
     // Vérifier si la sidebar existe déjà
@@ -70,7 +72,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     avatarContainer.className = "relative p-1 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500";
     
     const avatar: HTMLImageElement = document.createElement("img");
-    avatar.src = "http://localhost:3000/images/" + state.user.avatar || "http://localhost:3000/images/default.jpg";
+    avatar.src = `${API_CONFIG.API_BASE_URL}/images/` + state.user.avatar || `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
     avatar.className = "w-16 h-16 rounded-full border-2 border-gray-900";
     avatarContainer.appendChild(avatar);
 
@@ -218,7 +220,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
                 userItem.type = "button";
                 userItem.className = "flex items-center gap-2 p-2 hover:bg-gray-700/50 rounded-lg transition-colors";
                 userItem.innerHTML = `
-                    <img src="http://localhost:3000/images/${user.avatar}" class="w-6 h-6 rounded-full border border-purple-500/30">
+                    <img src="${API_CONFIG.API_BASE_URL}/images/${user.avatar}" class="w-6 h-6 rounded-full border border-purple-500/30">
                     <span class="text-sm">${user.username}</span>
                 `;
                 userItem.onclick = async () => {
@@ -313,7 +315,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
             userInfo.className = "flex items-center gap-2";
 
             const avatar: HTMLImageElement = document.createElement("img");
-            avatar.src = `http://localhost:3000/images/${request.avatar}`;
+            avatar.src = `${API_CONFIG.API_BASE_URL}/images/${request.avatar}`;
             avatar.className = "w-8 h-8 rounded-full border border-yellow-500/30";
 
             const username: HTMLSpanElement = document.createElement("span");
@@ -368,7 +370,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
             userInfo.className = "flex items-center gap-2";
 
             const avatar: HTMLImageElement = document.createElement("img");
-            avatar.src = `http://localhost:3000/images/${friend.avatar}`;
+            avatar.src = `${API_CONFIG.API_BASE_URL}/images/${friend.avatar}`;
             avatar.className = "w-8 h-8 rounded-full border border-green-500/30";
 
             const username: HTMLDivElement = document.createElement("div");

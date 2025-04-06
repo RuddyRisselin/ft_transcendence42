@@ -16,9 +16,14 @@ export default defineConfig({
     host: "0.0.0.0", // ✅ Nécessaire pour Docker
     proxy: {
       "/api": {
-        target: "http://localhost:3000", // ✅ Backend tourne sur ce port
+        target: "http://fastify_backend:3000", // ✅ Nom du service dans docker-compose
         changeOrigin: true,
         secure: false,
+      },
+      "/ws": {
+        target: "ws://fastify_backend:3000",
+        ws: true,
+        changeOrigin: true,
       },
     },
   },

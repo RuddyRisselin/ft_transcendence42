@@ -4,6 +4,7 @@ import { uploadFile } from "../../services/uploadFile";
 import { logout } from "../../services/auth";
 import { displayModalQRCode } from "../displayModalQRCode";
 import { translateText } from "../../translate";
+import API_CONFIG from "../../config/apiConfig";
 
 export default async function ProfileForm(): Promise<HTMLDivElement> {
     const textsToTranslate = [
@@ -58,7 +59,7 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
     divAvatar.className = "flex flex-col items-center justify-center w-full mb-6";
     
     const avatar: HTMLImageElement = document.createElement("img");
-    avatar.src = "http://localhost:3000/images/" + state.user.avatar || "http://localhost:3000/images/default.jpg";
+    avatar.src = `${API_CONFIG.API_BASE_URL}/images/` + state.user.avatar || `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
     avatar.className = "w-24 h-24 rounded-full border-2 border-blue-400 mb-4";
     divAvatar.appendChild(avatar);
     

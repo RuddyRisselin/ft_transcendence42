@@ -6,6 +6,7 @@ import StarsBackground from "./StarsBackground";
 import BackButton from "./BackButton";
 import { getFriendDetails } from "../../services/friendService";
 import { translateText } from "../../translate";
+import API_CONFIG from "../../config/apiConfig";
 
 export default async function FriendProfile(friendId: number): Promise<HTMLElement> {
     const textsToTranslate: string[] = [
@@ -61,7 +62,7 @@ export default async function FriendProfile(friendId: number): Promise<HTMLEleme
 
     // Avatar
     const avatar: HTMLImageElement = document.createElement("img");
-    avatar.src = "http://localhost:3000/images/" + state.user.avatar;
+    avatar.src = `${API_CONFIG.API_BASE_URL}/images/` + state.user.avatar;
     avatar.className = "w-24 h-24 rounded-full";
 
     avatarCircle.appendChild(avatar);

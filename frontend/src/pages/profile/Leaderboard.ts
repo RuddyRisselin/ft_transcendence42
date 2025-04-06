@@ -1,6 +1,7 @@
 import { state } from "../../state";
 import { translateText } from "../../translate";
 import { getUsers, refreshUserCache } from "../../services/userService";
+import API_CONFIG from "../../config/apiConfig";
 
 // Variables pour les traductions
 //let translatedTDS: string = "Classement";
@@ -86,10 +87,10 @@ export default async function Leaderboard(): Promise<HTMLElement> {
                 rankElement.className = "text-gray-400 font-medium";
                 
                 const playerAvatar = document.createElement("img");
-                playerAvatar.src = player.avatar || "http://localhost:3000/images/default.jpg";
+                playerAvatar.src = player.avatar || `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
                 playerAvatar.className = "w-8 h-8 rounded-full border border-gray-600 object-cover";
                 playerAvatar.onerror = () => {
-                    playerAvatar.src = "http://localhost:3000/images/default.jpg";
+                    playerAvatar.src = `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
                 };
                 
                 const username = document.createElement("span");
@@ -134,12 +135,12 @@ export default async function Leaderboard(): Promise<HTMLElement> {
         
         // Avatar
         const avatar = document.createElement("img");
-        avatar.src = player.avatar || "http://localhost:3000/images/default.jpg";
+        avatar.src = player.avatar || `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
         avatar.className = "rounded-full object-cover";
         avatar.style.width = `calc(${size} - 16px)`;
         avatar.style.height = `calc(${size} - 16px)`;
         avatar.onerror = () => {
-            avatar.src = "http://localhost:3000/images/default.jpg";
+            avatar.src = `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
         };
         
         avatarContainer.append(avatar, rankBadge);

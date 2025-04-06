@@ -9,7 +9,6 @@ const gameWsRoutes = require("./websockets/gameWs");
 const tournamentRoutes = require("./routes/tournaments");
 const path = require("path");
 const fastifyStatic = require("@fastify/static");
-const fs = require('fs');
 
 const twoFaRoutes = require('./routes/2FA');
 
