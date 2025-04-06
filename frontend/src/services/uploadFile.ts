@@ -1,6 +1,8 @@
+import API_CONFIG from "../config/apiConfig";
+
 export async function uploadFile(formData: FormData) {
     try {
-        const response: Response = await fetch(`http://localhost:3000/uploadFile`, {
+        const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/uploadFile`, {
             method: "POST",
             body: formData,
         });

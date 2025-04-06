@@ -9,6 +9,7 @@ import { translateText } from "../translate";
 import { GameMode, GameOptions, startGameWithOptions } from "../game/multiplayers";
 import { tournamentTheme, setTheme } from "../game/objects";
 import { finishMatch as finishTournamentMatch } from "../game/multiplayers";
+import API_CONFIG from "../config/apiConfig";
 
 // Variable globale pour éviter les doubles redirections
 let redirectionInProgress = false;
@@ -70,7 +71,7 @@ async function saveTournamentToHistory() {
         ranking: finalRanking
     };
 
-    await fetch("http://localhost:3000/tournaments", {
+    await fetch(`${API_CONFIG.API_BASE_URL}/tournaments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

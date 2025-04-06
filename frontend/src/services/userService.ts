@@ -1,5 +1,6 @@
 import { saveAuthData } from "./auth";
 import { state } from "../../src/state";
+import API_CONFIG from "../config/apiConfig";
 
 interface User {
     id: number;
@@ -36,7 +37,7 @@ export async function getUsers(): Promise<User[]> {
     console.log("🔹 Envoi de la requête GET vers /users/all...");
 
     try {
-        const response = await fetch("http://localhost:3000/users/all", {
+        const response = await fetch(`${API_CONFIG.API_BASE_URL}/users/all`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
             cache: 'no-cache' // Forcer le rafraîchissement depuis le serveur
@@ -53,9 +54,9 @@ export async function getUsers(): Promise<User[]> {
         users.forEach(user => {
             // S'assurer que l'avatar est correctement formaté
             if (user.avatar) {
-                user.avatar = user.avatar.startsWith('http') ? user.avatar : `http://localhost:3000/images/${user.avatar}`;
+                user.avatar = user.avatar.startsWith('http') ? user.avatar : `${API_CONFIG.API_BASE_URL}/images/${user.avatar}`;
             } else {
-                user.avatar = "http://localhost:3000/images/default.jpg";
+                user.avatar = `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
             }
             // S'assurer que wins est un nombre
             user.wins = parseInt(user.wins as any) || 0;
@@ -78,8 +79,7 @@ export async function getUsers(): Promise<User[]> {
 // Mise à jour des informations de l'utilisateur
 export async function updateUser(token: string | "", username:string, inputUsername: string, inputEmail: string) {
     try {
-        // const response = await fetch("/api/users/update", {
-        const response: Response = await fetch(`http://localhost:3000/users/username/${username}/update`, {
+        const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/users/username/${username}/update`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ inputUsername, inputEmail }),
@@ -99,7 +99,7 @@ export async function updateUser(token: string | "", username:string, inputUsern
 
 export async function updatePhotoUser(username: string, file: string) {
     try {
-        const response = await fetch(`http://localhost:3000/users/username/${username}/updatephoto`, {
+        const response = await fetch(`${API_CONFIG.API_BASE_URL}/users/username/${username}/updatephoto`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, file }),
@@ -134,8 +134,7 @@ export async function updatePhotoUser(username: string, file: string) {
 export async function deleteUser(username: string) {
     console.log(`Envoi de la requête DELETE pour : ${username}`);
     try {
-        // const response = await fetch(`/api/users/username/${username}`, {
-            const response: Response = await fetch(`http://localhost:3000/users/username/${username}`, {
+        const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/users/username/${username}`, {
             method: "DELETE",
         });
 
@@ -158,8 +157,7 @@ export async function anonymizeUser(username: string, token: string | "") {
     console.log(`🛠️ Envoi de la requête PATCH pour anonymiser : ${username}`);
 
     try {
-        // const response = await fetch(`/api/users/username/${username}/anonymize`, {
-        const response: Response = await fetch(`http://localhost:3000/users/username/${username}/anonymize`, {
+        const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/users/username/${username}/anonymize`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username }),
@@ -183,12 +181,12 @@ export async function anonymizeUser(username: string, token: string | "") {
 }
 
 export async function getAllUsers() {
-    const response: Response = await fetch("/api/users");
+    const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/users`);
     return response.json();
 }
 
 export async function authenticateUser(username: string, password: string) {
-    const response: Response = await fetch("/api/auth/login", {
+    const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -199,7 +197,7 @@ export async function authenticateUser(username: string, password: string) {
 
 export async function getQrcode(userId : number, username : string)
 {
-    return fetch("http://localhost:3000/2FA/generate-2fa", {
+    return fetch(`${API_CONFIG.API_BASE_URL}/2FA/generate-2fa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({userId, username})
@@ -212,7 +210,7 @@ export async function getQrcode(userId : number, username : string)
 
 export async function update2FAOff(userId : number, username : string)
 {
-    return fetch("http://localhost:3000/2FA/disable-2fa", {
+    return fetch(`${API_CONFIG.API_BASE_URL}/2FA/disable-2fa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({userId, username})
@@ -242,13 +240,12 @@ export async function getUserById(userId: number): Promise<User | null> {
 
 export async function updateLanguage(userId : number, language : string)
 {
-    return fetch(`http://localhost:3000/users/language`, {
+    return fetch(`${API_CONFIG.API_BASE_URL}/users/language`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({userId, language})
     })
     .then(response => response.json())
-    .catch(error => console.error("Erreur lors de l'update de la langue", error));
-    
+    .catch(error => console.error("Erreur lors de la mise à jour de la langue:", error));
 }
 

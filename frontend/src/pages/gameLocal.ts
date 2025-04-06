@@ -7,6 +7,7 @@ import { paddle1, paddle2, resetPaddleSpeeds, PLAYER_PADDLE_SPEED, ball } from "
 import { localTheme, setTheme } from "../game/objects";
 import { GameMode, GameOptions } from "../game/multiplayers";
 import { translateText } from "../translate";
+import API_CONFIG from "../config/apiConfig";
 
 async function saveMatch(winner: string) {
     if (!state.localMatch) {
@@ -23,7 +24,7 @@ async function saveMatch(winner: string) {
 
     try {
         // 🔹 Récupérer les ID des joueurs via l'API
-        const responseUsers = await fetch(`/api/users?username=${player1}&username=${player2}`);
+        const responseUsers = await fetch(`${API_CONFIG.API_BASE_URL}/users?username=${player1}&username=${player2}`);
         const usersData = await responseUsers.json();
 
         if (!usersData || usersData.length < 2) {
@@ -44,7 +45,7 @@ async function saveMatch(winner: string) {
         const matchData = { player1_id, player2_id, winner_id };
         console.log("📌 Envoi des données du match :", matchData);
 
-        const response = await fetch("http://localhost:3000/matches", {
+        const response = await fetch(`${API_CONFIG.API_BASE_URL}/matches`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(matchData)
@@ -60,7 +61,7 @@ async function saveMatch(winner: string) {
 
 // ✅ Fonction pour récupérer l'ID d'un utilisateur à partir de son username
 async function getUserId(username: string) {
-    const response = await fetch(`/users`);
+    const response = await fetch(`${API_CONFIG.API_BASE_URL}/users`);
     const users = await response.json();
     const user = users.find((u: any) => u.username === username);
     return user ? user.id : null;

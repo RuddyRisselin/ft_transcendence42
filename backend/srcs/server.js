@@ -9,11 +9,16 @@ const gameWsRoutes = require("./websockets/gameWs");
 const tournamentRoutes = require("./routes/tournaments");
 const path = require("path");
 const fastifyStatic = require("@fastify/static");
+const fs = require('fs');
 
 const twoFaRoutes = require('./routes/2FA');
 
 async function startServer() {
-  const fastify = Fastify({ logger: true });
+  // Configuration simple en HTTP - Nginx s'occupe du HTTPS
+  const fastify = Fastify({ 
+    logger: true,
+    trustProxy: true  // Important pour que le backend sache qu'il est derrière un proxy
+  });
 
   // ✅ Attendre que Fastify soit bien configuré
   await configureServer(fastify);
@@ -38,7 +43,7 @@ async function startServer() {
   // ✅ Démarrer le serveur après configuration complète
   try {
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
-    fastify.log.info("🚀 Serveur backend en cours d'exécution sur http://localhost:3000");
+    fastify.log.info(`🚀 Serveur backend en cours d'exécution sur http://localhost:3000`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

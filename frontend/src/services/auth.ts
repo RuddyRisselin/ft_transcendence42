@@ -1,5 +1,7 @@
 import { state } from "../state";
 import { navigateTo } from "../router";
+import API_CONFIG from "../config/apiConfig";
+
 // Sauvegarde le token et l'utilisateur
 export function saveAuthData(token: string, user: any) {
     state.token = token;
@@ -46,7 +48,7 @@ export async function logout() {
         }
 
         // ✅ Mettre à jour le statut utilisateur en "offline"
-        await fetch(`http://localhost:3000/users/${state.user.id}/status`, {
+        await fetch(`${API_CONFIG.API_BASE_URL}/users/${state.user.id}/status`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "offline" }),
@@ -87,7 +89,7 @@ export async function logout() {
 // Gère la connexion utilisateur
 export async function login(username: string, password: string, redirection: boolean, language : string) {
     try {
-        const response: Response = await fetch("http://localhost:3000/login", {
+        const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password, language}),
@@ -100,7 +102,7 @@ export async function login(username: string, password: string, redirection: boo
         if (data.requires2FA)
         {
             const codeOTP: string | null = prompt("Code 2FA :");
-            const response: Response = await fetch("http://localhost:3000/validate-2fa", {
+            const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/validate-2fa`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password, codeOTP }),
@@ -135,7 +137,7 @@ export async function login(username: string, password: string, redirection: boo
 // Inscription d'un utilisateur
 export async function register(username: string, email: string, password: string) {
     try {
-        const response: Response = await fetch("http://localhost:3000/register", {
+        const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email, password }),
@@ -154,7 +156,7 @@ export async function register(username: string, email: string, password: string
 }
 
 export async function loginWithoutSession(username: string, password: string) {
-    const response: Response = await fetch("http://localhost:3000/login", { 
+    const response: Response = await fetch(`${API_CONFIG.API_BASE_URL}/login`, { 
         method: "POST",
         body: JSON.stringify({ username, password }),
         headers: { "Content-Type": "application/json" },
@@ -172,10 +174,11 @@ export async function loginWithoutSession(username: string, password: string) {
 export function connectToWebSocket(userId: string, onMessage: (message: any) => void) {
     if (!userId) return;
 
-    let socket = new WebSocket(`ws://localhost:3000/ws?userId=${userId}`);
+    // Utiliser WSS via la configuration
+    let socket = new WebSocket(`${API_CONFIG.WS_URL}/?userId=${userId}`);
 
     socket.onopen = () => {
-        console.log("✅ Connecté au WebSocket en tant que", userId);
+        console.log("✅ Connecté au WebSocket Sécurisé en tant que", userId);
     };
 
     socket.onclose = () => {

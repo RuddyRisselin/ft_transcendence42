@@ -5,11 +5,12 @@ require("dotenv").config();
 
 async function configureServer(fastify) {
     await fastify.register(require("@fastify/cors"), {
-      origin: ["http://localhost:5173", "https://localhost:4430"],  // 🔒 Autorise uniquement le frontend
-      methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      origin: true,  // Permet toutes les origines en développement
+      methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS", "PUT"],
+      allowedHeaders: ["Content-Type", "Authorization", "Origin", "X-Requested-With", "Accept"],
       credentials: true, 
-      preflightContinue: true  // 🔥 Essaye de ne pas bloquer les préflight requests
+      preflightContinue: false,  // Gérer correctement les requêtes OPTIONS
+      optionsSuccessStatus: 204
   });
 
   await fastify.register(jwt, {
