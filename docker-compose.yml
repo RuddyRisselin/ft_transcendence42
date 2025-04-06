@@ -28,6 +28,7 @@ services:
     volumes:
       - ./backend/srcs:/app/srcs
       - ./backend/database:/app/database
+      - ./backend/certs:/app/certs
       - ./images:/app/images
       - /app/node_modules
     networks:
