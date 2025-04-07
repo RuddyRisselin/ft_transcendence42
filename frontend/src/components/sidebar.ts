@@ -413,6 +413,17 @@ export default async function Sidebar(): Promise<HTMLElement> {
     }
 
     async function loadFriends() {
+        const textToTranslate: string[] = [
+            "Voulez-vous vraiment supprimer ",
+            "de vos amis ?",
+            "a été supprimé de vos amis"
+        ];
+        const [
+            translatedReallyDel,
+            translatedYourFriends,
+            translatedFriendDel
+        ] = await Promise.all(textToTranslate.map(text => translateText(text)));
+
         const friends = await getFriends();
         friendsUl.innerHTML = "";
 
@@ -467,14 +478,14 @@ export default async function Sidebar(): Promise<HTMLElement> {
             removeBtn.innerHTML = "🗑️";
             removeBtn.className = "p-1.5 bg-red-600 hover:bg-red-500 rounded-lg transition-all scale-95 group-hover:scale-100";
             removeBtn.onclick = async () => {
-                dialogMessage.innerHTML = `Do you really want to remove ${friend.username} from your friends?`;
+                dialogMessage.innerHTML = `${translatedReallyDel} ${friend.username} ${translatedYourFriends}`;
                 confirmationDialog.classList.remove("hidden");
-                
+
                 const handleConfirm = async () => {
                     await removeFriend(friend.id);
                     loadFriends();
                     confirmationDialog.classList.add("hidden");
-                    showNotification(`${friend.username} has been removed from your friends`);
+                    showNotification(`${friend.username} ${translatedFriendDel}`);
                 };
                 
                 const handleCancel = () => {
