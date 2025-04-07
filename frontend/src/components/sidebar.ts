@@ -9,12 +9,11 @@ import { navigateTo } from "../router";
 import API_CONFIG from "../config/apiConfig";
 
 export default async function Sidebar(): Promise<HTMLElement> {
-    // Vérifier si la sidebar existe déjà
+    // Check if sidebar already exists
     const existingSidebar = document.querySelector(".sidebar-component");
     if (existingSidebar) {
         return existingSidebar as HTMLElement;
     }
-
 
     /*          TRANSLATE TAB       */
     const textToTranslate: string[] = [
@@ -51,23 +50,23 @@ export default async function Sidebar(): Promise<HTMLElement> {
     const sidebar: HTMLElement = document.createElement("aside");
     sidebar.className = "sidebar-component fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
 
-    // Conteneur principal avec animation
+    // Main container with animation
     const mainContainer: HTMLDivElement = document.createElement("div");
     mainContainer.className = "flex w-[calc(200%)] h-full transition-transform duration-300";
 
-    // Conteneur de la sidebar principale
+    // Main sidebar container
     const sidebarContent: HTMLDivElement = document.createElement("div");
     sidebarContent.className = "w-64 flex-shrink-0 flex flex-col h-full";
 
-    // Conteneur de la gestion des amis
+    // Friends management container
     const friendsContent: HTMLDivElement = document.createElement("div");
     friendsContent.className = "w-64 flex-shrink-0 flex flex-col h-full bg-gray-900";
 
-    // Conteneur de l'utilisateur connecté
+    // Connected user container
     const userContainer: HTMLDivElement = document.createElement("div");
     userContainer.className = "flex flex-col items-center p-6 border-b border-gray-700/50 bg-gray-800/30";
 
-    // Avatar avec bordure animée
+    // Animated border avatar
     const avatarContainer: HTMLDivElement = document.createElement("div");
     avatarContainer.className = "relative p-1 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500";
     
@@ -76,12 +75,12 @@ export default async function Sidebar(): Promise<HTMLElement> {
     avatar.className = "w-16 h-16 rounded-full border-2 border-gray-900";
     avatarContainer.appendChild(avatar);
 
-    // Nom d'utilisateur
+    // Username
     const username: HTMLSpanElement = document.createElement("span");
     username.innerHTML = `${state.user?.username || translatedGuest}`;
     username.className = "text-lg font-semibold mt-3 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
 
-    // Statut (Online/Offline)
+    // Status (Online/Offline)
     const statusContainer: HTMLDivElement = document.createElement("div");
     statusContainer.className = "flex items-center mt-2";
 
@@ -99,17 +98,16 @@ export default async function Sidebar(): Promise<HTMLElement> {
             if (currentUser) {
                 statusIndicator.className = `w-2 h-2 rounded-full mr-2 ${currentUser.status === "online" ? "bg-green-500" : "bg-red-500"}`;
                 statusText.innerHTML = currentUser.status === "online" ?  (localStorage.getItem("language") == "fr" ? "En ligne" :  await translateText("online")) : (localStorage.getItem("language") == "fr" ? "Hors ligne" :  await translateText("offline"));
-                console.log("État utilisateur mis à jour:", currentUser.status);
             }
         } catch (error) {
-            console.error("Erreur lors de la mise à jour du statut:", error);
+            console.error("Error updating status:", error);
         }
     }
 
     updateStatus();
     const statusInterval = setInterval(updateStatus, 5000);
     
-    // Nettoyage de l'intervalle lorsque le composant est supprimé
+    // Clean up interval when component is removed
     sidebar.addEventListener("remove", () => {
         clearInterval(statusInterval);
     });
@@ -145,25 +143,23 @@ export default async function Sidebar(): Promise<HTMLElement> {
         nav.appendChild(a);
     });
 
-    // Bouton amis
+    // Friends button
     const friendsButton: HTMLButtonElement = document.createElement("button");
     friendsButton.className = "flex items-center p-3 hover:bg-gray-800/50 rounded-lg transition duration-200 group w-full mt-2";
     friendsButton.innerHTML = '<span class="mr-3 text-lg group-hover:scale-110 transition-transform">👥</span>' + `<span class="text-gray-300 group-hover:text-white transition-colors">${translatedFriends}</span>`;
     friendsButton.onclick = () => {
         mainContainer.style.transform = "translateX(-256px)";
-        // Recharger les données quand on ouvre le panneau
         loadUsers();
         loadFriendRequests();
         loadFriends();
     };
     nav.appendChild(friendsButton);
 
-    // Bouton de déconnexion
+    // Logout button
     const logoutButton: HTMLButtonElement = document.createElement("button");
     logoutButton.className = "mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
     logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒 </span>' +  translatedDeconnexion;
     logoutButton.onclick = async () => {
-        // Suppression de la sidebar du DOM
         const sidebarContainer = document.querySelector(".sidebar-component");
         if (sidebarContainer) {
             sidebarContainer.remove();
@@ -172,7 +168,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
         await logout();
     };
 
-    // Construction de la section amis
+    // Friends section
     const friendsHeader: HTMLDivElement = document.createElement("div");
     friendsHeader.className = "p-6 border-b border-gray-700/50 bg-gray-800/30 flex items-center";
     
@@ -187,19 +183,59 @@ export default async function Sidebar(): Promise<HTMLElement> {
     friendsTitle.className = "text-lg font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
     friendsTitle.innerHTML = translatedManageFriends;
 
-    friendsHeader.append(backButton, friendsTitle);
+    const refreshButton: HTMLButtonElement = document.createElement("button");
+    refreshButton.innerHTML = "🔄";
+    refreshButton.className = "ml-2 p-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors";
+    refreshButton.title = "Refresh list";
+    refreshButton.onclick = () => {
+        loadUsers();
+        loadFriendRequests();
+        loadFriends();
+        refreshButton.classList.add("animate-spin");
+        setTimeout(() => refreshButton.classList.remove("animate-spin"), 1000);
+    };
+
+    friendsHeader.append(backButton, friendsTitle, refreshButton);
     friendsContent.appendChild(friendsHeader);
 
-    // Contenu de la gestion des amis
+    // Friends management content
     const friendsManager: HTMLDivElement = document.createElement("div");
     friendsManager.className = "p-4 space-y-6 overflow-y-auto custom-scrollbar h-[calc(100vh-64px)]";
 
-    // Recherche d'amis avec autocomplétion
+    // Friend search with autocomplete
     const searchSection: HTMLDivElement = document.createElement("div");
     searchSection.className = "bg-gray-800/50 p-4 rounded-lg border border-purple-500/20";
 
+    // Notification container
+    const notificationDiv: HTMLDivElement = document.createElement("div");
+    notificationDiv.className = "mb-4";
+
     const searchForm: HTMLFormElement = document.createElement("form");
     searchForm.className = "flex flex-col gap-2";
+
+    function showNotification(message: string, isSuccess: boolean = true) {
+        const notification = document.createElement("div");
+        notification.className = `p-3 rounded-lg mb-2 flex items-center justify-between ${
+            isSuccess ? "bg-green-900/50 border border-green-500/30" : "bg-red-900/50 border border-red-500/30"
+        }`;
+        
+        const messageSpan = document.createElement("span");
+        messageSpan.className = "text-sm";
+        messageSpan.innerHTML = message;
+        
+        const closeBtn = document.createElement("button");
+        closeBtn.innerHTML = "✕";
+        closeBtn.className = "text-gray-400 hover:text-white";
+        closeBtn.onclick = () => notification.remove();
+        
+        notification.append(messageSpan, closeBtn);
+        notificationDiv.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = "0";
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
 
     const searchInput: HTMLInputElement = document.createElement("input");
     searchInput.type = "text";
@@ -239,24 +275,9 @@ export default async function Sidebar(): Promise<HTMLElement> {
                         searchInput.value = "";
                         searchResults.className = "hidden flex-col gap-1 mt-2";
                         loadFriendRequests();
-                        // Feedback visuel
-                        const originalContent: string = userItem.innerHTML;
-
-                        userItem.innerHTML = "✅ " + translatedSendFriends;
-                        userItem.className += " text-green-400";
-                        setTimeout(() => {
-                            userItem.innerHTML = originalContent;
-                            userItem.className = userItem.className.replace(" text-green-400", "");
-                        }, 2000);
+                        showNotification("Friend request sent successfully!");
                     } catch (error) {
-                        // Feedback d'erreur
-                        const originalContent: string = userItem.innerHTML;
-                        userItem.innerHTML = "❌ " +  translatedError;
-                        userItem.className += " text-red-400";
-                        setTimeout(() => {
-                            userItem.innerHTML = originalContent;
-                            userItem.className = userItem.className.replace(" text-red-400", "");
-                        }, 2000);
+                        showNotification("Error sending friend request", false);
                     }
                 };
                 searchResults.appendChild(userItem);
@@ -269,9 +290,10 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
     searchForm.onsubmit = (e) => e.preventDefault();
     searchForm.append(searchInput, searchResults);
+    searchSection.appendChild(notificationDiv);
     searchSection.appendChild(searchForm);
 
-    // Section demandes d'amitié
+    // Friend requests section
     const requestsSection: HTMLDivElement = document.createElement("div");
     requestsSection.className = "bg-gray-800/50 p-4 rounded-lg border border-yellow-500/20";
 
@@ -284,9 +306,39 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
     requestsSection.append(requestsTitle, requestsList);
 
-    // Section liste d'amis
+    // Friends list section
     const friendsList: HTMLDivElement = document.createElement("div");
     friendsList.className = "bg-gray-800/50 p-4 rounded-lg border border-green-500/20";
+
+    // Confirmation dialog for friend removal
+    const confirmationDialog: HTMLDivElement = document.createElement("div");
+    confirmationDialog.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden";
+    
+    const dialogContent: HTMLDivElement = document.createElement("div");
+    dialogContent.className = "bg-gray-800 p-6 rounded-lg border border-red-500/30 max-w-md w-full";
+    
+    const dialogTitle: HTMLHeadingElement = document.createElement("h3");
+    dialogTitle.className = "text-lg font-semibold text-red-400 mb-4";
+    dialogTitle.innerHTML = "Confirm deletion";
+    
+    const dialogMessage: HTMLParagraphElement = document.createElement("p");
+    dialogMessage.className = "text-gray-300 mb-6";
+    
+    const dialogButtons: HTMLDivElement = document.createElement("div");
+    dialogButtons.className = "flex justify-end gap-3";
+    
+    const cancelButton: HTMLButtonElement = document.createElement("button");
+    cancelButton.className = "px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors";
+    cancelButton.innerHTML = "Cancel";
+    
+    const confirmButton: HTMLButtonElement = document.createElement("button");
+    confirmButton.className = "px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg transition-colors";
+    confirmButton.innerHTML = "Delete";
+    
+    dialogButtons.append(cancelButton, confirmButton);
+    dialogContent.append(dialogTitle, dialogMessage, dialogButtons);
+    confirmationDialog.appendChild(dialogContent);
+    document.body.appendChild(confirmationDialog);
 
     const friendsListTitle: HTMLHeadingElement = document.createElement("h3");
     friendsListTitle.className = "text-green-300 font-semibold mb-3 flex items-center gap-2";
@@ -297,11 +349,11 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
     friendsList.append(friendsListTitle, friendsUl);
 
-    // Ajout des sections au gestionnaire d'amis
+    // Add sections to friends manager
     friendsManager.append(searchSection, requestsSection, friendsList);
     friendsContent.appendChild(friendsManager);
 
-    // Fonctions de gestion des amis
+    // Friends management functions
     let users: any[] = [];
 
     async function loadUsers() {
@@ -386,7 +438,6 @@ export default async function Sidebar(): Promise<HTMLElement> {
             const username: HTMLDivElement = document.createElement("div");
             username.className = "flex flex-col";
             
-            //ICII
             username.innerHTML = `
                 <span class="text-sm">${friend.username}</span>
                 <span class="text-xs ${friend.status === "online" ? "text-green-400" : "text-gray-400"}">
@@ -416,10 +467,37 @@ export default async function Sidebar(): Promise<HTMLElement> {
             removeBtn.innerHTML = "🗑️";
             removeBtn.className = "p-1.5 bg-red-600 hover:bg-red-500 rounded-lg transition-all scale-95 group-hover:scale-100";
             removeBtn.onclick = async () => {
-                if (confirm(translatedNoConfirmDeleteFriend)) {
+                dialogMessage.innerHTML = `Do you really want to remove ${friend.username} from your friends?`;
+                confirmationDialog.classList.remove("hidden");
+                
+                const handleConfirm = async () => {
                     await removeFriend(friend.id);
                     loadFriends();
-                }
+                    confirmationDialog.classList.add("hidden");
+                    showNotification(`${friend.username} has been removed from your friends`);
+                };
+                
+                const handleCancel = () => {
+                    confirmationDialog.classList.add("hidden");
+                };
+                
+                confirmButton.onclick = handleConfirm;
+                cancelButton.onclick = handleCancel;
+                
+                const cleanup = () => {
+                    confirmButton.onclick = null;
+                    cancelButton.onclick = null;
+                    confirmationDialog.removeEventListener("click", handleOutsideClick);
+                };
+                
+                const handleOutsideClick = (e: MouseEvent) => {
+                    if (e.target === confirmationDialog) {
+                        handleCancel();
+                        cleanup();
+                    }
+                };
+                
+                confirmationDialog.addEventListener("click", handleOutsideClick);
             };
 
             buttonsContainer.append(viewProfileBtn, removeBtn);
@@ -428,30 +506,18 @@ export default async function Sidebar(): Promise<HTMLElement> {
         });
     }
 
-    // Mise à jour du statut des amis via WebSocket avec notification
+    // Update friend status via WebSocket with notification
     connectToWebSocket(String(state.user.id), async (message) => {
         if (message.type === "user_status") {
-            console.log("📢 Mise à jour du statut de l'utilisateur:", message.userId, "->", message.status);
+            console.log("📢 User status update:", message.userId, "->", message.status);
             
-            // Mise à jour de l'indicateur de statut principal si c'est l'utilisateur actuel
             if (message.userId === state.user.id) {
                 statusIndicator.className = `w-2 h-2 rounded-full mr-2 ${message.status === "online" ? "bg-green-500" : "bg-red-500"}`;
                 statusText.innerHTML = message.status === "online" ? 
                     (localStorage.getItem("language") == "fr" ? "En ligne" : await translateText("online")) : 
                     (localStorage.getItem("language") == "fr" ? "Hors ligne" : await translateText("offline"));
-                
-                // Mettre à jour le bouton de reconnexion
-                if (wsReconnectBtn) {
-                    wsReconnectBtn.classList.add("bg-green-700");
-                    wsReconnectBtn.innerHTML = "✅";
-                    setTimeout(() => {
-                        wsReconnectBtn.classList.remove("bg-green-700");
-                        wsReconnectBtn.innerHTML = "🔄";
-                    }, 2000);
-                }
             }
             
-            // Mise à jour dans la liste d'amis
             const friendElement = document.getElementById(`friend-${message.userId}`);
             if (friendElement) {
                 friendElement.className = `flex items-center justify-between p-2 ${message.status === "online" ? "bg-green-900/30" : "bg-gray-700/50"} rounded-lg group`;
@@ -464,36 +530,12 @@ export default async function Sidebar(): Promise<HTMLElement> {
                 }
             }
             
-            // Forcer la mise à jour du statut global
             updateStatus();
         }
     });
 
-
-    
     const languageDiv: HTMLDivElement = document.createElement("div");
     languageDiv.className = "mt-auto mb-4 flex p-3 flex-row flex-wrap justify-around items-center";
-    
-    // Bouton de reconnexion WebSocket
-    const wsReconnectBtn: HTMLButtonElement = document.createElement("button");
-    wsReconnectBtn.innerHTML = "🔄";
-    wsReconnectBtn.title = "Reconnecter WebSocket";
-    wsReconnectBtn.className = "px-2 py-1 m-1 border-2 border-purple-500/75 rounded hover:bg-purple-700 duration-500";
-    wsReconnectBtn.onclick = () => {
-        if (state.socket) {
-            state.socket.close();
-            state.socket = null;
-        }
-        connectToWebSocket(String(state.user.id), async (message) => {
-            console.log("📢 Reconnexion WebSocket - Message reçu:", message);
-            if (message.type === "user_status") {
-                updateStatus();
-            }
-        });
-        wsReconnectBtn.classList.add("bg-purple-700");
-        setTimeout(() => wsReconnectBtn.classList.remove("bg-purple-700"), 2000);
-    };
-    languageDiv.appendChild(wsReconnectBtn);
     
     const btnEN: HTMLButtonElement = document.createElement("button");
     const btnES: HTMLButtonElement = document.createElement("button");
@@ -515,14 +557,12 @@ export default async function Sidebar(): Promise<HTMLElement> {
         localStorage.setItem("language", langue);
         updateLanguage(state.user.id, langue);
         window.location.reload();
-
     };
     btnES.onclick = async () => {
         const langue: string = "es";
         localStorage.setItem("language", langue);
         updateLanguage(state.user.id, langue);
         window.location.reload();
-
     };
     btnFR.onclick = async () => {
         const langue: string = "fr";
@@ -538,7 +578,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     else
         btnFR.classList.add("bg-blue-700");
 
-    // Assemblage final    
+    // Final assembly
     sidebarContent.append(userContainer, nav, languageDiv, logoutButton);
     mainContainer.append(sidebarContent, friendsContent);
     sidebar.appendChild(mainContainer);
