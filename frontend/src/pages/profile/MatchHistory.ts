@@ -16,7 +16,10 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             "Non classé",
             "ème",
             "du",
-            "Erreur de chargement des tournois."
+            "Erreur de chargement des tournois.",
+            "1er",
+            "2ème",
+            "3ème"
         ];
     
         const [
@@ -29,17 +32,20 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             translatedWin,
             translatedErrorLoadingMatches,
             translatedTournamentNotFound,
-            translateUnclassified,
+            translatedUnclassified,
             translatedPos,
             translatedOf,
-            translatedErrorLoadingTournament
+            translatedErrorLoadingTournament,
+            translatedFirstPos,
+            translatedSecondPos,
+            translatedThirdPos
         ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
 
     const container: HTMLDivElement = document.createElement("div");
     container.className = "bg-gray-800 text-white rounded-xl shadow-lg p-6 flex flex-col h-full";
 
     const title: HTMLHeadingElement = document.createElement("h2");
-    title.innerHTML = translatedHistory;
+    title.innerHTML = `${translatedHistory}`;
     title.className = "text-2xl font-bold mb-4 text-center";
 
     let activeTab: "matches" | "tournaments" = "matches";
@@ -157,18 +163,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
     async function fetchTournamentHistory(): Promise<void> {
         console.log("🏆 Début du chargement de l'historique des tournois...");
         console.log("🎯 ID utilisateur cible:", targetUserId);
-        
-        const textToTranslate: string[] = [
-            "1er",
-            "2ème",
-            "3ème"
-        ];
-
-        const [
-            translatedFirst,
-            translatedSecond,
-            translatedThird
-        ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
         try {
             historyContainer.innerHTML = `<p class='text-white'>${translatedLoading}</p>`;
             
@@ -273,7 +267,7 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                     }
                 });
     
-                let positionText = translateUnclassified;
+                let positionText = translatedUnclassified;
                 let positionColor = "bg-gray-600";
                 
                 console.log(`- Recherche du résultat de ${profileUsername} dans le classement:`, ranking);
@@ -301,15 +295,15 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                     
                     if (userEntry) {
                         if (userEntry.includes("🏆")) {
-                            positionText = `🏆 ${translatedFirst}`;
+                            positionText = `🏆 ${translatedFirstPos}`;
                             positionColor = "bg-yellow-500";
                             console.log(`🥇 Vainqueur trouvé: ${profileUsername}`);
                         } else if (userEntry.includes("🥈")) {
-                            positionText = `🥈 ${translatedSecond}`;
+                            positionText = `🥈 ${translatedSecondPos}`;
                             positionColor = "bg-gray-400";
                             console.log(`🥈 Finaliste trouvé: ${profileUsername}`);
                         } else if (userEntry.includes("🥉")) {
-                            positionText = `🥉 ${translatedThird}`;
+                            positionText = `🥉 ${translatedThirdPos}`;
                             positionColor = "bg-orange-500";
                             console.log(`🥉 Demi-finaliste trouvé: ${profileUsername}`);
                         } else {
