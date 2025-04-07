@@ -92,17 +92,27 @@ export default async function Sidebar(): Promise<HTMLElement> {
     statusText.className = "text-sm text-gray-400";
 
     async function updateStatus() {
-        const users = await getUsers();
-        const currentUser = users.find(user => user.id === state.user?.id);
-        
-        if (currentUser) {
-            statusIndicator.className = `w-2 h-2 rounded-full mr-2 ${currentUser.status === "online" ? "bg-green-500" : "bg-red-500"}`;
-            statusText.innerHTML = currentUser.status === "online" ?  (localStorage.getItem("language") == "fr" ? "En ligne" :  await translateText("online")) : (localStorage.getItem("language") == "fr" ? "Hors ligne" :  await translateText("offline"));
+        try {
+            const users = await getUsers();
+            const currentUser = users.find(user => user.id === state.user?.id);
+            
+            if (currentUser) {
+                statusIndicator.className = `w-2 h-2 rounded-full mr-2 ${currentUser.status === "online" ? "bg-green-500" : "bg-red-500"}`;
+                statusText.innerHTML = currentUser.status === "online" ?  (localStorage.getItem("language") == "fr" ? "En ligne" :  await translateText("online")) : (localStorage.getItem("language") == "fr" ? "Hors ligne" :  await translateText("offline"));
+                console.log("État utilisateur mis à jour:", currentUser.status);
+            }
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour du statut:", error);
         }
     }
 
     updateStatus();
-    setInterval(updateStatus, 5000);
+    const statusInterval = setInterval(updateStatus, 5000);
+    
+    // Nettoyage de l'intervalle lorsque le composant est supprimé
+    sidebar.addEventListener("remove", () => {
+        clearInterval(statusInterval);
+    });
     statusContainer.append(statusIndicator, statusText);
     userContainer.append(avatarContainer, username, statusContainer);
 
@@ -421,15 +431,41 @@ export default async function Sidebar(): Promise<HTMLElement> {
     // Mise à jour du statut des amis via WebSocket avec notification
     connectToWebSocket(String(state.user.id), async (message) => {
         if (message.type === "user_status") {
+            console.log("📢 Mise à jour du statut de l'utilisateur:", message.userId, "->", message.status);
+            
+            // Mise à jour de l'indicateur de statut principal si c'est l'utilisateur actuel
+            if (message.userId === state.user.id) {
+                statusIndicator.className = `w-2 h-2 rounded-full mr-2 ${message.status === "online" ? "bg-green-500" : "bg-red-500"}`;
+                statusText.innerHTML = message.status === "online" ? 
+                    (localStorage.getItem("language") == "fr" ? "En ligne" : await translateText("online")) : 
+                    (localStorage.getItem("language") == "fr" ? "Hors ligne" : await translateText("offline"));
+                
+                // Mettre à jour le bouton de reconnexion
+                if (wsReconnectBtn) {
+                    wsReconnectBtn.classList.add("bg-green-700");
+                    wsReconnectBtn.innerHTML = "✅";
+                    setTimeout(() => {
+                        wsReconnectBtn.classList.remove("bg-green-700");
+                        wsReconnectBtn.innerHTML = "🔄";
+                    }, 2000);
+                }
+            }
+            
+            // Mise à jour dans la liste d'amis
             const friendElement = document.getElementById(`friend-${message.userId}`);
             if (friendElement) {
                 friendElement.className = `flex items-center justify-between p-2 ${message.status === "online" ? "bg-green-900/30" : "bg-gray-700/50"} rounded-lg group`;
                 const statusSpan = friendElement.querySelector(".text-xs");
                 if (statusSpan) {
                     statusSpan.className = `text-xs ${message.status === "online" ? "text-green-400" : "text-gray-400"}`;
-                    statusSpan.innerHTML = message.status === "online" ? (localStorage.getItem("language") == "fr" ? "🟢 En ligne" :  "🟢 " + await translateText("online")) : (localStorage.getItem("language") == "fr" ? "⭘ Hors ligne" :  "⭘ " + await translateText("offline"));
+                    statusSpan.innerHTML = message.status === "online" ? 
+                        (localStorage.getItem("language") == "fr" ? "🟢 En ligne" : "🟢 " + await translateText("online")) : 
+                        (localStorage.getItem("language") == "fr" ? "⭘ Hors ligne" : "⭘ " + await translateText("offline"));
                 }
             }
+            
+            // Forcer la mise à jour du statut global
+            updateStatus();
         }
     });
 
@@ -437,6 +473,28 @@ export default async function Sidebar(): Promise<HTMLElement> {
     
     const languageDiv: HTMLDivElement = document.createElement("div");
     languageDiv.className = "mt-auto mb-4 flex p-3 flex-row flex-wrap justify-around items-center";
+    
+    // Bouton de reconnexion WebSocket
+    const wsReconnectBtn: HTMLButtonElement = document.createElement("button");
+    wsReconnectBtn.innerHTML = "🔄";
+    wsReconnectBtn.title = "Reconnecter WebSocket";
+    wsReconnectBtn.className = "px-2 py-1 m-1 border-2 border-purple-500/75 rounded hover:bg-purple-700 duration-500";
+    wsReconnectBtn.onclick = () => {
+        if (state.socket) {
+            state.socket.close();
+            state.socket = null;
+        }
+        connectToWebSocket(String(state.user.id), async (message) => {
+            console.log("📢 Reconnexion WebSocket - Message reçu:", message);
+            if (message.type === "user_status") {
+                updateStatus();
+            }
+        });
+        wsReconnectBtn.classList.add("bg-purple-700");
+        setTimeout(() => wsReconnectBtn.classList.remove("bg-purple-700"), 2000);
+    };
+    languageDiv.appendChild(wsReconnectBtn);
+    
     const btnEN: HTMLButtonElement = document.createElement("button");
     const btnES: HTMLButtonElement = document.createElement("button");
     const btnFR: HTMLButtonElement = document.createElement("button");

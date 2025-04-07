@@ -5,7 +5,7 @@ module.exports = function (fastify, opts, done) {
     fastify.get("/ws", { websocket: true }, (connection, req) => {
         console.log("🔍 Connexion WebSocket détectée, URL:", req.url);
 
-        // ✅ Extraire userId de l’URL
+        // ✅ Extraire userId de l'URL
         const url = new URL(req.url, `http://${req.headers.host}`);
         const userId = url.searchParams.get("userId");
 
@@ -48,13 +48,44 @@ module.exports = function (fastify, opts, done) {
             clearInterval(pingInterval); // Arrêter le ping
 
             // 🔹 Mettre à jour le statut de l'utilisateur hors ligne
-            updateUserStatus(userId, "offline");
-            broadcastMessage({ type: "user_status", userId, status: "offline" });
+            // Attendre un court délai pour les rafraîchissements de page
+            // afin d'éviter les changements d'état incorrects
+            setTimeout(() => {
+                // Vérifier si l'utilisateur s'est reconnecté entre-temps
+                if (!usersOnline.has(userId)) {
+                    console.log(`⏱ Délai écoulé, utilisateur ${userId} toujours déconnecté.`);
+                    updateUserStatus(userId, "offline");
+                    broadcastMessage({ type: "user_status", userId, status: "offline" });
+                } else {
+                    console.log(`✅ L'utilisateur ${userId} s'est reconnecté rapidement, statut maintenu.`);
+                }
+            }, 2000); // Délai de 2 secondes avant de considérer l'utilisateur comme réellement déconnecté
         });
 
         // 🔹 Gérer les messages reçus
         connection.on("message", (message) => {
-            console.log(`📩 Message reçu de ${userId}:`, message.toString());
+            try {
+                const data = JSON.parse(message.toString());
+                console.log(`📩 Message reçu de ${userId}:`, data);
+                
+                // Traiter les messages user_status spécialement
+                if (data.type === "user_status") {
+                    console.log(`📢 Mise à jour du statut utilisateur ${data.userId} → ${data.status}`);
+                    updateUserStatus(data.userId, data.status);
+                    
+                    // Diffuser le statut à tous les utilisateurs connectés
+                    if (data.isRefresh) {
+                        console.log(`🔄 Message de rafraîchissement, mise à jour du statut sans broadcast`);
+                    } else {
+                        broadcastMessage(data);
+                    }
+                }
+                
+                // Autres types de messages peuvent être traités ici
+                
+            } catch (err) {
+                console.error(`❌ Erreur lors du traitement du message:`, err);
+            }
         });
     });
 
@@ -92,9 +123,15 @@ setInterval(() => {
         } else {
             console.log(`❌ Déconnexion détectée pour ${userId}`);
             usersOnline.delete(userId);
-            updateUserStatus(userId, "offline");
-            broadcastMessage({ type: "user_status", userId, status: "offline" });
+            
+            // Même logique de délai pour les déconnexions détectées par ping
+            setTimeout(() => {
+                if (!usersOnline.has(userId)) {
+                    updateUserStatus(userId, "offline");
+                    broadcastMessage({ type: "user_status", userId, status: "offline" });
+                }
+            }, 2000);
         }
     }
-}, 5000); // Vérification toutes les 5 secondes
+}, 5000);
 
