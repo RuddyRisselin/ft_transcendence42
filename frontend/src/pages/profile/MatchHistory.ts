@@ -138,6 +138,17 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
     }
 
     async function fetchTournamentHistory(): Promise<void> {
+        const textToTranslate: string[] = [
+            "1er",
+            "2ème",
+            "3ème"
+        ];
+
+        const [
+            translatedFirst,
+            translatedSecond,
+            translatedThird
+        ] = await Promise.all(textsToTranslate.map(text => translateText(text)));
         try {
             historyContainer.innerHTML = `<p class='text-white'>${translatedLoading}</p>`;
     
@@ -220,16 +231,16 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                             break;
                         }
                     }
-                    
+
                     if (userEntry) {
                         if (userEntry.indexOf("🏆") >= 0) {
-                            positionText = "🏆 1er";
+                            positionText = `🏆 ${translatedFirst}`;
                             positionColor = "bg-yellow-500";
                         } else if (userEntry.indexOf("🥈") >= 0) {
-                            positionText = "🥈 2e";
+                            positionText = `🥈 ${translatedSecond}`;
                             positionColor = "bg-gray-400";
                         } else if (userEntry.indexOf("🥉") >= 0) {
-                            positionText = "🥉 3e";
+                            positionText = `🥉 ${translatedThird}`;
                             positionColor = "bg-orange-500";
                         } else {
                             const position: number = Math.floor(ranking.indexOf(userEntry) / (players.length / 4)) + 4;
