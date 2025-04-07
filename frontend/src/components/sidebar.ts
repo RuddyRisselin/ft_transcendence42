@@ -72,7 +72,7 @@ export default async function Sidebar(): Promise<HTMLElement> {
     avatarContainer.className = "relative p-1 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500";
     
     const avatar: HTMLImageElement = document.createElement("img");
-    avatar.src = `${API_CONFIG.API_BASE_URL}/images/` + state.user.avatar || `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
+    avatar.src = `${API_CONFIG.API_BASE_URL}/images/${state.user?.avatar || 'default.jpg'}`;
     avatar.className = "w-16 h-16 rounded-full border-2 border-gray-900";
     avatarContainer.appendChild(avatar);
 
