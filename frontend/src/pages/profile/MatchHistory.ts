@@ -209,6 +209,14 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
     
             // Collecter tous les IDs des joueurs
             const allPlayerIds = new Set<number>();
+            // Garder aussi un mappage inversé des usernames vers IDs
+            const usernameToIdMap = new Map<string, number>();
+            
+            if (userId) {
+                // Ajouter l'ID de l'utilisateur consulté au mappage
+                usernameToIdMap.set(profileUsername, Number(userId));
+            }
+            
             tournaments.forEach(tournament => {
                 const players = typeof tournament.players === "string" 
                     ? JSON.parse(tournament.players) 
@@ -231,7 +239,11 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                     const userResponse: Response = await fetch(`/api/users?ids=${Array.from(allPlayerIds).join(",")}`);
                     if (userResponse.ok) {
                         const users: { id: number; username: string }[] = await userResponse.json();
-                        users.forEach(user => userMap.set(user.id, user.username));
+                        users.forEach(user => {
+                            userMap.set(user.id, user.username);
+                            // Mettre à jour aussi le mappage inversé
+                            usernameToIdMap.set(user.username, user.id);
+                        });
                         console.log("✅ Noms d'utilisateurs récupérés:", userMap);
                     } else {
                         console.error("❌ Erreur API lors de la récupération des utilisateurs:", await userResponse.text());
@@ -270,56 +282,35 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 let positionText = translatedUnclassified;
                 let positionColor = "bg-gray-600";
                 
-                console.log(`- Recherche du résultat de ${profileUsername} dans le classement:`, ranking);
+                // Trouver le gagnant du tournoi
+                let tournamentWinner = "?";
                 
                 if (ranking && Array.isArray(ranking)) {
-                    let userEntry: string | null = null;
-                    let userIndex: number = -1;
-                    
-                    // Rechercher l'entrée correspondant au profil consulté avec une recherche plus souple
-                    for (let i = 0; i < ranking.length; i++) {
-                        const entry: string = String(ranking[i]);
+                    // Le gagnant est toujours le premier élément du classement 
+                    // et contient généralement l'emoji 🏆
+                    if (ranking.length > 0) {
+                        const winnerEntry = String(ranking[0]);
+                        // Enlever l'emoji du nom si présent
+                        tournamentWinner = winnerEntry.replace(/🏆\s*/, '').trim();
                         
-                        // Différentes façons que le nom peut apparaître dans le classement
-                        if (entry === profileUsername || 
-                            entry.includes(` ${profileUsername}`) || 
-                            entry.includes(`${profileUsername} `) ||
-                            entry.endsWith(profileUsername)) {
-                            
-                            userEntry = entry;
-                            userIndex = i;
-                            console.log(`✓ Position trouvée: ${i+1}, entrée: "${entry}"`);
-                            break;
+                        // Si le gagnant est un ID numérique, essayer de le convertir en nom
+                        if (!isNaN(Number(tournamentWinner)) && userMap.has(Number(tournamentWinner))) {
+                            tournamentWinner = userMap.get(Number(tournamentWinner)) || tournamentWinner;
                         }
+                        
+                        console.log(`👑 Gagnant du tournoi: ${tournamentWinner}`);
                     }
                     
-                    if (userEntry) {
-                        if (userEntry.includes("🏆")) {
-                            positionText = `🏆 ${translatedFirstPos}`;
-                            positionColor = "bg-yellow-500";
-                            console.log(`🥇 Vainqueur trouvé: ${profileUsername}`);
-                        } else if (userEntry.includes("🥈")) {
-                            positionText = `🥈 ${translatedSecondPos}`;
-                            positionColor = "bg-gray-400";
-                            console.log(`🥈 Finaliste trouvé: ${profileUsername}`);
-                        } else if (userEntry.includes("🥉")) {
-                            positionText = `🥉 ${translatedThirdPos}`;
-                            positionColor = "bg-orange-500";
-                            console.log(`🥉 Demi-finaliste trouvé: ${profileUsername}`);
-                        } else {
-                            // Position calculée en fonction de l'index dans le classement
-                            const position: number = userIndex >= 0 ? userIndex + 1 : 4;
-                            positionText = `${position}${translatedPos}`;
-                            positionColor = "bg-gray-700";
-                            console.log(`🏅 Position calculée: ${position}`);
-                        }
+                    // Indiquer si le joueur affiché est le gagnant
+                    if (tournamentWinner === profileUsername) {
+                        positionText = `🏆 ${translatedWin}`;
+                        positionColor = "bg-yellow-500";
                     } else {
-                        console.log(`⚠️ Utilisateur non trouvé dans le classement, affichage par défaut`);
+                        positionText = `${translatedWin}: ${tournamentWinner}`;
+                        positionColor = "bg-gray-700";
                     }
-                } else {
-                    console.log(`⚠️ Pas de classement disponible pour ce tournoi`);
                 }
-    
+                
                 tournamentItem.innerHTML = `
                     <p class="font-bold text-lg text-blue-400">${translatedTournament} n°${tournament.id} ${translatedOf} ${date}</p>
                     <p class="text-sm text-gray-300">Joueurs : ${playerNames.join(", ")}</p>

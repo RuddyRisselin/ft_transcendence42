@@ -38,7 +38,54 @@ async function saveTournamentToHistory() {
     const maxRound: number = bracket.length;
     eliminatedInRound[winner] = maxRound;
 
-    // Étape 3 - Grouper les joueurs par round d'élimination
+    // Étape 3 - Traitement spécial pour la demi-finale (3ème et 4ème place)
+    // Trouver les joueurs des demi-finales (avant-dernier round)
+    const semiFinalsRound = maxRound - 1;
+    if (semiFinalsRound >= 0 && bracket[semiFinalsRound]) {
+        // Trouver le joueur qui a perdu contre le gagnant final (finaliste/2ème place)
+        const finalRound = bracket[maxRound - 1]; // La finale
+        const runnerUp = finalRound.matchups[0]?.player1 === winner 
+            ? finalRound.matchups[0]?.player2 
+            : finalRound.matchups[0]?.player1;
+
+        // Collecter tous les joueurs éliminés en demi-finale
+        const semifinalists: string[] = [];
+        const semifinalistsMatches: any[] = []; // Pour stocker quel joueur a perdu contre qui
+
+        for (const match of bracket[semiFinalsRound].matchups) {
+            if (match.player1 && match.player1 !== match.winner) {
+                semifinalists.push(match.player1);
+                semifinalistsMatches.push({
+                    player: match.player1,
+                    winner: match.winner
+                });
+            }
+            if (match.player2 && match.player2 !== match.winner) {
+                semifinalists.push(match.player2);
+                semifinalistsMatches.push({
+                    player: match.player2,
+                    winner: match.winner
+                });
+            }
+        }
+
+        // Ajuster les positions des demi-finalistes
+        if (semifinalists.length > 0) {
+            // Assigner la position 3 au demi-finaliste qui a perdu contre le gagnant final
+            // et la position 4 au demi-finaliste qui a perdu contre le finaliste (2ème place)
+            semifinalistsMatches.forEach(({ player, winner: matchWinner }) => {
+                if (matchWinner === winner) { // Celui qui a perdu contre le champion
+                    // Ce joueur a perdu contre le gagnant final, il est donc 3ème
+                    eliminatedInRound[player] = semiFinalsRound + 0.6; // 3ème place (valeur plus haute)
+                } else if (matchWinner === runnerUp) { // Celui qui a perdu contre le finaliste
+                    // Ce joueur a perdu contre le finaliste, il est donc 4ème
+                    eliminatedInRound[player] = semiFinalsRound + 0.5; // 4ème place (valeur plus basse)
+                }
+            });
+        }
+    }
+
+    // Étape 4 - Grouper les joueurs par round d'élimination
     const roundGroups: Record<number, string[]> = {};
     for (const [player, round] of Object.entries(eliminatedInRound)) {
         if (!roundGroups[round]) {
@@ -47,7 +94,7 @@ async function saveTournamentToHistory() {
         roundGroups[round].push(player);
     }
 
-    // Étape 4 - Attribuer un classement égal aux joueurs éliminés au même round
+    // Étape 5 - Attribuer un classement égal aux joueurs éliminés au même round
     const sortedRounds: number[] = Object.keys(roundGroups)
         .map(Number)
         .sort((a, b) => b - a); // Du gagnant (plus haut round) au premier éliminé
@@ -65,7 +112,7 @@ async function saveTournamentToHistory() {
         }
     }
 
-    // Étape 5 - Envoi à l'API
+    // Étape 6 - Envoi à l'API
     const body = {
         players,
         ranking: finalRanking
