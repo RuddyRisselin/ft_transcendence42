@@ -8,23 +8,23 @@ export const state = {
         player1: string;
         player2: string;
         player2Auth: null;
-        mode: "time" | "points"; // ✅ Mode de jeu (temps ou points)
-        target: number; // ✅ Objectif (temps ou points)
+        mode: "points"; // ✅ Mode de jeu (points uniquement)
+        target: number; // ✅ Objectif (points)
     } | null,
 
     // ✅ Match contre IA
     aiGame: null as {
         level: string; // Niveau de difficulté de l'IA
-        mode?: "time" | "points"; // Mode de jeu (temps ou points)
-        target?: number; // Objectif (temps ou points)
+        mode?: "points"; // Mode de jeu (points uniquement)
+        target?: number; // Objectif (points)
     } | null,
     
     // ✅ AJOUT: Structure pour le match contre l'IA actif
     aiMatch: null as {
         player: string;
         level: string; // Niveau de difficulté de l'IA (easy, medium, hard)
-        mode: "time" | "points"; // Mode de jeu (temps ou points)
-        target: number; // Objectif (temps ou points)
+        mode: "points"; // Mode de jeu (points uniquement)
+        target: number; // Objectif (points)
         scoreHuman: number; // Score du joueur humain
         scoreAI: number; // Score de l'IA
     } | null,
@@ -33,8 +33,8 @@ export const state = {
     tournament: null as {
         players: string[]; // ✅ Liste des joueurs du tournoi
         matchs: number;
-        mode: "time" | "points"; // ✅ Mode du tournoi
-        target: number; // ✅ Objectif (temps ou points)
+        mode: "points"; // ✅ Mode du tournoi (points uniquement)
+        target: number; // ✅ Objectif (points)
         bracket: { 
             round: number; 
             matchups: { 

@@ -299,7 +299,7 @@ const [
     
     const modeIcon = document.createElement("div");
     modeIcon.className = "text-2xl mb-2 text-purple-300";
-    modeIcon.innerHTML = state.tournament.mode === "time" ? "⏱️" : "🎯";
+    modeIcon.innerHTML = "🎯";
     
     const modeTitle = document.createElement("div");
     modeTitle.className = "text-sm text-indigo-300 mb-1";
@@ -307,9 +307,7 @@ const [
     
     const modeValue = document.createElement("div");
     modeValue.className = "text-lg font-medium text-white";
-    modeValue.innerHTML = state.tournament.mode === "time" 
-        ? `${state.tournament.target / 60} ${translatedMinutes}` 
-        : `${state.tournament.target} ${translatedPoints}`;
+    modeValue.innerHTML = `${state.tournament.target} ${translatedPoints}`;
     
     modeInfo.append(modeIcon, modeTitle, modeValue);
     

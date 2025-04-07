@@ -110,51 +110,9 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     const matchSettingsContainer = document.createElement("div");
     matchSettingsContainer.className = "w-full space-y-6 hidden"; // Caché tant que le Joueur 2 n'est pas connecté
 
-    // ✅ Sélection du mode de jeu
-    const modeContainer = document.createElement("div");
-    modeContainer.className = "w-full space-y-3";
-    
-    const modeLabel = document.createElement("div");
-    modeLabel.className = "text-xl font-medium text-blue-200";
-    modeLabel.innerHTML = "";
-
-    const modeSelect = document.createElement("select");
-    modeSelect.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
-
-    const optionTime: HTMLOptionElement = document.createElement("option");
-    optionTime.value = "time";
-    optionTime.innerHTML = "⏳ " + translatedMatchTime;
-
-    const optionPoints: HTMLOptionElement = document.createElement("option");
-    optionPoints.value = "points";
-    optionPoints.innerHTML = "🏆 " + translatedMatchPoint;
-
-    modeSelect.append(optionTime, optionPoints);
-    modeContainer.append(modeLabel, modeSelect);
-
-    // ✅ Options de durée
-    const timeContainer = document.createElement("div");
-    timeContainer.className = "w-full space-y-3";
-    
-    const timeLabel = document.createElement("div");
-    timeLabel.className = "text-xl font-medium text-blue-200";
-    timeLabel.innerHTML = translatedTimingMatch;
-
-    const timeOptions = document.createElement("select");
-    timeOptions.className = "w-full px-4 py-3 rounded-lg text-white shadow-md border-2 border-blue-600 bg-blue-900/70 focus:border-blue-400 focus:ring focus:ring-blue-400/50 transition-all";
-
-    [120, 300, 600].forEach(time => {
-        const option: HTMLOptionElement = document.createElement("option");
-        option.value = String(time);
-        option.innerHTML = `⏳ ${Math.floor(time / 60)} ${translatedMinute} ${time % 60 ? (time % 60) + ' sec' : ''}`;
-        timeOptions.appendChild(option);
-    });
-    
-    timeContainer.append(timeLabel, timeOptions);
-
     // ✅ Options de points
     const pointsContainer = document.createElement("div");
-    pointsContainer.className = "w-full space-y-3 hidden";
+    pointsContainer.className = "w-full space-y-3";
     
     const pointsLabel = document.createElement("div");
     pointsLabel.className = "text-xl font-medium text-blue-200";
@@ -180,16 +138,9 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
     // ✅ Affichage dynamique des options de match
     function updateMatchOptions() {
-        if (modeSelect.value === "time") {
-            timeContainer.classList.remove("hidden");
-            pointsContainer.classList.add("hidden");
-        } else {
-            timeContainer.classList.add("hidden");
-            pointsContainer.classList.remove("hidden");
-        }
+        // Maintenant que nous n'avons plus qu'un seul mode (points),
+        // cette fonction n'a plus rien à faire
     }
-    modeSelect.addEventListener("change", updateMatchOptions);
-    updateMatchOptions();
 
     // ✅ Affichage du mot de passe et du bouton après la sélection d'un joueur
     function showLoginFields() {
@@ -253,14 +204,14 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     
         state.localMatch.player1 = state.user.username;
         state.localMatch.player2 = player2Select.value;
-        state.localMatch.mode = modeSelect.value as "time" | "points";
-        state.localMatch.target = modeSelect.value === "time" ? parseInt(timeOptions.value) : parseInt(pointsOptions.value);
+        state.localMatch.mode = "points";
+        state.localMatch.target = parseInt(pointsOptions.value);
     
         navigateTo(new Event("click"), "/game-local");
     };
 
     // Assembler tous les éléments
-    matchSettingsContainer.append(modeContainer, timeContainer, pointsContainer, startGameButton);
+    matchSettingsContainer.append(pointsContainer, startGameButton);
     mainSection.append(playerSelectionContainer, passwordContainer, connectButton, matchSettingsContainer);
     container.append(title, mainSection);
     

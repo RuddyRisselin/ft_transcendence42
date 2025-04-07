@@ -350,37 +350,34 @@ export default async function GameTournament() {
         }
     };
 
-    // ✅ Mode "nombre de points"
-    if (state.tournament.mode === "points") {
-        // Pour capturer les scores à chaque point marqué
-        startGame(gameCanvas, (scorer: "left" | "right") => {
-            if (matchEnded) return;
-            
-            // Mettre à jour les scores locaux
-            if (scorer === "left") {
-                player1Score += 1;
-            } else {
-                player2Score += 1;
-            }
-            
-            // Mettre à jour l'affichage
-            updateScoreBoard();
-            
-            // Vérifier si un joueur a gagné
-            if (!state.tournament) return; // Vérification pour éviter l'erreur
-            
-            if (player1Score >= state.tournament.target) {
-                endMatch(player1);
-            } else if (player2Score >= state.tournament.target) {
-                endMatch(player2);
-            }
-        });
+    // Mode "nombre de points" (seul mode disponible)
+    startGame(gameCanvas, (scorer: "left" | "right") => {
+        if (matchEnded) return;
         
-        // Réinitialiser les vitesses des raquettes
-        resetPaddleSpeeds();
-        paddle1.speed = PLAYER_PADDLE_SPEED;
-        paddle2.speed = PLAYER_PADDLE_SPEED;
-    }
+        // Mettre à jour les scores locaux
+        if (scorer === "left") {
+            player1Score += 1;
+        } else {
+            player2Score += 1;
+        }
+        
+        // Mettre à jour l'affichage
+        updateScoreBoard();
+        
+        // Vérifier si un joueur a gagné
+        if (!state.tournament) return; // Vérification pour éviter l'erreur
+        
+        if (player1Score >= state.tournament.target) {
+            endMatch(player1);
+        } else if (player2Score >= state.tournament.target) {
+            endMatch(player2);
+        }
+    });
+    
+    // Réinitialiser les vitesses des raquettes
+    resetPaddleSpeeds();
+    paddle1.speed = PLAYER_PADDLE_SPEED;
+    paddle2.speed = PLAYER_PADDLE_SPEED;
 
     // ✅ NOUVEAU: Fonction pour sauvegarder l'état du jeu
     function saveGameState() {

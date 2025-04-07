@@ -13,7 +13,6 @@ export enum GameMode {
 export interface GameOptions {
     mode: GameMode;
     scoreLimit?: number;
-    timeLimit?: number;
     theme?: GameTheme;
     aiDifficulty?: "easy" | "medium" | "hard";
     callback?: (winner: string) => void;

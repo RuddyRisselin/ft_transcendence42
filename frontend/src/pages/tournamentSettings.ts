@@ -271,28 +271,6 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     optionsTitle.className = "text-2xl font-bold text-purple-200 mb-4";
     step3.appendChild(optionsTitle);
 
-    const modeContainer = document.createElement("div");
-    modeContainer.className = "space-y-2";
-    
-    const modeLabel = document.createElement("label");
-    modeLabel.innerText = translatedGameMode;
-    modeLabel.className = "text-lg font-medium text-purple-200";
-    
-    const modeSelect = document.createElement("select");
-    modeSelect.className = "w-full px-4 py-3 rounded-xl text-white bg-indigo-900/70 border-2 border-indigo-600 shadow-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none transition-all";
-    
-    const optionTime: HTMLOptionElement = document.createElement("option");
-    optionTime.value = translatedTime;
-    optionTime.innerHTML = "⏳ " +  translatedMatchTime;
-
-    const optionPoints: HTMLOptionElement = document.createElement("option");
-    optionPoints.value = translatedPoints;
-    optionPoints.innerHTML = "🏆 " + translatedMatchPoint;
-
-    modeSelect.append(optionTime, optionPoints);
-    modeContainer.append(modeLabel, modeSelect);
-    step3.appendChild(modeContainer);
-
     const targetContainer = document.createElement("div");
     targetContainer.className = "space-y-2 mt-4";
     
@@ -303,22 +281,17 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     const targetSelect = document.createElement("select");
     targetSelect.className = "w-full px-4 py-3 rounded-xl text-white bg-indigo-900/70 border-2 border-indigo-600 shadow-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none transition-all";
 
-    function updateTargetOptions() {
-        targetSelect.innerHTML = "";
-        const options: number[] = modeSelect.value === "time" ? [120, 300, 600] : [5, 10, 15];
-        options.forEach(async value => {
-            const option: HTMLOptionElement = document.createElement("option");
-            option.value = String(value);
-            option.innerHTML = modeSelect.value === "time" ? `${value / 60} ${translatedMin}` : `${value} ${translatedPoint}`;
-            targetSelect.appendChild(option);
-        });
-    }
+    // Points options
+    const options: number[] = [5, 10, 15];
+    options.forEach(value => {
+        const option: HTMLOptionElement = document.createElement("option");
+        option.value = String(value);
+        option.innerHTML = `${value} ${translatedPoint}`;
+        targetSelect.appendChild(option);
+    });
     
     targetContainer.append(targetLabel, targetSelect);
     step3.appendChild(targetContainer);
-    
-    modeSelect.addEventListener("change", updateTargetOptions);
-    updateTargetOptions();
 
     const startTournamentButton = document.createElement("button");
     startTournamentButton.className = "w-full mt-8 px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-500 hover:to-indigo-600 text-white rounded-xl shadow-xl transition-all font-medium text-lg flex items-center justify-center";
@@ -336,7 +309,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         state.tournament = {
             players: Array.from(connectedPlayers),
             matchs: Array.from(connectedPlayers).length - 1,
-            mode: modeSelect.value as "time" | "points",
+            mode: "points", // Toujours en mode points
             target: parseInt(targetSelect.value),
             bracket: [],
         };

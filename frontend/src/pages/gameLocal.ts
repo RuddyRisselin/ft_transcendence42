@@ -308,8 +308,7 @@ export default async function GameLocal() {
     // Utilisation du nouveau système de jeu avec thèmes
     const gameOptions: GameOptions = {
         mode: GameMode.LOCAL,
-        scoreLimit: state.localMatch?.mode === "points" ? state.localMatch.target : undefined,
-        timeLimit: state.localMatch?.mode === "time" ? state.localMatch.target : undefined,
+        scoreLimit: state.localMatch?.target,
         theme: localTheme,
         callback: (winner: string) => {
             if (matchEnded || !state.localMatch) return;
@@ -321,76 +320,30 @@ export default async function GameLocal() {
         }
     };
 
-    // ✅ Mode "nombre de points"
-    if (state.localMatch.mode === "points") {
-        const onScore = (scorer: "left" | "right") => {
-            if (matchEnded || !state.localMatch) return;
+    // Mode "nombre de points" (maintenant le seul mode disponible)
+    const onScore = (scorer: "left" | "right") => {
+        if (matchEnded || !state.localMatch) return;
 
-            if (scorer === "left") {
-                player1Score += 1;
-            } else {
-                player2Score += 1;
-            }
+        if (scorer === "left") {
+            player1Score += 1;
+        } else {
+            player2Score += 1;
+        }
 
-            updateScoreBoard();
+        updateScoreBoard();
 
-            if (player1Score >= state.localMatch.target) {
-                endMatch(state.localMatch.player1);
-            } else if (player2Score >= state.localMatch.target) {
-                endMatch(state.localMatch.player2);
-            }
-        };
-        
-        // Initialiser le jeu avec le callback personnalisé pour le score
-        startGame(gameCanvas, onScore);
-        
-        // Réinitialiser les vitesses des raquettes
-        resetPaddleSpeeds();
-    }
-
-    // ✅ Mode "temps limité"
-    if (state.localMatch.mode === "time") {
-        let timeLeft = state.localMatch.target;
-        
-        const timerDisplay: HTMLDivElement = document.createElement("div");
-        timerDisplay.className = "text-2xl font-bold mt-6 p-4 rounded-xl bg-black/40 border border-blue-500/30 text-blue-200";
-        translateText(" Temps restant: ").then((translated) => {
-            timerDisplay.innerHTML = `⏳ ${translated} ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
-        })
-
-        container.appendChild(timerDisplay);
-
-        const timerInterval = setInterval(() => {
-            if (matchEnded || !state.localMatch) {
-                clearInterval(timerInterval);
-                return;
-            }
-
-            timeLeft--;
-            translateText(" Temps restant: ").then((translated) => {
-                timerDisplay.innerHTML = `⏳ ${translated} ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
-            })
-
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                endMatch(player1Score > player2Score ? state.localMatch.player1 : 
-                        player1Score < player2Score ? state.localMatch.player2 : 
-                        "Match nul!");
-            }
-        }, 1000);
-
-        startGame(gameCanvas, (scorer: "left" | "right") => {
-            if (matchEnded || !state.localMatch) return;
-
-            if (scorer === "left") {
-                player1Score += 1;
-            } else if (scorer === "right") {
-                player2Score += 1;
-            }
-
-            updateScoreBoard();
-        });
-    }
+        if (player1Score >= state.localMatch.target) {
+            endMatch(state.localMatch.player1);
+        } else if (player2Score >= state.localMatch.target) {
+            endMatch(state.localMatch.player2);
+        }
+    };
+    
+    // Initialiser le jeu avec le callback personnalisé pour le score
+    startGame(gameCanvas, onScore);
+    
+    // Réinitialiser les vitesses des raquettes
+    resetPaddleSpeeds();
 
     setupControls(paddle1, paddle2, gameCanvas.height);
 
