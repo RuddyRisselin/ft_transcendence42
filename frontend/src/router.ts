@@ -1,6 +1,7 @@
 import Home from "./pages/home";
 import Game from "./pages/game";
 import Dashboard from "./pages/profile/Dashboard";
+import UserProfile from "./pages/profile/UserProfile";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Matches from "./pages/matches";
@@ -137,9 +138,35 @@ export function initRouter() {
       }
       
       const newPath = window.location.pathname;
-      const page: () => Promise<HTMLElement> | HTMLElement = routes[newPath] || Home;
-      app.innerHTML = "";
-      app.appendChild(await page());
+      
+      // Gestion des routes avec paramètres (comme /profile/123)
+      const profilePattern = /^\/profile\/(\d+)$/;
+      const profileMatch = newPath.match(profilePattern);
+      
+      if (profileMatch && profileMatch[1]) {
+        // Si l'URL correspond au pattern de profil utilisateur
+        const userId = Number(profileMatch[1]);
+        console.log("📋 Route de profil utilisateur détectée, userId:", userId);
+        app.innerHTML = "";
+        if (isAuthenticated()) {
+          try {
+            const profileComponent = await UserProfile(userId);
+            app.appendChild(profileComponent);
+            console.log("✅ Profil utilisateur rendu avec succès");
+          } catch (error) {
+            console.error("❌ Erreur lors du rendu du profil utilisateur:", error);
+            app.appendChild(await Login());
+          }
+        } else {
+          console.log("⚠️ Utilisateur non authentifié, redirection vers Login");
+          app.appendChild(await Login());
+        }
+      } else {
+        // Routes normales
+        const page: () => Promise<HTMLElement> | HTMLElement = routes[newPath] || Home;
+        app.innerHTML = "";
+        app.appendChild(await page());
+      }
 
       // Réinitialiser la sidebar si l'utilisateur est connecté
       if (state.user && !document.querySelector(".sidebar-component")) {

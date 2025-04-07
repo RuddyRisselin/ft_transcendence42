@@ -2,7 +2,6 @@ import { state } from "../state";
 import { logout, connectToWebSocket } from "../services/auth";
 import { getUsers } from "../services/userService";
 import { getFriends, getFriendRequests, removeFriend, acceptFriendRequest, rejectFriendRequest, addFriend } from "../services/friendService";
-import FriendProfile from "../pages/profile/FriendProfile";
 import { translateText } from "../translate";
 import { updateLanguage } from "../services/userService";
 import { navigateTo } from "../router";
@@ -464,14 +463,13 @@ export default async function Sidebar(): Promise<HTMLElement> {
             const viewProfileBtn: HTMLButtonElement = document.createElement("button");
             viewProfileBtn.innerHTML = "👤";
             viewProfileBtn.className = "p-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors";
-            viewProfileBtn.onclick = () => {
-                const mainContent = document.querySelector(".flex-1");
-                if (mainContent) {
-                    mainContent.innerHTML = "";
-                    FriendProfile(friend.id).then(container => {
-                        mainContent.appendChild(container);
-                    });
-                }
+            viewProfileBtn.onclick = (event) => {
+                event.preventDefault();
+                const profileUrl = `/profile/${friend.id}`;
+                console.log("🔗 Navigation vers le profil:", profileUrl);
+                window.history.pushState({}, "", profileUrl);
+                window.dispatchEvent(new Event("popstate"));
+                console.log("🔄 Événement popstate déclenché");
             };
 
             const removeBtn: HTMLButtonElement = document.createElement("button");
