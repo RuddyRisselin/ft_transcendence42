@@ -168,21 +168,22 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 return;
             }
     
+            // Collecter tous les IDs des joueurs
             const allPlayerIds = new Set<number>();
             tournaments.forEach(tournament => {
                 const players = typeof tournament.players === "string" 
                     ? JSON.parse(tournament.players) 
                     : tournament.players;
                 
-                players.forEach(player => {
+                players.forEach((player: any) => {
                     if (typeof player === "number") {
                         allPlayerIds.add(player);
                     }
                 });
             });
-    
-            const userMap = new Map<number, string>();
             
+            // Récupérer les noms d'utilisateurs
+            const userMap = new Map<number, string>();
             if (allPlayerIds.size > 0) {
                 try {
                     const userResponse: Response = await fetch(`/api/users?ids=${Array.from(allPlayerIds).join(",")}`);
@@ -194,8 +195,34 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                     console.error("Erreur lors de la récupération des noms des joueurs", error);
                 }
             }
-    
-            tournaments.forEach(tournament => {
+            
+            // Récupérer le nom d'utilisateur cible
+            const targetUsername = userMap.get(targetUserId as number) || 
+                                  (state.user?.id === targetUserId ? state.user.username : null);
+            
+            // Filtrer les tournois auxquels le joueur cible a participé
+            const filteredTournaments = tournaments.filter(tournament => {
+                const players = typeof tournament.players === "string" 
+                    ? JSON.parse(tournament.players) 
+                    : tournament.players;
+                
+                // Vérifier si le joueur a participé au tournoi
+                return players.some((player: any) => {
+                    if (typeof player === "number") {
+                        return player === targetUserId;
+                    } else if (typeof player === "string" && targetUsername) {
+                        return player === targetUsername;
+                    }
+                    return false;
+                });
+            });
+            
+            if (filteredTournaments.length === 0) {
+                historyContainer.innerHTML = `<p class='text-white'>${translatedTournamentNotFound}</p>`;
+                return;
+            }
+            
+            filteredTournaments.forEach(tournament => {
                 const tournamentItem: HTMLDivElement = document.createElement("div");
                 tournamentItem.className = "p-3 rounded-lg text-white text-sm flex flex-col bg-gray-900 border border-gray-700 shadow-lg";
     
@@ -221,12 +248,11 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 let positionColor = "bg-gray-600";
                 
                 if (ranking && Array.isArray(ranking)) {
-                    const username = userId ? userMap.get(userId) : state.user.username;
                     let userEntry: string | null = null;
                     
                     for (let i = 0; i < ranking.length; i++) {
                         const entry: string = String(ranking[i]);
-                        if (entry === username || entry.indexOf(` ${username}`) >= 0 || entry.endsWith(username)) {
+                        if (entry === targetUsername || entry.indexOf(` ${targetUsername}`) >= 0 || entry.endsWith(targetUsername)) {
                             userEntry = entry;
                             break;
                         }
