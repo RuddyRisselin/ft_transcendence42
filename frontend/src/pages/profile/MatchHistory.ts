@@ -98,7 +98,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
         try {
             historyContainer.innerHTML = `<p class='text-white text-center py-2'>${translatedLoading}</p>`;
             
-            // Récupérer le nom d'utilisateur du profil affiché
             let profileUsername = "";
             if (userId && userId !== state.user?.id) {
                 try {
@@ -161,7 +160,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
         try {
             historyContainer.innerHTML = `<p class='text-white'>${translatedLoading}</p>`;
             
-            // Récupérer le nom d'utilisateur du profil consulté
             let profileUsername = "";
             if (userId && userId !== state.user?.id) {
                 try {
@@ -179,7 +177,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 profileUsername = state.user.username;
             }
             
-            // Utiliser le endpoint avec userId comme pour les matchs
             const response: Response = await fetch(`/api/tournaments?userId=${targetUserId}`);
             if (!response.ok) {
                 console.error("Erreur API lors de la récupération des tournois:", await response.text());
@@ -212,7 +209,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 });
             });
             
-            // Récupérer les noms d'utilisateurs
             const userMap = new Map<number, string>();
             if (allPlayerIds.size > 0) {
                 try {
@@ -231,8 +227,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 }
             }
             
-            // Utiliser les tournois directement sans filtrage supplémentaire
-            // puisque l'API a déjà filtré les tournois pour cet utilisateur
             tournaments.forEach(tournament => {
                 
                 const tournamentItem: HTMLDivElement = document.createElement("div");
@@ -259,12 +253,9 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 let positionText = translatedUnclassified;
                 let positionColor = "bg-gray-600";
                 
-                // Trouver le gagnant du tournoi
                 let tournamentWinner = "?";
                 
                 if (ranking && Array.isArray(ranking)) {
-                    // Le gagnant est toujours le premier élément du classement 
-                    // et contient généralement l'emoji 🏆
                     if (ranking.length > 0) {
                         const winnerEntry = String(ranking[0]);
                         tournamentWinner = winnerEntry.replace(/🏆\s*/, '').trim();

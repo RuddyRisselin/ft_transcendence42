@@ -118,7 +118,6 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         }
     };
 
-    // Conteneur pour les entrées de formulaire
     const formFieldsContainer: HTMLDivElement = document.createElement("div");
     formFieldsContainer.className = "w-full space-y-4";
 
@@ -226,7 +225,6 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
         }
     };
 
-    // Activation 2FA
     const div2FA: HTMLDivElement = document.createElement("div");
     div2FA.className = "flex items-center justify-between w-full mt-4";
     

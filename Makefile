@@ -2,6 +2,7 @@ all:
 	docker-compose up --build -d
 
 init:
+	cd frontend && npm install && cd ..
 	cd frontend && npm run build && cd ..
 	cd backend && npm rebuild && cd ..
 

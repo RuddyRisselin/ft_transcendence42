@@ -15,7 +15,6 @@ export default async function Dashboard(): Promise<HTMLElement> {
     const mainContainer: HTMLDivElement = document.createElement("div");
     mainContainer.className = "flex w-full h-screen overflow-hidden bg-gray-900";
     
-    // Ajouter la sidebar
     const sidebar: Promise<HTMLElement> = Sidebar();
     mainContainer.appendChild(await sidebar);
     
@@ -27,7 +26,6 @@ export default async function Dashboard(): Promise<HTMLElement> {
     const layoutWrapper: HTMLDivElement = document.createElement("div");
     layoutWrapper.className = "grid grid-cols-1 lg:grid-cols-12 gap-6 w-full h-screen p-6 md:pl-10 overflow-y-auto";
 
-    // Rangée supérieure avec Profile Management et Leaderboard
     const topRow: HTMLDivElement = document.createElement("div");
     topRow.className = "lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6";
 
@@ -53,7 +51,6 @@ export default async function Dashboard(): Promise<HTMLElement> {
 
     topRow.append(profileSection, leaderboard, history);
     
-    // Rangée inférieure avec les stats
     const stats: Promise<HTMLElement> = ProfileStats();
     (await stats).className = "lg:col-span-12 bg-gray-800 rounded-lg shadow-lg";
 
