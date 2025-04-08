@@ -47,7 +47,6 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
             return;
         }
         try {
-            console.log(`Fetching stats for user ID: ${targetUserId}`);
 
             const response: Response = await fetch(`/api/user/stats?userId=${targetUserId}`);
             if (!response.ok) {
@@ -55,7 +54,6 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
             }
 
             const stats = await response.json();
-            console.log("Stats received:", stats);
 
             if (!stats || typeof stats.totalGames === "undefined") {
                 statsList.innerHTML = `<p class='text-white text-center py-4'>${translatedStatsNotFound}</p>`;
@@ -67,7 +65,6 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
             const losses = stats.losses || 0;
             const winrate: number = totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
 
-            // Créer un élément d'info statistique stylé
             function createStatItem(label, value, color) {
                 const statItem: HTMLDivElement = document.createElement("div");
                 statItem.className = "flex flex-col";
@@ -84,24 +81,18 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
                 return statItem;
             }
 
-            // Vider la liste et ajouter les nouvelles stats
             statsList.innerHTML = "";
             
-            // Total Games
             statsList.appendChild(createStatItem( translatedTotalGames, totalGames, "text-blue-400"));
             
-            // Wins
             statsList.appendChild(createStatItem(translatedWins, wins, "text-green-500"));
             
-            // Losses
             statsList.appendChild(createStatItem(translatedLosses, losses, "text-red-500"));
             
-            // Win Rate
             statsList.appendChild(createStatItem(translatedWinRates, `${winrate}%`, "text-yellow-400"));
 
             renderChart(wins, losses);
         } catch (error) {
-            console.error("Error fetching stats:", error);
             statsList.innerHTML = "<p class='text-red-500 font-bold'>Error loading stats.</p>";
         }
     }
@@ -119,7 +110,7 @@ export default async function ProfileStats(userId?: number): Promise<HTMLElement
                 labels: [translatedWins, translatedLosses],
                 datasets: [{
                     data: [wins, losses],
-                    backgroundColor: ["#10B981", "#EF4444"], // Vert et rouge
+                    backgroundColor: ["#10B981", "#EF4444"],
                     borderWidth: 0,
                     hoverOffset: 4
                 }]

@@ -26,7 +26,6 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
     const mainContainer: HTMLDivElement = document.createElement("div");
     mainContainer.className = "flex w-full h-screen overflow-hidden bg-gray-900";
     
-    // Ajouter la sidebar
     const sidebar: Promise<HTMLElement> = Sidebar();
     mainContainer.appendChild(await sidebar);
     
@@ -38,7 +37,6 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
     const layoutWrapper: HTMLDivElement = document.createElement("div");
     layoutWrapper.className = "grid grid-cols-1 lg:grid-cols-12 gap-6 w-full h-screen p-6 md:pl-10 overflow-y-auto";
 
-    // Bouton retour
     const backButtonContainer: HTMLDivElement = document.createElement("div");
     backButtonContainer.className = "fixed top-4 left-4 z-10";
     backButtonContainer.appendChild(BackButton());
@@ -47,11 +45,9 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
     const topRow: HTMLDivElement = document.createElement("div");
     topRow.className = "lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6";
 
-    // Section profil
     const profileSection: HTMLDivElement = document.createElement("div");
     profileSection.className = "lg:col-span-3 bg-gray-800 rounded-lg shadow-lg flex flex-col items-center p-6";
     
-    // Cercle coloré autour de l'avatar
     const avatarCircle: HTMLDivElement = document.createElement("div");
     avatarCircle.className = "w-32 h-32 rounded-full border-2 border-blue-400/50 flex items-center justify-center mb-4";
 
@@ -64,7 +60,6 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
     username.className = "text-xl font-bold text-white/90 mb-3";
     username.innerHTML = translatedLoading;
 
-    // Status avec icône
     const status: HTMLDivElement = document.createElement("div");
     status.className = "flex items-center gap-2 text-gray-400";
 
@@ -79,14 +74,12 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
     
     profileSection.append(avatarCircle, username, status);
 
-    // Section Leaderboard
     const leaderboard: HTMLDivElement = document.createElement("div");
     leaderboard.className = "lg:col-span-6 bg-gray-800 rounded-lg shadow-lg flex flex-col";
     Leaderboard().then(container => {
         leaderboard.append(container);
     });
     
-    // Section historique des matchs
     const history: HTMLDivElement = document.createElement("div");
     history.className = "lg:col-span-3 bg-gray-800 rounded-lg shadow-lg flex flex-col";
     MatchHistory(userId).then(container => {
@@ -96,13 +89,11 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
 
     topRow.append(profileSection, leaderboard, history);
     
-    // Rangée inférieure avec les stats
     const stats: Promise<HTMLElement> = ProfileStats(userId);
     (await stats).className = "lg:col-span-12 bg-gray-800 rounded-lg shadow-lg";
 
     layoutWrapper.append(topRow, await stats);
     
-    // Bouton de toggle pour la sidebar sur mobile
     const toggleSidebarButton: HTMLDivElement = document.createElement("div");
     toggleSidebarButton.className = "fixed top-4 right-4 w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center cursor-pointer text-white text-base transition duration-300 transform hover:scale-110 hover:bg-gray-600 shadow-lg z-10 md:hidden";
     toggleSidebarButton.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>`;
@@ -129,7 +120,6 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
     profileWrapper.append(toggleSidebarButton, sidebarOverlay, layoutWrapper);
     mainContainer.appendChild(profileWrapper);
 
-    // Charger les informations de l'utilisateur
     async function loadUserInfo() {
         try {
             const friend = await getFriendDetails(userId);
