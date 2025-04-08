@@ -5,11 +5,11 @@ require("dotenv").config();
 
 async function configureServer(fastify) {
     await fastify.register(require("@fastify/cors"), {
-      origin: true,  // Permet toutes les origines en développement
+      origin: true,
       methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS", "PUT"],
       allowedHeaders: ["Content-Type", "Authorization", "Origin", "X-Requested-With", "Accept"],
       credentials: true, 
-      preflightContinue: false,  // Gérer correctement les requêtes OPTIONS
+      preflightContinue: false,
       optionsSuccessStatus: 204
   });
 

@@ -1,11 +1,9 @@
-// srcs/routes/tournaments.js
 const db = require("../database/db");
 
 /**
  * @param {import('fastify').FastifyInstance} fastify 
  */
 async function tournamentRoutes(fastify) {
-    // 🔸 Créer un tournoi
     fastify.post("/tournaments", async (req, res) => {
         const { players, ranking } = req.body;
     
@@ -19,8 +17,6 @@ async function tournamentRoutes(fastify) {
         return { success: true, tournamentId: info.lastInsertRowid };
     });
     
-
-    // 🔸 Obtenir les tournois d'un utilisateur
     fastify.get("/tournaments/user/:username", async (request, reply) => {
         const username = request.params.username;
 
@@ -40,7 +36,6 @@ async function tournamentRoutes(fastify) {
         }
     });
 
-    // 🔸 Tous les tournois (debug/admin)
     fastify.get("/tournaments", async (request, reply) => {
         try {
             const stmt = db.prepare("SELECT * FROM tournaments");

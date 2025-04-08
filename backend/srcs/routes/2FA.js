@@ -2,10 +2,9 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const db = require("../database/db");
 
-const userSecrets = {}; // Pour stocker temporairement les secrets
+const userSecrets = {};
 
 async function twoFaRoutes(fastify) {
-  // 🔹 Route pour générer le QR Code
   fastify.post('/generate-2fa', async (request, reply) => {
     const userId = request.body.userId;
     const username = request.body.username;
@@ -14,7 +13,6 @@ async function twoFaRoutes(fastify) {
       return reply.status(400).send({ error: 'userId est requis' });
     }
 
-    // Génération du secret
     const secret = speakeasy.generateSecret({
       name: `ft_transcendence (${username})`,
     });
@@ -52,7 +50,6 @@ async function twoFaRoutes(fastify) {
       return reply.status(400).send({ error: 'userId est requis' });
     }
   
-    // Générer un secret et stocker dans la BDD
     const secret = speakeasy.generateSecret({
       name: `ft_transcendence (${username})`,
     });

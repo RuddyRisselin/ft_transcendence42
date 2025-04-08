@@ -61,7 +61,7 @@ module.exports = function (fastify, opts, done) {
             }
             catch (err)
             {
-                console.error(`❌ Erreur lors du traitement du message:`, err);
+                console.error(`Erreur lors du traitement du message:`, err);
             }
         });
     });
@@ -81,7 +81,7 @@ function broadcastMessage(message) {
         try {
             connection.send(JSON.stringify(message));
         } catch (err) {
-            console.error(`❌ Erreur en envoyant un message à ${userId}:`, err);
+            console.error(`Erreur en envoyant un message à ${userId}:`, err);
         }
     }
 }
@@ -92,7 +92,7 @@ setInterval(() => {
             try {
                 connection.ping();
             } catch (err) {
-                console.error(`⚠️ Erreur lors du ping de ${userId}:`, err);
+                console.error(`Erreur lors du ping de ${userId}:`, err);
             }
         } else {
             usersOnline.delete(userId);

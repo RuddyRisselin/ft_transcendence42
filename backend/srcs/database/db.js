@@ -4,7 +4,6 @@ require("dotenv").config();
 try {
   const db = new Database("./database/ft_transcendence.db", { verbose: console.log });
 
-  // Création des tables si elles n'existent pas encore
   db.exec(`
       CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,

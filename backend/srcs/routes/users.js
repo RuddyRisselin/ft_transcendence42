@@ -1,7 +1,6 @@
 const db = require("../database/db");
 
 async function userRoutes(fastify) {
-  // 🔹 Récupérer tous les utilisateurs
   fastify.get("/users", async (request, reply) => {
     const users = db.prepare("SELECT id, username, email, avatar, status, created_at FROM users").all();
     return users;
@@ -53,7 +52,6 @@ async function userRoutes(fastify) {
     }
   });
 
-  // 🔹 Mettre à jour le statut d'un utilisateur
   fastify.patch("/users/:id/status", async (request, reply) => {
     const { id } = request.params;
     const { status } = request.body;
@@ -71,7 +69,6 @@ async function userRoutes(fastify) {
     }
   });
 
-  // 🔹 Update un utilisateur
   fastify.patch("/users/username/:username/update", async (request, reply) => {
     const { username } = request.params;
     const inputUsername = request.body.inputUsername;
