@@ -1,5 +1,4 @@
 import Home from "./pages/home";
-//import Game from "./pages/game";
 import Dashboard from "./pages/profile/Dashboard";
 import UserProfile from "./pages/profile/UserProfile";
 import Login from "./pages/login";

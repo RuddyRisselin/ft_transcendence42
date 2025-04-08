@@ -1,6 +1,3 @@
-
-
-
 export async function translateText(text: string): Promise<string> 
 {
     const target: string | null = localStorage.getItem("language");
