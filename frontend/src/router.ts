@@ -1,5 +1,5 @@
 import Home from "./pages/home";
-import Game from "./pages/game";
+//import Game from "./pages/game";
 import Dashboard from "./pages/profile/Dashboard";
 import UserProfile from "./pages/profile/UserProfile";
 import Login from "./pages/login";
@@ -23,7 +23,7 @@ function restoreStateFromLocalStorage() {
         try {
             state.user = JSON.parse(localStorage.getItem('userData')!);
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration des données utilisateur:", error);
+            console.error("Erreur lors de la restauration des données utilisateur:", error);
         }
     }
     
@@ -31,7 +31,7 @@ function restoreStateFromLocalStorage() {
         try {
             state.localMatch = JSON.parse(localStorage.getItem('localMatchData')!);
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration des données de match local:", error);
+            console.error("Erreur lors de la restauration des données de match local:", error);
         }
     }
     
@@ -43,14 +43,13 @@ function restoreStateFromLocalStorage() {
                 state.tournament.currentMatch = JSON.parse(localStorage.getItem('currentMatchData')!);
             }
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration des données de tournoi:", error);
+            console.error("Erreur lors de la restauration des données de tournoi:", error);
         }
     }
 }
 
 const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
   "/": Home,
-  "/game": Game,
   "/dashboard": async () => (isAuthenticated() ? await Dashboard() : await Login()),
   "/login": Login,
   "/matches": async () => (isAuthenticated() ? await Matches() : await Login()),
