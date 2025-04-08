@@ -22,7 +22,6 @@ export async function translateText(text: string): Promise<string>
         localStorage.setItem(cacheKey, translatedText);
         return translatedText;
     } catch (error) {
-        console.error("Erreur lors de la traduction :", error);
         return "Erreur de traduction";
     }
 }

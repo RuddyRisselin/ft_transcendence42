@@ -1,7 +1,6 @@
 const db = require('../database/db');
 
 async function matchesRoutes(fastify, options) {
-    // Récupérer les matchs d'un utilisateur avec les noms des joueurs
     fastify.get('/matches', async (request, reply) => {
         const { userId } = request.query;    
         if (!userId) {
@@ -27,15 +26,10 @@ async function matchesRoutes(fastify, options) {
                 ORDER BY matches.played_at DESC
             `).all(userId, userId);
     
-            console.log(`Matches fetched for user ${userId}:`, matches); // Vérification
-    
-            // Vérifier si la réponse est bien un tableau, sinon la convertir en tableau
             const result = Array.isArray(matches) ? matches : [matches];
     
-            console.log(`Final matches array sent to frontend:`, result); // Vérification finale
             reply.send(result);
         } catch (error) {
-            console.error("Error fetching matches:", error);
             reply.status(500).send({ error: "Internal server error" });
         }
       });
@@ -54,10 +48,8 @@ async function matchesRoutes(fastify, options) {
                 ORDER BY wins DESC
             `).all();
     
-            console.log("Leaderboard data:", leaderboard); // Debugging
             reply.send(leaderboard);
         } catch (error) {
-            console.error("Error fetching leaderboard:", error);
             reply.status(500).send({ error: "Internal server error" });
         }
     });
@@ -77,11 +69,9 @@ async function matchesRoutes(fastify, options) {
           `);
           const info = insert.run(player1_id, player2_id, winner_id);
     
-          console.log(`New match added:`, { id: info.lastInsertRowid, player1_id, player2_id, winner_id });
     
           reply.send({ id: info.lastInsertRowid, player1_id, player2_id, winner_id });
         } catch (error) {
-          console.error("Error inserting match:", error);
           reply.status(400).send({ error: "Erreur lors de l'ajout du match" });
         }
       });
@@ -102,13 +92,11 @@ async function matchesRoutes(fastify, options) {
         }
 
         waitingQueue.push(userId);
-        console.log(`✅ Joueur ${userId} en attente de match (${waitingQueue.length} en file)`);
 
         if (waitingQueue.length >= 2) {
             const player1 = waitingQueue.shift();
             const player2 = waitingQueue.shift();
 
-            console.log(`🎮 Match trouvé entre ${player1} et ${player2}`);
 
             const matchId = `${player1}-${player2}`;
             activeMatches.set(matchId, { player1, player2 });
@@ -125,7 +113,6 @@ async function matchesRoutes(fastify, options) {
                         }
                     }));
                 } catch (err) {
-                    console.error(`❌ Erreur en envoyant le match à un joueur:`, err);
                 }
             });
 

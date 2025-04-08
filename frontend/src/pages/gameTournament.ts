@@ -8,10 +8,8 @@ import { drawBracket } from "./tournamentBracket";
 import { translateText } from "../translate";
 import { GameMode, GameOptions, startGameWithOptions } from "../game/multiplayers";
 import { tournamentTheme, setTheme } from "../game/objects";
-import { finishMatch as finishTournamentMatch } from "../game/multiplayers";
 import API_CONFIG from "../config/apiConfig";
 
-// Variable globale pour éviter les doubles redirections
 let redirectionInProgress = false;
 
 async function saveTournamentToHistory() {
@@ -20,7 +18,7 @@ async function saveTournamentToHistory() {
 
     const { bracket, winner, players } = state.tournament;
 
-    // Étape 1 - Initialisation des rangs
+    // Initialisation des rangs
     const eliminatedInRound: Record<string, number> = {};
 
     bracket.forEach((round, roundIndex) => {
@@ -34,11 +32,11 @@ async function saveTournamentToHistory() {
         }
     });
 
-    // Étape 2 - Le gagnant n'a pas été éliminé, donc on lui attribue le round max + 1
+    // Le gagnant n'a pas été éliminé, donc on lui attribue le round max + 1
     const maxRound: number = bracket.length;
     eliminatedInRound[winner] = maxRound;
 
-    // Étape 3 - Traitement spécial pour la demi-finale (3ème et 4ème place)
+    // Traitement spécial pour la demi-finale (3ème et 4ème place)
     // Trouver les joueurs des demi-finales (avant-dernier round)
     const semiFinalsRound = maxRound - 1;
     if (semiFinalsRound >= 0 && bracket[semiFinalsRound]) {
@@ -123,8 +121,6 @@ async function saveTournamentToHistory() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
     });
-
-    console.log("✅ Tournoi enregistré avec classement :", finalRanking);
 }
 
 

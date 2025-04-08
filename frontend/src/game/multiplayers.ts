@@ -20,7 +20,6 @@ export interface GameOptions {
 
 // Fonction principale pour démarrer une partie avec les options
 export function startGameWithOptions(canvas: HTMLCanvasElement, options: GameOptions) {
-    console.log("🎮 Démarrage du jeu avec options:", options);
     
     // Sélection du thème en fonction du mode
     if (options.theme) {
@@ -54,7 +53,6 @@ export function startGameWithOptions(canvas: HTMLCanvasElement, options: GameOpt
             scoreLeft++;
         }
         
-        console.log(`Score actuel: ${scoreLeft} - ${scoreRight}`);
         
         // Vérifier si le score limite est atteint et appeler le callback
         if (options.callback && options.scoreLimit) {
@@ -111,5 +109,4 @@ export function createTournamentMatch(player1: string, player2: string, options:
 
 export function finishMatch(winner: string) {
     console.log(`🏆 Fin du match, vainqueur: ${winner}`);
-    // Intégration avec le système de tournoi
 }

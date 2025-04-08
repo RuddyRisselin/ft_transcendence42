@@ -3,7 +3,7 @@ import { aiKeyState } from './ai';
 
 const keysPressed: { [key: string]: boolean } = {};
 
-// ✅ Gestion des événements clavier
+// Gestion des événements clavier
 function handleKeyDown(event: KeyboardEvent) {
     if (["ArrowUp", "ArrowDown", "z", "s"].includes(event.key)) {
         keysPressed[event.key] = true;
@@ -16,7 +16,7 @@ function handleKeyUp(event: KeyboardEvent) {
     }
 }
 
-// ✅ Fonction pour activer les contrôles
+// Fonction pour activer les contrôles
 export function setupControls(paddle1: any, paddle2: any, canvasHeight: number) {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
@@ -32,7 +32,6 @@ export function setupControls(paddle1: any, paddle2: any, canvasHeight: number) 
         }
 
         // Contrôles du joueur 2 (flèches haut et bas) ou simulation d'IA
-        // L'IA utilise les mêmes contrôles que le joueur humain
         if (keysPressed['ArrowUp'] || aiKeyState.ArrowUp) {
             paddle2.y = Math.max(0, paddle2.y - paddle2.speed);
         }
@@ -43,19 +42,16 @@ export function setupControls(paddle1: any, paddle2: any, canvasHeight: number) 
         requestAnimationFrame(updatePosition);
     }
 
-    // Démarrer la boucle d'animation
     updatePosition();
 }
 
-// ✅ Fonction pour désactiver les contrôles après la partie
+// Fonction pour désactiver les contrôles après la partie
 export function cleanupControls() {
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
     
-    // Réinitialiser l'état des touches
     for (const key in keysPressed) {
         keysPressed[key] = false;
     }
 
-    console.log("⌨️ Contrôles désactivés après la partie.");
 }

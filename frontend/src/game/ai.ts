@@ -140,7 +140,6 @@ export function setAIDifficulty(difficulty: AIDifficulty) {
     // S'assurer que la vitesse est toujours égale à celle du joueur
     paddle2.speed = PLAYER_PADDLE_SPEED;
     
-    console.log(`IA configurée en difficulté: ${difficulty}, vitesse: ${paddle2.speed}, précision: ${config.predictionAccuracy}, erreur: ${config.errorMargin}`);
     resetAI();
 }
 
@@ -148,7 +147,6 @@ export function setAIDifficulty(difficulty: AIDifficulty) {
 export function onAILoss() {
     consecutiveLosses++;
     
-    console.log(`L'IA a perdu ${consecutiveLosses} fois consécutives, amélioration en cours...`);
     
     // Récupérer les améliorations pour la difficulté actuelle
     const improvements = difficultyImprovements[currentDifficulty];
@@ -190,13 +188,11 @@ export function onAILoss() {
     // Appliquer la nouvelle configuration
     setAIDifficulty(currentDifficulty);
     
-    console.log(`IA améliorée: précision=${newConfig.predictionAccuracy}, erreur=${newConfig.errorMargin}, rebonds=${newConfig.maxBounces}, seuil=${newConfig.threshold}, maintien=${newConfig.minStateHoldTime}`);
 }
 
 // Fonction appelée quand l'IA gagne une partie, réinitialise le compteur de défaites
 export function onAIWin() {
     if (consecutiveLosses > 0) {
-        console.log(`L'IA a gagné, réinitialisation du compteur de défaites (était: ${consecutiveLosses})`);
         consecutiveLosses = 0;
     }
 }

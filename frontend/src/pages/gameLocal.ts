@@ -11,39 +11,31 @@ import API_CONFIG from "../config/apiConfig";
 
 async function saveMatch(winner: string) {
     if (!state.localMatch) {
-        console.error("❌ Erreur : `state.localMatch` est null !");
         return;
     }
 
-    // ✅ Ajoute une vérification explicite pour éviter l'erreur
     const { player1, player2 } = state.localMatch;
     if (!player1 || !player2) {
-        console.error("❌ Erreur : Les noms des joueurs ne sont pas définis.");
         return;
     }
 
     try {
-        // 🔹 Récupérer les ID des joueurs via l'API
         const responseUsers = await fetch(`${API_CONFIG.API_BASE_URL}/users?username=${player1}&username=${player2}`);
         const usersData = await responseUsers.json();
 
         if (!usersData || usersData.length < 2) {
-            console.error("❌ Impossible de récupérer les ID des joueurs :", usersData);
             return;
         }
 
-        // 🔹 Associer les ID des joueurs
         const player1_id = usersData.find(user => user.username === player1)?.id;
         const player2_id = usersData.find(user => user.username === player2)?.id;
         const winner_id = usersData.find(user => user.username === winner)?.id;
 
         if (!player1_id || !player2_id || !winner_id) {
-            console.error("❌ Erreur : Impossible d'associer les ID des joueurs.");
             return;
         }
 
         const matchData = { player1_id, player2_id, winner_id };
-        console.log("📌 Envoi des données du match :", matchData);
 
         const response = await fetch(`${API_CONFIG.API_BASE_URL}/matches`, {
             method: "POST",
@@ -52,14 +44,12 @@ async function saveMatch(winner: string) {
         });
 
         const result = await response.json();
-        console.log("✅ Match enregistré avec succès :", result);
     } catch (error) {
         console.error("❌ Erreur serveur lors de l'enregistrement du match :", error);
     }
 }
 
 
-// ✅ Fonction pour récupérer l'ID d'un utilisateur à partir de son username
 async function getUserId(username: string) {
     const response = await fetch(`${API_CONFIG.API_BASE_URL}/users`);
     const users = await response.json();
@@ -80,22 +70,19 @@ export default async function GameLocal() {
         translatedReturnToDashboard
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     document.addEventListener("DOMContentLoaded", () => {
-        document.documentElement.style.overflow = "hidden"; // Désactive le scroll globalement
-        document.body.style.overflow = "hidden"; // Désactive le scroll sur le body
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
     }); 
     resetGame();
     
-    // ✅ NOUVEAU: Vérifier et restaurer les données si nécessaire
     if (!state.localMatch && localStorage.getItem('localMatchData')) {
         try {
             state.localMatch = JSON.parse(localStorage.getItem('localMatchData')!);
-            console.log("✅ Données de match local restaurées depuis localStorage");
         } catch (error) {
             console.error("❌ Erreur lors de la restauration des données:", error);
         }
     }
     
-    // Rediriger seulement si les données ne sont toujours pas disponibles
     if (!state.localMatch) {
         const currentPage = localStorage.getItem('currentPage');
         if (currentPage === 'local-match') {
@@ -106,14 +93,11 @@ export default async function GameLocal() {
         return document.createElement("div");
     }
     
-    // ✅ NOUVEAU: Stocker l'état actuel dans localStorage
     localStorage.setItem('currentPage', 'game-local');
     localStorage.setItem('localMatchData', JSON.stringify(state.localMatch));
     
-    // Appliquer le thème local
     setTheme(localTheme);
     
-    // S'assurer que les raquettes des joueurs ont la bonne vitesse
     resetPaddleSpeeds();
     paddle1.speed = PLAYER_PADDLE_SPEED;
     paddle2.speed = PLAYER_PADDLE_SPEED;
@@ -123,17 +107,13 @@ export default async function GameLocal() {
     let matchEnded = false;
     let lastStateSave = Date.now();
 
-    // ✅ NOUVEAU: Restaurer les scores depuis localStorage s'ils existent
     if (localStorage.getItem('localGameScores')) {
         try {
             const savedScores = JSON.parse(localStorage.getItem('localGameScores')!);
-            // Vérifier si les scores sont récents (moins de 3 minutes)
             if (Date.now() - savedScores.timestamp < 180000) {
                 player1Score = savedScores.player1;
                 player2Score = savedScores.player2;
-                console.log("✅ Scores restaurés:", player1Score, "-", player2Score);
             } else {
-                // Scores trop anciens, les supprimer
                 localStorage.removeItem('localGameScores');
             }
         } catch (error) {
@@ -141,16 +121,13 @@ export default async function GameLocal() {
         }
     }
     
-    // ✅ NOUVEAU: Ajouter un événement pour détecter les rechargements de page
     window.addEventListener('beforeunload', (event) => {
-        // Sauvegarder les données de jeu avant le rechargement
         localStorage.setItem('localGameScores', JSON.stringify({
             player1: player1Score,
             player2: player2Score,
             timestamp: Date.now()
         }));
 
-        // Sauvegarder l'état des raquettes et de la balle
         localStorage.setItem('gameState', JSON.stringify({
             paddle1: { y: paddle1.y },
             paddle2: { y: paddle2.y },
@@ -170,7 +147,6 @@ export default async function GameLocal() {
     title.innerHTML = `🏓 ${translatedLocalMatch}`;
 
 
-    // Sous-titre avec les noms des joueurs
     const subtitle = document.createElement("div");
     subtitle.className = "mt-2 text-2xl text-center";
     
@@ -189,7 +165,6 @@ export default async function GameLocal() {
     subtitle.append(player1Span, vsSpan, player2Span);
     header.append(title, subtitle);
 
-    // Conteneur du jeu avec effet glassmorphism
     const gameContainer = document.createElement("div");
     gameContainer.className = "bg-black bg-opacity-30 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-blue-500/30";
 
@@ -199,22 +174,18 @@ export default async function GameLocal() {
     gameCanvas.className = "border-4 border-blue-500/30 rounded-xl shadow-lg";
     gameCanvas.style.background = localTheme.background; // Définir explicitement l'arrière-plan du canvas
 
-    // Créer un conteneur pour le canvas qui permettra un positionnement relatif
     const canvasContainer = document.createElement("div");
     canvasContainer.className = "relative";
     canvasContainer.appendChild(gameCanvas);
     
-    // Message de victoire (placé dans le conteneur du canvas)
     const endMessage = document.createElement("div");
     endMessage.className = "hidden absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm rounded-xl z-10";
     
-    // Contenu du message de victoire
     const victoryContent = document.createElement("div");
     victoryContent.className = "bg-black/60 p-8 rounded-xl border border-blue-500/50 shadow-2xl text-center";
     endMessage.appendChild(victoryContent);
     canvasContainer.appendChild(endMessage);
 
-    // Tableau de scores stylisé
     const scoreBoard = document.createElement("div");
     scoreBoard.className = "text-3xl font-bold mt-6 p-6 rounded-xl bg-gradient-to-r from-blue-800/80 to-blue-700/80 shadow-lg border border-blue-500/30 flex justify-center items-center space-x-8";
     
@@ -257,7 +228,6 @@ export default async function GameLocal() {
         player1ScoreDisplay.innerHTML = String(player1Score);
         player2ScoreDisplay.innerHTML = String(player2Score);
 
-        // ✅ NOUVEAU: Sauvegarder les scores dans localStorage
         localStorage.setItem('localGameScores', JSON.stringify({
             player1: player1Score,
             player2: player2Score,
@@ -269,9 +239,8 @@ export default async function GameLocal() {
         if (matchEnded) return;
         matchEnded = true;
 
-        cleanupControls(); // ✅ Désactive proprement les touches après la partie
+        cleanupControls();
 
-        // Création d'un message de victoire animé
         victoryContent.innerHTML = `
             <div class="text-7xl mb-6">🏆</div>
             <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-4">${winner}</h2>
@@ -279,10 +248,8 @@ export default async function GameLocal() {
             <div class="mt-6 text-blue-200/80 text-sm">${translatedReturnToDashboard}</div>
         `;
         
-        // Afficher le message avec une animation
         endMessage.classList.remove("hidden");
         
-        // Ajouter une animation personnalisée au contenu
         victoryContent.style.animation = "scale-up 0.5s ease-out forwards";
         const styleElement = document.createElement('style');
         styleElement.textContent = `
@@ -293,19 +260,16 @@ export default async function GameLocal() {
         `;
         document.head.appendChild(styleElement);
 
-        // ✅ NOUVEAU: Nettoyer les données du match terminé et les scores
         setTimeout(() => {
             localStorage.removeItem('localMatchData');
             localStorage.removeItem('localGameScores');
             localStorage.removeItem('gameState');
-        }, 4500); // Juste avant la redirection
+        }, 4500);
 
-        // Sauvegarde du match et redirection
         saveMatch(winner);
         setTimeout(() => navigateTo(new Event("click"), "/matches"), 5000);
     }
 
-    // Utilisation du nouveau système de jeu avec thèmes
     const gameOptions: GameOptions = {
         mode: GameMode.LOCAL,
         scoreLimit: state.localMatch?.target,
@@ -320,7 +284,6 @@ export default async function GameLocal() {
         }
     };
 
-    // Mode "nombre de points" (maintenant le seul mode disponible)
     const onScore = (scorer: "left" | "right") => {
         if (matchEnded || !state.localMatch) return;
 
@@ -339,24 +302,17 @@ export default async function GameLocal() {
         }
     };
     
-    // Initialiser le jeu avec le callback personnalisé pour le score
     startGame(gameCanvas, onScore);
-    
-    // Réinitialiser les vitesses des raquettes
     resetPaddleSpeeds();
-
     setupControls(paddle1, paddle2, gameCanvas.height);
 
     window.addEventListener("popstate", () => {
-        console.log("🔄 Retour arrière détecté. Réinitialisation du jeu.");
         resetGame();
     });
 
-    // ✅ NOUVEAU: Fonction pour sauvegarder l'état du jeu
     function saveGameState() {
         if (matchEnded) return;
         
-        // Sauvegarder l'état toutes les 2 secondes
         if (Date.now() - lastStateSave > 2000) {
             localStorage.setItem('gameState', JSON.stringify({
                 paddle1: { y: paddle1.y },
@@ -368,11 +324,9 @@ export default async function GameLocal() {
         }
     }
 
-    // ✅ NOUVEAU: Restaurer l'état du jeu si disponible
     if (localStorage.getItem('gameState')) {
         try {
             const savedState = JSON.parse(localStorage.getItem('gameState')!);
-            // Vérifier si l'état est récent (moins de 10 secondes)
             if (Date.now() - savedState.timestamp < 10000) {
                 paddle1.y = savedState.paddle1.y;
                 paddle2.y = savedState.paddle2.y;
@@ -380,7 +334,6 @@ export default async function GameLocal() {
                 ball.y = savedState.ball.y;
                 ball.speedX = savedState.ball.speedX;
                 ball.speedY = savedState.ball.speedY;
-                console.log("✅ État du jeu restauré");
             } else {
                 localStorage.removeItem('gameState');
             }
@@ -389,13 +342,11 @@ export default async function GameLocal() {
         }
     }
 
-    // ✅ NOUVEAU: Hook pour sauvegarder l'état du jeu dans startGame
     const originalStartGame = startGame;
     // @ts-ignore - On étend l'interface window
     window.startGame = (canvas, onScoreCallback) => {
         const result = originalStartGame(canvas, onScoreCallback);
         
-        // Ajouter notre sauvegarde d'état à la boucle de jeu
         // @ts-ignore - On étend l'interface window
         const originalGameLoop = window.gameLoop;
         // @ts-ignore - On étend l'interface window
@@ -408,8 +359,6 @@ export default async function GameLocal() {
         return result;
     };
 
-    // Mettre à jour l'affichage des scores au démarrage
     updateScoreBoard();
-
     return Layout(container);
 }

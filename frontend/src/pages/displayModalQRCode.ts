@@ -81,7 +81,6 @@ export async function displayModalQRCode(btnQRCode , userId, username, container
             }
             catch (error) 
             {
-                console.error("❌ Erreur QRcode :", error);
                 alert(translatedAlertQrCode);
             }
         }

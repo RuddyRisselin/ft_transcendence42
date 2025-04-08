@@ -15,13 +15,10 @@ import { isAuthenticated } from "./services/auth";
 import { state } from "./state";
 import Sidebar from "./components/sidebar";
 import Rules from "./pages/rules";
-//import Match from "./pages/match";
 
-// ✅ NOUVEAU: Fonction pour restaurer l'état depuis localStorage au chargement
 function restoreStateFromLocalStorage() {
     const currentPage = localStorage.getItem('currentPage');
     
-    // Restaurer l'état de l'utilisateur si nécessaire
     if (localStorage.getItem('userData')) {
         try {
             state.user = JSON.parse(localStorage.getItem('userData')!);
@@ -30,7 +27,6 @@ function restoreStateFromLocalStorage() {
         }
     }
     
-    // Restaurer l'état du match local
     if (localStorage.getItem('localMatchData')) {
         try {
             state.localMatch = JSON.parse(localStorage.getItem('localMatchData')!);
@@ -39,12 +35,10 @@ function restoreStateFromLocalStorage() {
         }
     }
     
-    // Restaurer l'état du tournoi
     if (localStorage.getItem('tournamentData')) {
         try {
             state.tournament = JSON.parse(localStorage.getItem('tournamentData')!);
             
-            // Restaurer également le match actuel si disponible
             if (localStorage.getItem('currentMatchData') && state.tournament) {
                 state.tournament.currentMatch = JSON.parse(localStorage.getItem('currentMatchData')!);
             }
@@ -52,8 +46,6 @@ function restoreStateFromLocalStorage() {
             console.error("❌ Erreur lors de la restauration des données de tournoi:", error);
         }
     }
-    
-    console.log("✅ État restauré depuis localStorage, page actuelle:", currentPage);
 }
 
 const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
@@ -75,11 +67,8 @@ const routes: Record<string, () => Promise<HTMLElement> | HTMLElement> = {
 export function navigateTo(event: Event, path: string, popstate: boolean = false) {
   event.preventDefault();
   
-  // ✅ NOUVEAU: Nettoyage des données de jeu lors de la navigation vers les pages de jeu
   if (path.includes('game-ai') || path.includes('game-local') || path.includes('tournament-game')) {
-    console.log("✅ Navigation vers une page de jeu, nettoyage des données précédentes");
     
-    // Nettoyer les données de jeu en fonction de la destination
     if (path.includes('game-ai')) {
       localStorage.removeItem('aiGameScores');
       localStorage.removeItem('aiGameState');
@@ -93,20 +82,17 @@ export function navigateTo(event: Event, path: string, popstate: boolean = false
       localStorage.removeItem('tournamentGameState');
     }
     
-    // Retirer tous les overlays de victoire potentiellement présents
     const victoryOverlays = document.querySelectorAll('.victory-container');
     victoryOverlays.forEach(overlay => overlay.remove());
   }
   
   window.history.pushState({}, "", path);
-  // Toujours déclencher l'événement popstate pour le rendu de la page
   window.dispatchEvent(new Event("popstate"));
 }
 
 (window as any).navigateTo = navigateTo;
 
 export function initRouter() {
-  // ✅ NOUVEAU: Restaurer l'état depuis localStorage au chargement de l'application
   restoreStateFromLocalStorage();
 
   const app = document.getElementById("app");
@@ -116,59 +102,40 @@ export function initRouter() {
     setTimeout(async () => {
       const path: string = window.location.pathname;
       
-      // ✅ NOUVEAU: Redirection intelligente en cas de rechargement de page
       const currentPage = localStorage.getItem('currentPage');
       if (path === '/' && currentPage) {
-        // Si nous sommes à la racine mais qu'une page était précédemment enregistrée,
-        // nous pouvons supposer que c'est un rechargement de page
-        console.log("🔄 Détection d'un rechargement de page, redirection vers:", currentPage);
-        
-        if (currentPage === 'game-local' && state.localMatch) {
-          console.log("🎮 Restauration du match local en cours...");
+        if (currentPage === 'game-local' && state.localMatch)
           window.history.replaceState({}, "", "/game-local");
-        } 
-        else if (currentPage === 'tournament-game' && state.tournament && state.tournament.currentMatch) {
-          console.log("🏆 Restauration du match de tournoi en cours...");
+        else if (currentPage === 'tournament-game' && state.tournament && state.tournament.currentMatch)
           window.history.replaceState({}, "", "/tournament-game");
-        }
-        else if (currentPage === 'game-ai' && state.aiMatch) {
-          console.log("🤖 Restauration du match contre l'IA en cours...");
+        else if (currentPage === 'game-ai' && state.aiMatch)
           window.history.replaceState({}, "", "/game-ai");
-        }
       }
       
       const newPath = window.location.pathname;
       
-      // Gestion des routes avec paramètres (comme /profile/123)
       const profilePattern = /^\/profile\/(\d+)$/;
       const profileMatch = newPath.match(profilePattern);
       
       if (profileMatch && profileMatch[1]) {
-        // Si l'URL correspond au pattern de profil utilisateur
         const userId = Number(profileMatch[1]);
-        console.log("📋 Route de profil utilisateur détectée, userId:", userId);
         app.innerHTML = "";
         if (isAuthenticated()) {
           try {
             const profileComponent = await UserProfile(userId);
             app.appendChild(profileComponent);
-            console.log("✅ Profil utilisateur rendu avec succès");
           } catch (error) {
-            console.error("❌ Erreur lors du rendu du profil utilisateur:", error);
             app.appendChild(await Login());
           }
         } else {
-          console.log("⚠️ Utilisateur non authentifié, redirection vers Login");
           app.appendChild(await Login());
         }
       } else {
-        // Routes normales
         const page: () => Promise<HTMLElement> | HTMLElement = routes[newPath] || Home;
         app.innerHTML = "";
         app.appendChild(await page());
       }
 
-      // Réinitialiser la sidebar si l'utilisateur est connecté
       if (state.user && !document.querySelector(".sidebar-component")) {
         const sidebarContainer = document.createElement("div");
         sidebarContainer.className = "sidebar-container";
@@ -177,7 +144,7 @@ export function initRouter() {
         })
         document.body.appendChild(sidebarContainer);
       }
-    }, 100); // Laisse 100ms pour s'assurer que `loadAuthData()` s'exécute
+    }, 100);
   };
 
   window.addEventListener("popstate", render);

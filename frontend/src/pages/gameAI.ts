@@ -2,8 +2,6 @@ import { startGame, stopGame } from "../game/engine";
 import { resetScores, incrementScore, getScores, setTheme, easyAITheme, normalAITheme, hardAITheme, paddle1, paddle2, canvasHeight, PLAYER_PADDLE_SPEED, resetPaddleSpeeds, ball } from "../game/objects";
 import { setupControls, cleanupControls } from "../game/controls";
 import { setAIDifficulty, AIDifficulty, updateAI, resetAI, onAILoss, onAIWin } from "../game/ai";
-import { navigateTo } from "../router";
-import { state } from "../state";
 import { translateText } from "../translate";
 
 let animationId: number | null = null;
@@ -32,7 +30,6 @@ export default async function GameAI(): Promise<HTMLElement> {
         translatedAdvancedBot,
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     
-    // Stopper le jeu précédent si nécessaire
     if (animationId) {
         cancelAnimationFrame(animationId);
         animationId = null;
@@ -46,21 +43,16 @@ export default async function GameAI(): Promise<HTMLElement> {
     gameStarted = false;
     resetScores();
 
-    // ✅ NOUVEAU: Stocker l'état actuel dans localStorage
     localStorage.setItem('currentPage', 'game-ai');
     
-    // Récupérer la difficulté depuis l'URL
     const urlParams = new URLSearchParams(window.location.search);
     const difficulty = urlParams.get('difficulty') || 'normal';
     
-    // ✅ NOUVEAU: Restaurer les scores depuis localStorage s'ils existent
     let lastStateSave = Date.now();
     if (localStorage.getItem('aiGameScores')) {
         try {
             const savedScores = JSON.parse(localStorage.getItem('aiGameScores')!);
-            // Vérifier si les scores sont récents (moins de 5 minutes)
             if (Date.now() - savedScores.timestamp < 300000 && savedScores.difficulty === difficulty) {
-                // Restaurer les scores seulement si la difficulté correspond
                 const { score1, score2 } = getScores();
                 resetScores();
                 for (let i = 0; i < savedScores.score1; i++) {
@@ -69,9 +61,7 @@ export default async function GameAI(): Promise<HTMLElement> {
                 for (let i = 0; i < savedScores.score2; i++) {
                     incrementScore(2);
                 }
-                console.log("✅ Scores du match IA restaurés:", savedScores.score1, "-", savedScores.score2);
             } else {
-                // Scores trop anciens ou difficulté différente, les supprimer
                 localStorage.removeItem('aiGameScores');
             }
         } catch (error) {
@@ -383,7 +373,6 @@ export default async function GameAI(): Promise<HTMLElement> {
         if (player1ScoreElement) player1ScoreElement.innerHTML = score1.toString();
         if (player2ScoreElement) player2ScoreElement.innerHTML = score2.toString();
         
-        // ✅ NOUVEAU: Sauvegarder les scores dans localStorage
         localStorage.setItem('aiGameScores', JSON.stringify({
             score1,
             score2,
@@ -413,7 +402,6 @@ export default async function GameAI(): Promise<HTMLElement> {
             animationId = null;
         }
         
-        // ✅ NOUVEAU: Nettoyer les données du match terminé et les scores
         setTimeout(() => {
             localStorage.removeItem('aiGameScores');
             localStorage.removeItem('aiGameState');
@@ -445,7 +433,6 @@ export default async function GameAI(): Promise<HTMLElement> {
             }
         }
         
-        // Création d'un message de victoire animé
         victoryContent.innerHTML = `
             <div class="text-7xl mb-6">🏆</div>
             <h2 class="text-4xl font-bold bg-gradient-to-r ${gradientClasses} bg-clip-text text-transparent mb-4">${winner}</h2>
@@ -457,7 +444,6 @@ export default async function GameAI(): Promise<HTMLElement> {
         endMessage.classList.remove("hidden");
         endMessage.classList.add("animate-fadeIn");
         
-        // Ajouter une animation personnalisée au contenu
         victoryContent.style.animation = "scale-up 0.5s ease-out forwards";
         const styleElement = document.createElement('style');
         styleElement.textContent = `
@@ -476,7 +462,6 @@ export default async function GameAI(): Promise<HTMLElement> {
         document.head.appendChild(styleElement);
     }
 
-    // ✅ NOUVEAU: Fonction pour sauvegarder l'état du jeu
     function saveGameState() {
         if (matchEnded) return;
         
@@ -493,7 +478,6 @@ export default async function GameAI(): Promise<HTMLElement> {
         }
     }
 
-    // ✅ NOUVEAU: Restaurer l'état du jeu si disponible
     if (localStorage.getItem('aiGameState')) {
         try {
             const savedState = JSON.parse(localStorage.getItem('aiGameState')!);
@@ -505,7 +489,6 @@ export default async function GameAI(): Promise<HTMLElement> {
                 ball.y = savedState.ball.y;
                 ball.speedX = savedState.ball.speedX;
                 ball.speedY = savedState.ball.speedY;
-                console.log("✅ État du jeu contre IA restauré");
             } else {
                 localStorage.removeItem('aiGameState');
             }
@@ -514,7 +497,6 @@ export default async function GameAI(): Promise<HTMLElement> {
         }
     }
 
-    // Démarrer le jeu
     function startGameWithAI() {
         gameStarted = true;
         
@@ -531,7 +513,6 @@ export default async function GameAI(): Promise<HTMLElement> {
         // Setup des contrôles pour le joueur
         setupControls(paddle1, paddle2, canvasHeight);
         
-        // ✅ NOUVEAU: Hook pour sauvegarder l'état du jeu
         const originalStartGame = startGame;
         // @ts-ignore - On étend l'interface window
         window.startGame = (canvas, onScoreCallback) => {

@@ -8,13 +8,11 @@ import { navigateTo } from "../router";
 import API_CONFIG from "../config/apiConfig";
 
 export default async function Sidebar(): Promise<HTMLElement> {
-    // Check if sidebar already exists
     const existingSidebar = document.querySelector(".sidebar-component");
     if (existingSidebar) {
         return existingSidebar as HTMLElement;
     }
 
-    /*          TRANSLATE TAB       */
     const textToTranslate: string[] = [
         "invité",
         "Amis",
@@ -49,23 +47,18 @@ export default async function Sidebar(): Promise<HTMLElement> {
     const sidebar: HTMLElement = document.createElement("aside");
     sidebar.className = "sidebar-component fixed inset-y-0 left-0 w-64 bg-gray-900 text-white flex flex-col shadow-lg z-20 overflow-hidden";
 
-    // Main container with animation
     const mainContainer: HTMLDivElement = document.createElement("div");
     mainContainer.className = "flex w-[calc(200%)] h-full transition-transform duration-300";
 
-    // Main sidebar container
     const sidebarContent: HTMLDivElement = document.createElement("div");
     sidebarContent.className = "w-64 flex-shrink-0 flex flex-col h-full";
 
-    // Friends management container
     const friendsContent: HTMLDivElement = document.createElement("div");
     friendsContent.className = "w-64 flex-shrink-0 flex flex-col h-full bg-gray-900";
 
-    // Connected user container
     const userContainer: HTMLDivElement = document.createElement("div");
     userContainer.className = "flex flex-col items-center p-6 border-b border-gray-700/50 bg-gray-800/30";
 
-    // Animated border avatar
     const avatarContainer: HTMLDivElement = document.createElement("div");
     avatarContainer.className = "relative p-1 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500";
     
@@ -74,12 +67,10 @@ export default async function Sidebar(): Promise<HTMLElement> {
     avatar.className = "w-16 h-16 rounded-full border-2 border-gray-900";
     avatarContainer.appendChild(avatar);
 
-    // Username
     const username: HTMLSpanElement = document.createElement("span");
     username.innerHTML = `${state.user?.username || translatedGuest}`;
     username.className = "text-lg font-semibold mt-3 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent";
 
-    // Status (Online/Offline)
     const statusContainer: HTMLDivElement = document.createElement("div");
     statusContainer.className = "flex items-center mt-2";
 
@@ -106,14 +97,12 @@ export default async function Sidebar(): Promise<HTMLElement> {
     updateStatus();
     const statusInterval = setInterval(updateStatus, 5000);
     
-    // Clean up interval when component is removed
     sidebar.addEventListener("remove", () => {
         clearInterval(statusInterval);
     });
     statusContainer.append(statusIndicator, statusText);
     userContainer.append(avatarContainer, username, statusContainer);
 
-    // Navigation
     const nav: HTMLElement = document.createElement("nav");
     nav.className = "flex flex-col mt-4 px-4 space-y-2";
 
@@ -142,7 +131,6 @@ export default async function Sidebar(): Promise<HTMLElement> {
         nav.appendChild(a);
     });
 
-    // Friends button
     const friendsButton: HTMLButtonElement = document.createElement("button");
     friendsButton.className = "flex items-center p-3 hover:bg-gray-800/50 rounded-lg transition duration-200 group w-full mt-2";
     friendsButton.innerHTML = '<span class="mr-3 text-lg group-hover:scale-110 transition-transform">👥</span>' + `<span class="text-gray-300 group-hover:text-white transition-colors">${translatedFriends}</span>`;
@@ -154,7 +142,6 @@ export default async function Sidebar(): Promise<HTMLElement> {
     };
     nav.appendChild(friendsButton);
 
-    // Logout button
     const logoutButton: HTMLButtonElement = document.createElement("button");
     logoutButton.className = "mx-4 mb-6 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20";
     logoutButton.innerHTML = '<span class="mr-2 group-hover:scale-110 transition-transform">🔒 </span>' +  translatedDeconnexion;
@@ -167,7 +154,6 @@ export default async function Sidebar(): Promise<HTMLElement> {
         await logout();
     };
 
-    // Friends section
     const friendsHeader: HTMLDivElement = document.createElement("div");
     friendsHeader.className = "p-6 border-b border-gray-700/50 bg-gray-800/30 flex items-center";
     
@@ -197,15 +183,12 @@ export default async function Sidebar(): Promise<HTMLElement> {
     friendsHeader.append(backButton, friendsTitle, refreshButton);
     friendsContent.appendChild(friendsHeader);
 
-    // Friends management content
     const friendsManager: HTMLDivElement = document.createElement("div");
     friendsManager.className = "p-4 space-y-6 overflow-y-auto custom-scrollbar h-[calc(100vh-64px)]";
 
-    // Friend search with autocomplete
     const searchSection: HTMLDivElement = document.createElement("div");
     searchSection.className = "bg-gray-800/50 p-4 rounded-lg border border-purple-500/20";
 
-    // Notification container
     const notificationDiv: HTMLDivElement = document.createElement("div");
     notificationDiv.className = "mb-4";
 
@@ -292,7 +275,6 @@ export default async function Sidebar(): Promise<HTMLElement> {
     searchSection.appendChild(notificationDiv);
     searchSection.appendChild(searchForm);
 
-    // Friend requests section
     const requestsSection: HTMLDivElement = document.createElement("div");
     requestsSection.className = "bg-gray-800/50 p-4 rounded-lg border border-yellow-500/20";
 
@@ -305,11 +287,9 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
     requestsSection.append(requestsTitle, requestsList);
 
-    // Friends list section
     const friendsList: HTMLDivElement = document.createElement("div");
     friendsList.className = "bg-gray-800/50 p-4 rounded-lg border border-green-500/20";
 
-    // Confirmation dialog for friend removal
     const confirmationDialog: HTMLDivElement = document.createElement("div");
     confirmationDialog.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden";
     
@@ -348,11 +328,9 @@ export default async function Sidebar(): Promise<HTMLElement> {
 
     friendsList.append(friendsListTitle, friendsUl);
 
-    // Add sections to friends manager
     friendsManager.append(searchSection, requestsSection, friendsList);
     friendsContent.appendChild(friendsManager);
 
-    // Friends management functions
     let users: any[] = [];
 
     async function loadUsers() {
@@ -466,10 +444,8 @@ export default async function Sidebar(): Promise<HTMLElement> {
             viewProfileBtn.onclick = (event) => {
                 event.preventDefault();
                 const profileUrl = `/profile/${friend.id}`;
-                console.log("🔗 Navigation vers le profil:", profileUrl);
                 window.history.pushState({}, "", profileUrl);
                 window.dispatchEvent(new Event("popstate"));
-                console.log("🔄 Événement popstate déclenché");
             };
 
             const removeBtn: HTMLButtonElement = document.createElement("button");
@@ -515,10 +491,8 @@ export default async function Sidebar(): Promise<HTMLElement> {
         });
     }
 
-    // Update friend status via WebSocket with notification
     connectToWebSocket(String(state.user.id), async (message) => {
         if (message.type === "user_status") {
-            console.log("📢 User status update:", message.userId, "->", message.status);
             
             if (message.userId === state.user.id) {
                 statusIndicator.className = `w-2 h-2 rounded-full mr-2 ${message.status === "online" ? "bg-green-500" : "bg-red-500"}`;
@@ -587,7 +561,6 @@ export default async function Sidebar(): Promise<HTMLElement> {
     else
         btnFR.classList.add("bg-blue-700");
 
-    // Final assembly
     sidebarContent.append(userContainer, nav, languageDiv, logoutButton);
     mainContainer.append(sidebarContent, friendsContent);
     sidebar.appendChild(mainContainer);

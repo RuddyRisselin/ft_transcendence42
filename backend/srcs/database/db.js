@@ -54,8 +54,6 @@ try {
 
   if (!columnExists)
     db.exec(`ALTER TABLE users ADD COLUMN anonymize INTEGER NOT NULL CHECK(anonymize IN (0, 1)) DEFAULT 0;`);
-  else
-    console.log("La colonne 'anonymize' existe déjà.");
 
   const is2FAEnabledExists = db
   .prepare("PRAGMA table_info(users);")
@@ -64,9 +62,6 @@ try {
 
   if (!is2FAEnabledExists)
     db.exec(`ALTER TABLE users ADD COLUMN is2FAEnabled INTEGER NOT NULL CHECK(is2FAEnabled IN (0, 1)) DEFAULT 0;`);
-  else
-    console.log("La colonne 'is2FAEnabled' existe déjà.");
-
 
   const qrCodeUrl = db
   .prepare("PRAGMA table_info(users);")
@@ -75,8 +70,6 @@ try {
   
   if (!qrCodeUrl)
     db.exec(`ALTER TABLE users ADD COLUMN qrCodeUrl TEXT;`);
-  else
-    console.log("La colonne 'qrCodeUrl' existe déjà.");
 
   const twoFASecretExists = db
   .prepare("PRAGMA table_info(users);")
@@ -85,10 +78,6 @@ try {
 
   if (!twoFASecretExists)
     db.exec(`ALTER TABLE users ADD COLUMN twoFASecret TEXT;`);
-  else
-    console.log("ℹLa colonne 'twoFASecret' existe déjà.");
-
-  console.log("✅ Base de données connectée et initialisée.");
 
   const language = db
   .prepare("PRAGMA table_info(users);")
@@ -97,11 +86,8 @@ try {
   
   if (!language)
     db.exec(`ALTER TABLE users ADD COLUMN language TEXT;`);
-  else
-    console.log("La colonne 'language' existe déjà.");
 
   module.exports = db;
 } catch (error) {
-  console.error("❌ Erreur lors de la connexion à SQLite:", error);
-  process.exit(1);
+    process.exit(1);
 }

@@ -29,7 +29,6 @@ async function userRoutes(fastify) {
   
         reply.send(stats);
     } catch (error) {
-        console.error("Error fetching user stats:", error);
         reply.status(500).send({ error: "Internal server error" });
     }
   
@@ -50,7 +49,6 @@ async function userRoutes(fastify) {
       `).all();
       return users;
     } catch (error) {
-      console.error("❌ Erreur lors de la récupération des utilisateurs :", error);
       return reply.status(500).send({ error: "Erreur serveur." });
     }
   });
@@ -82,32 +80,21 @@ async function userRoutes(fastify) {
     {
       const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
       if (!user)
-      {
-        console.log("❌ Utilisateur introuvable");
         return reply.status(404).send({ error: "Utilisateur non trouvé." });
-      }
       if (user.anonymize === 0)
       {
         const updateUser = db.prepare("UPDATE users SET username = ?, email = ? WHERE username = ?").run(inputUsername, inputEmail, username);
         if (!updateUser)
-          {
-            console.log("User already exist or private");
             return reply.status(400).send({ error: "User already exist" });
-          }
           user.username = inputUsername;
           user.email = inputEmail;
-          console.log("✅ Utilisateur mis a jour avec succès");
           return { message: "Utilisateur mis a jour avec succès!", user };
       }
       else
-      {
-        console.log("User is private, you don't update your profile");
         return reply.status(400).send({ error: "User is private, you don't update your profile" });
-      }
     }
     catch (error)
     {
-      console.error("Erreur lors de la mis a jour de l'utilisateur :", error);
       return reply.status(500).send({ error: "Erreur serveur." });
     }
   });
@@ -119,56 +106,40 @@ async function userRoutes(fastify) {
     {
       const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
       if (!user)
-      {
-        console.log("❌ Utilisateur introuvable");
         return reply.status(404).send({ error: "Utilisateur non trouvé." });
-      }
       if (user.anonymize === 0)
       {
         const updateUser = db.prepare("UPDATE users SET avatar = ? WHERE username = ?").run(file, username);
         user.avatar = file;
-        console.log("✅ Utilisateur mis a jour avec succès");
         return { message: "Utilisateur mis a jour avec succès!", user };
       }
       else
-      {
-        console.log("User is private, you don't update your profile");
         return reply.status(400).send({ error: "User is private, you don't update your profile" });
-      }
     }
     catch (error)
     {
-      console.error("Erreur lors de la mise à jour de l'utilisateur :", error.message, error.stack);
       return reply.status(500).send({ error: "Erreur serveur." });
     }
   });
 
-  // 🔹 Supprimer un utilisateur
   fastify.delete("/users/username/:username", async (request, reply) => {
     const { username } = request.params;
-    console.log("🔹 Suppression de l'utilisateur :", username);
     try
     {
       const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
       if (!user)
-      {
-        console.log("❌ Utilisateur introuvable");
         return reply.status(404).send({ error: "Utilisateur non trouvé." });
-      }
       db.prepare("DELETE FROM friends WHERE user_id = ? OR friend_id = ?").run(user.id, user.id);
       db.prepare("DELETE FROM matches WHERE player1_id = ? OR player2_id = ?").run(user.id, user.id);
       db.prepare("DELETE FROM users WHERE username = ?").run(username);
-      console.log("✅ Utilisateur supprimé avec succès");
       return { message: "Utilisateur supprimé avec succès!" };
     }
     catch (error)
     {
-      console.error("Erreur lors de la suppression de l'utilisateur :", error);
       return reply.status(500).send({ error: "Erreur serveur." });
     }
   });
 
-  // Anonymisation d'un utilisateur
   fastify.patch('/users/username/:username/anonymize', async (request, reply) => {
     const { username } = request.params;
     try
@@ -202,29 +173,24 @@ async function userRoutes(fastify) {
     }
     catch (error)
     {
-      console.error("Erreur lors de l'anonymisation de l'utilisateur", error);
       reply.status(500).send({ error: "Erreur serveur" });
     }
   });
 
-  // 🔹 Ajouter un ami
   fastify.post("/users/:userId/friends/:friendId", async (request, reply) => {
     const { userId, friendId } = request.params;
     
     try {
-      // Vérifier si l'utilisateur existe
       const user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
       if (!user) {
         return reply.status(404).send({ error: "Utilisateur non trouvé" });
       }
 
-      // Vérifier si l'ami existe
       const friend = db.prepare("SELECT * FROM users WHERE id = ?").get(friendId);
       if (!friend) {
         return reply.status(404).send({ error: "Ami non trouvé" });
       }
 
-      // Vérifier si la relation existe déjà
       const existingRelation = db.prepare(`
         SELECT * FROM friends 
         WHERE (user_id = ? AND friend_id = ?) 
@@ -235,7 +201,6 @@ async function userRoutes(fastify) {
         return reply.status(400).send({ error: "Cette relation d'amitié existe déjà" });
       }
 
-      // Créer la relation d'amitié
       db.prepare(`
         INSERT INTO friends (user_id, friend_id, status)
         VALUES (?, ?, 'pending')
@@ -243,12 +208,10 @@ async function userRoutes(fastify) {
 
       return { message: "Demande d'amitié envoyée" };
     } catch (error) {
-      console.error("Erreur lors de l'ajout d'un ami:", error);
       return reply.status(500).send({ error: "Erreur serveur" });
     }
   });
 
-  // 🔹 Accepter une demande d'amitié
   fastify.patch("/users/:userId/friends/:friendId/accept", async (request, reply) => {
     const { userId, friendId } = request.params;
     
@@ -265,12 +228,10 @@ async function userRoutes(fastify) {
 
       return { message: "Demande d'amitié acceptée" };
     } catch (error) {
-      console.error("Erreur lors de l'acceptation de la demande d'amitié:", error);
       return reply.status(500).send({ error: "Erreur serveur" });
     }
   });
 
-  // 🔹 Rejeter une demande d'amitié
   fastify.patch("/users/:userId/friends/:friendId/reject", async (request, reply) => {
     const { userId, friendId } = request.params;
     
@@ -281,18 +242,15 @@ async function userRoutes(fastify) {
         WHERE user_id = ? AND friend_id = ? AND status = 'pending'
       `).run(friendId, userId);
 
-      if (result.changes === 0) {
+      if (result.changes === 0)
         return reply.status(404).send({ error: "Demande d'amitié non trouvée" });
-      }
 
       return { message: "Demande d'amitié rejetée" };
     } catch (error) {
-      console.error("Erreur lors du rejet de la demande d'amitié:", error);
       return reply.status(500).send({ error: "Erreur serveur" });
     }
   });
 
-  // 🔹 Supprimer un ami
   fastify.delete("/users/:userId/friends/:friendId", async (request, reply) => {
     const { userId, friendId } = request.params;
     
@@ -308,13 +266,13 @@ async function userRoutes(fastify) {
       }
 
       return { message: "Ami supprimé" };
-    } catch (error) {
-      console.error("Erreur lors de la suppression d'un ami:", error);
+    }
+    catch (error)
+    {
       return reply.status(500).send({ error: "Erreur serveur" });
     }
   });
 
-  // 🔹 Obtenir la liste des amis
   fastify.get("/users/:userId/friends", async (request, reply) => {
     const { userId } = request.params;
     
@@ -329,12 +287,10 @@ async function userRoutes(fastify) {
 
       return friends;
     } catch (error) {
-      console.error("Erreur lors de la récupération des amis:", error);
       return reply.status(500).send({ error: "Erreur serveur" });
     }
   });
 
-  // 🔹 Obtenir les demandes d'amitié en attente
   fastify.get("/users/:userId/friend-requests", async (request, reply) => {
     const { userId } = request.params;
     
@@ -348,8 +304,9 @@ async function userRoutes(fastify) {
       `).all(userId);
 
       return requests;
-    } catch (error) {
-      console.error("Erreur lors de la récupération des demandes d'amitié:", error);
+    }
+    catch (error)
+    {
       return reply.status(500).send({ error: "Erreur serveur" });
     }
   });
@@ -364,7 +321,6 @@ async function userRoutes(fastify) {
         return reply.status(200).send({msg: "l'update de la langue c'est bien passer.", user});
     }
     catch(error) {
-      console.error("Erreur lors de l'update de la langue", error);
       return reply.status(500).send({ error: "Erreur serveur" });
     }
   });
