@@ -46,12 +46,11 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         return document.createElement("div");
     }
 
-    // ✅ NOUVEAU: Stocker la page actuelle dans localStorage pour les redirections
     localStorage.setItem('currentPage', 'local-match');
 
-    console.log("🔍 Chargement des utilisateurs...");
+    console.log("Chargement des utilisateurs...");
     const users = await getUsers();
-    console.log("✅ Utilisateurs récupérés :", users);
+    console.log("Utilisateurs récupérés :", users);
 
     const container = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-950 via-blue-700 to-blue-950 text-white p-8 space-y-6";
@@ -60,11 +59,9 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     title.innerHTML = `🏓 ${translatedMatch1v1}`;
     title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100 text-center";
 
-    // Section principale avec effet glassmorphism
     const mainSection = document.createElement("div");
     mainSection.className = "w-full max-w-xl bg-black bg-opacity-40 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-blue-500/30 flex flex-col items-center space-y-6";
 
-    // ✅ Sélection du Joueur 2 (liste déroulante)
     const playerSelectionContainer = document.createElement("div");
     playerSelectionContainer.className = "w-full space-y-3";
     
@@ -86,7 +83,6 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
     playerSelectionContainer.append(playerSelectLabel, player2Select);
 
-    // ✅ Champ de mot de passe pour le Joueur 2
     const passwordContainer = document.createElement("div");
     passwordContainer.className = "w-full space-y-3 hidden";
     
@@ -101,16 +97,13 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
     passwordContainer.append(passwordLabel, player2Password);
 
-    // ✅ Bouton pour valider la connexion du Joueur 2
     const connectButton = document.createElement("button");
     connectButton.innerHTML = `🔑 ${translatedConnectAgainst}`;
     connectButton.className = "w-full px-6 py-3 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-600 hover:to-blue-400 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 font-bold text-lg hidden";
 
-    // ✅ Section des paramètres du match (cachée au départ)
     const matchSettingsContainer = document.createElement("div");
-    matchSettingsContainer.className = "w-full space-y-6 hidden"; // Caché tant que le Joueur 2 n'est pas connecté
+    matchSettingsContainer.className = "w-full space-y-6 hidden";
 
-    // ✅ Options de points
     const pointsContainer = document.createElement("div");
     pointsContainer.className = "w-full space-y-3";
     
@@ -130,21 +123,13 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     
     pointsContainer.append(pointsLabel, pointsOptions);
 
-    // ✅ Bouton pour commencer la partie
     const startGameButton = document.createElement("button");
     startGameButton.innerHTML = `🚀 ${translatedStartParty}`;
 
     startGameButton.className = "w-full px-6 py-4 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-600 hover:to-blue-400 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 font-bold text-xl";
 
-    // ✅ Affichage dynamique des options de match
-    function updateMatchOptions() {
-        // Maintenant que nous n'avons plus qu'un seul mode (points),
-        // cette fonction n'a plus rien à faire
-    }
-
-    // ✅ Affichage du mot de passe et du bouton après la sélection d'un joueur
     function showLoginFields() {
-        console.log(`🎯 Joueur 2 sélectionné : ${player2Select.value}`);
+        console.log(`Joueur 2 sélectionné : ${player2Select.value}`);
         passwordContainer.classList.remove("hidden");
         connectButton.classList.remove("hidden");
     }
@@ -154,7 +139,6 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         showLoginFields();
     }
 
-    // ✅ Connexion temporaire du Joueur 2
     connectButton.onclick = async () => {
         const player2Username: string = player2Select.value;
         const password: string = player2Password.value.trim();
@@ -164,13 +148,12 @@ export default async function LocalMatch(): Promise<HTMLElement> {
             return;
         }
 
-        console.log(`🔑 Tentative de connexion temporaire pour ${player2Username}...`);
+        console.log(`Tentative de connexion temporaire pour ${player2Username}...`);
 
         try {
             const player2Auth = await loginWithoutSession(player2Username, password);
-            console.log(`✅ Connexion réussie pour ${player2Username}`, player2Auth);
+            console.log(`Connexion réussie pour ${player2Username}`, player2Auth);
 
-            // ✅ Stocker les infos du Joueur 2 sans écraser `state.user`
             if (!state.localMatch) {
                 state.localMatch = {
                     player1: state.user.username,
@@ -182,23 +165,20 @@ export default async function LocalMatch(): Promise<HTMLElement> {
             }
             state.localMatch.player2Auth = player2Auth;
 
-            // ✅ Cacher les champs après connexion
             playerSelectionContainer.classList.add("hidden");
             passwordContainer.classList.add("hidden");
             connectButton.classList.add("hidden");
 
-            // ✅ Afficher les paramètres du match et le bouton de démarrage
             matchSettingsContainer.classList.remove("hidden");
         } catch (error) {
-            console.error("❌ Échec de l'authentification :", error);
+            console.error("Échec de l'authentification :", error);
             alert("❌ " + translatedAlertFailed);
         }
     };
 
-    // ✅ Démarrer le match
     startGameButton.onclick = () => {
         if (!state.localMatch) {
-            console.error("❌ Erreur : `state.localMatch` est null !");
+            console.error("Erreur : `state.localMatch` est null !");
             return;
         }
     
@@ -210,7 +190,6 @@ export default async function LocalMatch(): Promise<HTMLElement> {
         navigateTo(new Event("click"), "/game-local");
     };
 
-    // Assembler tous les éléments
     matchSettingsContainer.append(pointsContainer, startGameButton);
     mainSection.append(playerSelectionContainer, passwordContainer, connectButton, matchSettingsContainer);
     container.append(title, mainSection);
