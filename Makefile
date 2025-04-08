@@ -1,5 +1,5 @@
 all:
-	docker-compose up --build
+	docker-compose up --build -d
 
 init:
 	cd frontend && npm run build && cd ..
