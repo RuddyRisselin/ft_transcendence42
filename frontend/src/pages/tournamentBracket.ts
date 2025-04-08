@@ -2,7 +2,6 @@ import { state } from "../state";
 import { navigateTo } from "../router";
 import { translateText } from "../translate";
 
-// 🔥 **Générer un bracket de tournoi en arbre binaire**
 async function generateBracket() {
     if (!state.tournament)
         return;
@@ -22,7 +21,6 @@ async function generateBracket() {
             matchups.push({ player1, player2 });
         }
 
-        // Si un joueur reste seul, il est qualifié automatiquement
         if (players.length === 1) {
             matchups.push({ player1: players.shift()!, player2: null });
         }
@@ -49,7 +47,6 @@ function getNextMatch() {
         }
     }
 
-    // ✅ ✅ ✅ Correction : S'il y a encore un match à jouer, le récupérer
     const lastRound = state.tournament.bracket[state.tournament.bracket.length - 1];
     if (lastRound.matchups.length === 1 && !lastRound.matchups[0].winner) {
         return lastRound.matchups[0];
@@ -59,7 +56,6 @@ function getNextMatch() {
 }
 
 
-// 🔥 **Mélanger aléatoirement un tableau (Fisher-Yates)**
 function shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
         const j: number = Math.floor(Math.random() * (i + 1));
@@ -101,7 +97,6 @@ const [
     translatedPoints
 ] = await Promise.all(textToTranslate.map(text => translateText(text)));
 
-    // ✅ NOUVEAU: Vérifier et restaurer les données du tournoi si nécessaire
     if (!state.tournament && localStorage.getItem('tournamentData')) {
         try {
             state.tournament = JSON.parse(localStorage.getItem('tournamentData')!);
@@ -116,22 +111,18 @@ const [
         return document.createElement("div");
     }
     
-    // ✅ NOUVEAU: Stocker l'état actuel dans localStorage
     localStorage.setItem('currentPage', 'tournament-bracket');
     localStorage.setItem('tournamentData', JSON.stringify(state.tournament));
 
-    // Conteneur principal sans défilement vertical
     const container = document.createElement("div");
     container.className = "absolute inset-0 flex flex-col items-center bg-gradient-to-r from-indigo-950 via-purple-900 to-indigo-950 text-white";
 
     const header = document.createElement("div");
     header.className = "w-full max-w-3xl bg-black bg-opacity-40 backdrop-blur-sm p-5 rounded-2xl shadow-2xl border border-purple-500/30 mt-6 mb-4 mx-auto";
     
-    // Créer une structure pour le header qui peut inclure le gagnant
     const headerContent = document.createElement("div");
     headerContent.className = "flex flex-col items-center";
     
-    // Message du gagnant en haut (compact mais lisible)
     if (state.tournament.winner) {
         const winnerBadge = document.createElement("div");
         winnerBadge.className = "flex items-center justify-center mb-3 bg-gradient-to-r from-yellow-900/40 to-amber-800/40 rounded-lg border border-yellow-500/40 py-3 px-5";
@@ -167,26 +158,20 @@ const [
         generateBracket();
     }
 
-    // 📌 Détermination dynamique de la taille du canvas
     const rounds = state.tournament.bracket.length;
     const totalPlayers = state.tournament.players.length;
     
-    // Calculer les dimensions optimales en fonction du nombre de joueurs et de l'écran
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // Adapter la taille globale en fonction de la hauteur disponible
-    const headerHeight = 120; // Estimation de l'espace pris par le header
-    const infoHeight = 150;   // Estimation de l'espace pris par les infos
-    const availableHeight = viewportHeight - headerHeight - infoHeight - 60; // 60px pour les marges
+    const headerHeight = 120;
+    const infoHeight = 150;
+    const availableHeight = viewportHeight - headerHeight - infoHeight - 60;
     
-    // Définir des proportions qui s'adaptent à différentes tailles d'écran
     const maxCanvasWidth = Math.min(viewportWidth * 0.92 - 32, 1400);
     
-    // Calculer l'espacement optimal en fonction des dimensions et du nombre de tours
     let horizontalSpacing, matchWidth;
     
-    // Adapter pour les différentes tailles d'écran et nombre de rounds
     if (rounds <= 2) {
         horizontalSpacing = Math.min(220, maxCanvasWidth / 3);
         matchWidth = Math.min(170, horizontalSpacing * 0.75);
@@ -198,57 +183,44 @@ const [
         matchWidth = Math.min(150, horizontalSpacing * 0.75);
     }
     
-    // Ajuster la taille des matchs en fonction du nombre de joueurs et de l'espace vertical
     let matchHeight, verticalSpacing;
     const maxMatchesInRound = Math.pow(2, rounds - 1);
     
-    // Réglage spécifique basé sur le nombre de joueurs
     if (totalPlayers >= 16) {
-        // Grand tournoi (16 joueurs)
         matchHeight = 36;
         verticalSpacing = 24;
     } else if (totalPlayers >= 9) {
-        // Tournoi moyen-grand (9-15 joueurs)
         matchHeight = 38;
         verticalSpacing = 28;
     } else if (totalPlayers > 4) {
-        // Tournoi moyen (5-8 joueurs)
         matchHeight = 46;
         verticalSpacing = 36;
     } else {
-        // Petit tournoi (4 joueurs ou moins)
         matchHeight = 54;
         verticalSpacing = 45;
     }
     
-    // Calculer la taille du canvas en fonction des paramètres optimisés
     const canvasWidth = Math.min(rounds * horizontalSpacing + matchWidth + 140, maxCanvasWidth);
     
-    // Pour les grands tournois, calculer la hauteur minimale nécessaire (avec une marge de sécurité)
     const matchesInFirstRound = state.tournament.bracket[0] ? state.tournament.bracket[0].matchups.length : 0;
     const minHeightNeeded = (matchesInFirstRound * matchHeight) + ((matchesInFirstRound - 1) * verticalSpacing) + 80;
     
-    // Augmenter la hauteur disponible pour les tournois plus grands
     let adjustedAvailableHeight = availableHeight;
     if (totalPlayers > 8) {
         adjustedAvailableHeight = Math.max(availableHeight, Math.min(minHeightNeeded, viewportHeight * 0.8));
     }
     
-    // Limiter la hauteur en fonction de l'espace disponible, mais garder une taille minimum
     const minCanvasHeight = Math.min(400, adjustedAvailableHeight);
     const canvasHeight = Math.max(minHeightNeeded, minCanvasHeight);
 
-    // Création du Canvas avec les dimensions optimisées
     const canvasContainer = document.createElement("div");
     canvasContainer.className = "bg-black bg-opacity-30 backdrop-blur-sm p-4 sm:p-5 rounded-2xl shadow-xl border border-indigo-500/30 flex justify-center items-center overflow-hidden";
-    // Limiter la largeur du conteneur pour éviter les débordements horizontaux
     canvasContainer.style.maxWidth = "calc(100vw - 24px)";
     
-    // Activer le défilement vertical basé sur le nombre de joueurs
     if (totalPlayers > 8) {
         canvasContainer.style.overflowY = "auto";
         canvasContainer.style.maxHeight = `${Math.min(viewportHeight * 0.75, 850)}px`;
-        canvasContainer.style.overflowX = "hidden"; // Éviter le défilement horizontal
+        canvasContainer.style.overflowX = "hidden";
     } else {
         canvasContainer.style.minHeight = "400px";
         canvasContainer.style.maxHeight = `${canvasHeight + 40}px`;
@@ -259,7 +231,6 @@ const [
     canvas.height = canvasHeight;
     canvas.className = "rounded-lg shadow-xl";
 
-    // S'assurer que le canvas est responsive
     canvas.style.maxWidth = "100%";
     canvas.style.height = "auto";
     canvas.style.objectFit = "contain";
@@ -272,11 +243,9 @@ const [
     
     canvasContainer.appendChild(canvas);
     
-    // Section avec les informations sur le tournoi
     const infoContainer = document.createElement("div");
     infoContainer.className = "mt-4 bg-black bg-opacity-30 backdrop-blur-sm p-4 sm:p-5 rounded-2xl shadow-xl border border-indigo-500/30 w-full max-w-3xl flex flex-wrap justify-between gap-4 mx-auto";
     
-    // Format du tournoi
     const formatInfo = document.createElement("div");
     formatInfo.className = "flex flex-col items-center";
     
@@ -293,7 +262,6 @@ const [
     
     formatInfo.append(formatIcon, formatTitle, formatValue);
     
-    // Mode de jeu
     const modeInfo = document.createElement("div");
     modeInfo.className = "flex flex-col items-center";
     
@@ -311,7 +279,6 @@ const [
     
     modeInfo.append(modeIcon, modeTitle, modeValue);
     
-    // Matchs restants
     const matchesInfo = document.createElement("div");
     matchesInfo.className = "flex flex-col items-center";
     
@@ -322,7 +289,6 @@ const [
     const matchesTitle = document.createElement("div");
     matchesTitle.className = "text-sm text-indigo-300 mb-1";
     matchesTitle.innerHTML = translatedMatchs;
-    // Calculer le nombre de matchs restants
     let matchesRemaining = 0;
     state.tournament.bracket.forEach(round => {
         round.matchups.forEach(match => {
@@ -342,7 +308,6 @@ const [
     
     infoContainer.append(formatInfo, modeInfo, matchesInfo);
     
-    // Bouton pour lancer le match (seulement si le tournoi n'est pas terminé)
     if (!state.tournament.winner) {
         const buttonContainer = document.createElement("div");
         buttonContainer.className = "w-full flex justify-center mt-4 mb-6";
@@ -356,10 +321,7 @@ const [
             const nextMatch = getNextMatch();
             if (nextMatch) {
                 state.tournament!.currentMatch = nextMatch;
-                
-                // ✅ NOUVEAU: Stocker le match actuel dans localStorage
                 localStorage.setItem('currentMatchData', JSON.stringify(nextMatch));
-                
                 navigateTo(new Event("click"), "/tournament-game");
             } else {
                 alert(`🏆 ${translatedTournamentFinished}`);
@@ -371,7 +333,6 @@ const [
     
     container.append(header, canvasContainer, infoContainer);
     
-    // Ajuster les dimensions quand la fenêtre change de taille
     window.addEventListener('resize', () => {
         const canvas = document.querySelector('canvas');
         if (canvas) {
@@ -385,11 +346,9 @@ const [
     return container;
 }
 
-// 🔥 **Dessiner le bracket en `Canvas`**
 export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, height: number) {
     if (!state.tournament) return;
 
-    /*          TRANSLATE TAB          */
     const textToTranslate: string[] = [
         "En attente..."
     ];
@@ -398,17 +357,15 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     ctx.clearRect(0, 0, width, height);
     
-    // Fond élégant avec motif subtil
     const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, "#1e1b4b20"); // indigo-950 avec transparence
-    gradient.addColorStop(0.5, "#581c8720"); // purple-900 avec transparence
-    gradient.addColorStop(1, "#1e1b4b20"); // indigo-950 avec transparence
+    gradient.addColorStop(0, "#1e1b4b20");
+    gradient.addColorStop(0.5, "#581c8720");
+    gradient.addColorStop(1, "#1e1b4b20");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
     
-    // Ajouter un motif de points subtil - Optimiser pour ne pas ralentir les petits appareils
-    const pointSpacing = width > 800 ? 20 : 40; // Points plus espacés sur petits écrans
-    ctx.fillStyle = "#8b5cf610"; // purple-500 très transparent
+    const pointSpacing = width > 800 ? 20 : 40;
+    ctx.fillStyle = "#8b5cf610";
     for (let x = 0; x < width; x += pointSpacing) {
         for (let y = 0; y < height; y += pointSpacing) {
             ctx.beginPath();
@@ -420,11 +377,8 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
     const bracket = state.tournament.bracket;
     const rounds = bracket.length;
     const totalPlayers = state.tournament.players.length;
-    
-    // Calculer dynamiquement les dimensions en fonction de la taille du canvas et du nombre de joueurs
     let matchHeight, matchWidth;
     
-    // Ajuster les dimensions des matchs en fonction du nombre de joueurs
     if (totalPlayers >= 16) {
         matchHeight = 36;
         matchWidth = width / (rounds + 2) * 0.8;
@@ -438,24 +392,20 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
     
     const horizontalSpacing = width / (rounds + 1);
     
-    // Centre vertical du canvas - ajusté pour grands tournois
     const centerY = totalPlayers > 8 
-        ? matchHeight * totalPlayers / 4 // Centre visuel pour les grands tournois
-        : height / 2;                    // Centre pour les petits tournois
+        ? matchHeight * totalPlayers / 4
+        : height / 2;
 
-    // Adapter la taille du texte en fonction de la taille du canvas et du nombre de joueurs
     const fontSize = totalPlayers >= 12
         ? Math.max(12, Math.min(13, matchHeight / 3))
         : Math.max(13, Math.min(15, matchHeight / 3));
 
-    // Dessiner les titres des rounds
     ctx.font = `bold ${fontSize}px Arial`;
     ctx.textAlign = "center";
     
-    // Dégradé pour les titres
     const titleGradient = ctx.createLinearGradient(0, 0, width, 0);
-    titleGradient.addColorStop(0, "#a5b4fc"); // indigo-300
-    titleGradient.addColorStop(1, "#c4b5fd"); // purple-300
+    titleGradient.addColorStop(0, "#a5b4fc");
+    titleGradient.addColorStop(1, "#c4b5fd");
     ctx.fillStyle = titleGradient;
     
     for (let i = 0; i < rounds; i++) {
@@ -467,7 +417,7 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
         ctx.fillText(roundTitle, x, 25);
     }
     
-    ctx.textAlign = "left"; // Réinitialiser l'alignement du texte
+    ctx.textAlign = "left";
 
     let positions: { x: number; y: number }[][] = [];
 
@@ -489,9 +439,8 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
     const totalHeight = firstRoundMatches * matchHeight + (firstRoundMatches - 1) * verticalSpacing;
     let startY = centerY - totalHeight / 2;
     
-    // Ajuster le point de départ pour les grands tournois
     if (totalPlayers > 8) {
-        startY = 40; // Commencer plus haut pour les grands tournois
+        startY = 40;
     }
 
     for (let roundIndex = 0; roundIndex < rounds; roundIndex++) {
@@ -500,26 +449,21 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
 
         positions[roundIndex] = [];
         
-        // Ajuster l'espacement vertical en fonction du nombre de matchs dans ce tour
         const roundTotalHeight = matchesInRound * matchHeight + (matchesInRound - 1) * verticalSpacing;
         let roundStartY = centerY - roundTotalHeight / 2;
         
-        // Ajuster pour les grands tournois
         if (totalPlayers > 8) {
-            roundStartY = startY + (roundIndex === 0 ? 0 : 20); // Un peu plus bas pour les tours suivants
+            roundStartY = startY + (roundIndex === 0 ? 0 : 20);
         }
 
         for (let matchIndex = 0; matchIndex < matchesInRound; matchIndex++) {
             const match = round.matchups[matchIndex];
 
-            // Ajout d'une marge horizontale aux extrémités du bracket (70px sur chaque côté)
             let x = roundIndex * horizontalSpacing + 70;
             let y = roundStartY + matchIndex * (matchHeight + verticalSpacing);
 
-            // Ajustement pour les tours suivants basé sur les positions précédentes
             if (roundIndex > 0) {
                 const prevRoundMatchCount = positions[roundIndex - 1].length;
-                // Calculer combien de matchs du tour précédent correspondent à ce match
                 const matchesPerCurrentMatch = prevRoundMatchCount / matchesInRound;
                 
                 if (matchesPerCurrentMatch >= 2) {
@@ -536,124 +480,106 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
 
             positions[roundIndex].push({ x, y });
 
-            // Dessiner l'arrière-plan des matchs avec un dégradé et effet de glassmorphism
             const matchGradient = ctx.createLinearGradient(x, y, x + matchWidth, y + matchHeight);
-            matchGradient.addColorStop(0, "#1e293b99"); // slate-800 semi-transparent
-            matchGradient.addColorStop(1, "#0f172a99"); // slate-900 semi-transparent
+            matchGradient.addColorStop(0, "#1e293b99");
+            matchGradient.addColorStop(1, "#0f172a99");
             
             ctx.fillStyle = matchGradient;
             ctx.beginPath();
-            ctx.roundRect(x, y, matchWidth, matchHeight, 8); // Coins arrondis
+            ctx.roundRect(x, y, matchWidth, matchHeight, 8);
             ctx.fill();
             
-            // Ajout d'une ombre légère
             ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
             ctx.shadowBlur = 10;
             ctx.shadowOffsetX = 2;
             ctx.shadowOffsetY = 2;
             
-            // Bordure dégradée avec animation
             const now = Date.now() / 1000;
             const borderGradient = ctx.createLinearGradient(x, y, x + matchWidth, y + matchHeight);
             
             if (match.winner) {
-                // Bordure dorée animée pour les matchs terminés
-                const shiftAmount = (Math.sin(now) + 1) / 2; // Valeur entre 0 et 1
-                borderGradient.addColorStop(0, "#fbbf24"); // amber-400
-                borderGradient.addColorStop(shiftAmount, "#f59e0b"); // amber-500
-                borderGradient.addColorStop(1, "#d97706"); // amber-600
+                const shiftAmount = (Math.sin(now) + 1) / 2;
+                borderGradient.addColorStop(0, "#fbbf24");
+                borderGradient.addColorStop(shiftAmount, "#f59e0b");
+                borderGradient.addColorStop(1, "#d97706");
             } else {
-                borderGradient.addColorStop(0, "#6366f1"); // indigo-500
-                borderGradient.addColorStop(1, "#8b5cf6"); // purple-500
+                borderGradient.addColorStop(0, "#6366f1");
+                borderGradient.addColorStop(1, "#8b5cf6");
             }
             
             ctx.strokeStyle = borderGradient;
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.roundRect(x, y, matchWidth, matchHeight, 8); // Coins arrondis
+            ctx.roundRect(x, y, matchWidth, matchHeight, 8);
             ctx.stroke();
             
-            // Réinitialiser l'ombre pour le texte
             ctx.shadowColor = 'transparent';
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
 
-            // Dessiner une séparation entre les joueurs
             ctx.beginPath();
             ctx.moveTo(x, y + matchHeight/2);
             ctx.lineTo(x + matchWidth, y + matchHeight/2);
-            ctx.strokeStyle = "#6366f140"; // indigo-500 très transparent
+            ctx.strokeStyle = "#6366f140";
             ctx.stroke();
 
-            // Noms des joueurs
             ctx.font = `bold ${fontSize}px Arial`;
             
-            // Joueur 1 - avec possibilité de mise en évidence
             if (match.player1 === match.winner) {
-                // Fond pour le joueur gagnant (partie supérieure)
                 const winnerGradient = ctx.createLinearGradient(x, y, x + matchWidth, y + matchHeight/2);
-                winnerGradient.addColorStop(0, "rgba(251, 191, 36, 0.3)"); // amber-400 avec transparence
-                winnerGradient.addColorStop(1, "rgba(245, 158, 11, 0.3)"); // amber-500 avec transparence
+                winnerGradient.addColorStop(0, "rgba(251, 191, 36, 0.3)");
+                winnerGradient.addColorStop(1, "rgba(245, 158, 11, 0.3)");
                 
                 ctx.fillStyle = winnerGradient;
                 ctx.beginPath();
-                ctx.roundRect(x, y, matchWidth, matchHeight/2, [8, 8, 0, 0]); // Coins arrondis seulement en haut
+                ctx.roundRect(x, y, matchWidth, matchHeight/2, [8, 8, 0, 0]);
                 ctx.fill();
                 
-                // Texte en couleur dorée pour le gagnant
-                ctx.fillStyle = "#fcd34d"; // amber-300
+                ctx.fillStyle = "#fcd34d";
             } else {
-                ctx.fillStyle = "#e0e7ff"; // indigo-100
+                ctx.fillStyle = "#e0e7ff";
             }
             
-            // Centrer verticalement le texte dans sa moitié
             const player1Text = match.player1 || "En attente...";
             const player1Y = y + matchHeight/4 + 6;
             ctx.fillText(player1Text, x + 14, player1Y);
             
-            // Joueur 2 - avec possibilité de mise en évidence
             if (match.player2 === match.winner) {
-                // Fond pour le joueur gagnant (partie inférieure)
                 const winnerGradient = ctx.createLinearGradient(x, y + matchHeight/2, x + matchWidth, y + matchHeight);
-                winnerGradient.addColorStop(0, "rgba(251, 191, 36, 0.3)"); // amber-400 avec transparence
-                winnerGradient.addColorStop(1, "rgba(245, 158, 11, 0.3)"); // amber-500 avec transparence
+                winnerGradient.addColorStop(0, "rgba(251, 191, 36, 0.3)");
+                winnerGradient.addColorStop(1, "rgba(245, 158, 11, 0.3)");
                 
                 ctx.fillStyle = winnerGradient;
                 ctx.beginPath();
-                ctx.roundRect(x, y + matchHeight/2, matchWidth, matchHeight/2, [0, 0, 8, 8]); // Coins arrondis seulement en bas
+                ctx.roundRect(x, y + matchHeight/2, matchWidth, matchHeight/2, [0, 0, 8, 8]);
                 ctx.fill();
                 
-                // Texte en couleur dorée pour le gagnant
-                ctx.fillStyle = "#fcd34d"; // amber-300
+                ctx.fillStyle = "#fcd34d";
             } else {
-                ctx.fillStyle = "#e0e7ff"; // indigo-100
+                ctx.fillStyle = "#e0e7ff";
             }
             
             const player2Text = match.player2 || "En attente...";
             const player2Y = y + 3*matchHeight/4 + 6;
             ctx.fillText(player2Text, x + 14, player2Y);
 
-            // Ajout d'une bordure lumineuse autour de la partie du joueur gagnant
             if (match.winner) {
                 if (match.player1 === match.winner) {
-                    // Bordure lumineuse pour la partie supérieure
                     ctx.beginPath();
                     ctx.roundRect(x, y, matchWidth, matchHeight/2, [8, 8, 0, 0]);
-                    ctx.strokeStyle = "#fbbf24"; // amber-400
+                    ctx.strokeStyle = "#fbbf24";
                     ctx.lineWidth = 1.5;
                     ctx.stroke();
                 } else if (match.player2 === match.winner) {
-                    // Bordure lumineuse pour la partie inférieure
                     ctx.beginPath();
                     ctx.roundRect(x, y + matchHeight/2, matchWidth, matchHeight/2, [0, 0, 8, 8]);
-                    ctx.strokeStyle = "#fbbf24"; // amber-400
+                    ctx.strokeStyle = "#fbbf24";
                     ctx.lineWidth = 1.5;
                     ctx.stroke();
                 }
             }
 
-            // Dessin des connexions
             if (roundIndex > 0) {
                 const matchesPerCurrentMatch = positions[roundIndex - 1].length / matchesInRound;
                 const startIdx = matchIndex * matchesPerCurrentMatch;
@@ -663,58 +589,50 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
                     const prev1 = positions[roundIndex - 1][startIdx];
                     const prev2 = positions[roundIndex - 1][endIdx];
                     
-                    // Créer un dégradé pour les lignes
                     const lineGradient = ctx.createLinearGradient(
                         prev1.x + matchWidth, prev1.y + matchHeight / 2,
                         x, y + matchHeight / 2
                     );
                     
                     if (match.winner) {
-                        lineGradient.addColorStop(0, "#fbbf2480"); // amber-400 semi-transparent
-                        lineGradient.addColorStop(1, "#f59e0b80"); // amber-500 semi-transparent
+                        lineGradient.addColorStop(0, "#fbbf2480");
+                        lineGradient.addColorStop(1, "#f59e0b80");
                     } else {
-                        lineGradient.addColorStop(0, "#6366f180"); // indigo-500 semi-transparent
-                        lineGradient.addColorStop(1, "#8b5cf680"); // purple-500 semi-transparent
+                        lineGradient.addColorStop(0, "#6366f180");
+                        lineGradient.addColorStop(1, "#8b5cf680");
                     }
                     
                     ctx.strokeStyle = lineGradient;
                     ctx.lineWidth = 2;
                     
-                    // Point de jonction des lignes (au milieu entre les deux matchs précédents)
                     const junctionX = prev1.x + matchWidth + 30;
                     const junctionY = (prev1.y + prev2.y + matchHeight) / 2;
                     
-                    // Ligne horizontale depuis le premier match précédent
                     ctx.beginPath();
                     ctx.moveTo(prev1.x + matchWidth, prev1.y + matchHeight / 2);
                     ctx.lineTo(junctionX, prev1.y + matchHeight / 2);
                     ctx.stroke();
                     
-                    // Ligne verticale depuis le premier match précédent
                     ctx.beginPath();
                     ctx.moveTo(junctionX, prev1.y + matchHeight / 2);
                     ctx.lineTo(junctionX, junctionY);
                     ctx.stroke();
                     
-                    // Ligne horizontale depuis le second match précédent
                     ctx.beginPath();
                     ctx.moveTo(prev2.x + matchWidth, prev2.y + matchHeight / 2);
                     ctx.lineTo(junctionX, prev2.y + matchHeight / 2);
                     ctx.stroke();
                     
-                    // Ligne verticale depuis le second match précédent
                     ctx.beginPath();
                     ctx.moveTo(junctionX, prev2.y + matchHeight / 2);
                     ctx.lineTo(junctionX, junctionY);
                     ctx.stroke();
                     
-                    // Ligne horizontale vers le match actuel
                     ctx.beginPath();
                     ctx.moveTo(junctionX, junctionY);
                     ctx.lineTo(x, y + matchHeight / 2);
                     ctx.stroke();
                     
-                    // Cercle de jonction
                     ctx.beginPath();
                     ctx.arc(junctionX, junctionY, 4, 0, Math.PI * 2);
                     ctx.fillStyle = lineGradient;
@@ -725,7 +643,6 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
     }
 }
 
-// 🔥 **Met à jour le bracket après un match**
 function updateBracket(winner: string) {
     if (!state.tournament) return;
 

@@ -5,11 +5,9 @@ import { translateText } from "../translate";
 export default async function Login() {
     if (localStorage.getItem("user"))
         window.location.href = "/matches";
-    // 🔴 Suppression immédiate de la sidebar si elle est présente
     const existingSidebar = document.querySelector(".sidebar");
     if (existingSidebar) {
         existingSidebar.remove();
-        console.log("✅ Sidebar supprimée sur la page de connexion.");
     }
 
     const textsToTranslate: string[] = [
@@ -81,7 +79,6 @@ export default async function Login() {
 
     const languageDiv: HTMLDivElement = document.createElement("div");
     languageDiv.className = "mt-auto flex p-3 flex-row flex-wrap justify-around items-center";
-    // languageDiv.className = "mt-auto mb-4 mx-4 p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 flex items-center justify-center rounded-lg transition duration-200 group border border-red-500/20"
     const btnEN: HTMLButtonElement = document.createElement("button");
     const btnES: HTMLButtonElement = document.createElement("button");
     const btnFR: HTMLButtonElement = document.createElement("button");

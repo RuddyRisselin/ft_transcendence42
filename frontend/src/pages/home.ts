@@ -3,9 +3,6 @@ import { navigateTo } from "../router";
 import { translateText } from "../translate";
 
 export default function Home(): HTMLElement {
-    console.log("🏠 Page Home affichée.");
-
-    // ✅ Vérification : si l'utilisateur est connecté, on le redirige immédiatement
     if (state.user) {
         navigateTo(new Event("click"), "/matches");
         return document.createElement("div");
