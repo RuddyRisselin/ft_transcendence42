@@ -11,7 +11,6 @@ export async function uploadFile(formData: FormData) {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error("❌ Erreur lors de la mise à jour de l'utilisateur :", error);
         return false;
     }
 }
