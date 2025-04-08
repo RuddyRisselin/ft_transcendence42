@@ -65,11 +65,10 @@ export default async function GameAI(): Promise<HTMLElement> {
                 localStorage.removeItem('aiGameScores');
             }
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration des scores:", error);
+            console.error("Erreur lors de la restauration des scores:", error);
         }
     }
     
-    // Configurer la difficulté de l'IA
     switch(difficulty) {
         case 'easy':
             setAIDifficulty(AIDifficulty.EASY);
@@ -84,12 +83,10 @@ export default async function GameAI(): Promise<HTMLElement> {
             setTheme(normalAITheme);
     }
 
-    // S'assurer que la raquette du joueur a toujours la même vitesse dans tous les modes
     paddle1.speed = PLAYER_PADDLE_SPEED;
 
     const container = document.createElement("div");
     
-    // Fond dynamique en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             container.className = "absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-green-950 via-green-800 to-green-950 text-white";
@@ -101,11 +98,9 @@ export default async function GameAI(): Promise<HTMLElement> {
             container.className = "absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-orange-950 via-orange-800 to-orange-950 text-white";
     }
 
-    // Header avec titre stylisé comme dans gameTournament.ts
     const header = document.createElement("div");
     header.className = "w-full max-w-3xl bg-black bg-opacity-40 backdrop-blur-sm p-6 rounded-2xl shadow-2xl border mb-8";
     
-    // Adapter les couleurs en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             header.classList.add("border-green-500/30");
@@ -121,7 +116,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     title.className = "text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r text-center";
     title.innerHTML = `🏓 ${translatedTitleMatchIA}`;
     
-    // Adapter les couleurs du titre en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             title.classList.add("from-green-400", "to-emerald-400");
@@ -133,7 +127,6 @@ export default async function GameAI(): Promise<HTMLElement> {
             title.classList.add("from-yellow-400", "to-amber-400");
     }
     
-    // Sous-titre avec les noms des joueurs
     const subtitle = document.createElement("div");
     subtitle.className = "mt-2 text-2xl text-center";
     
@@ -142,7 +135,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     player1Span.innerText = translatedYou;
     
     
-    // Adapter les couleurs du nom du joueur en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             player1Span.classList.add("from-green-400", "to-green-600");
@@ -157,7 +149,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     const vsSpan = document.createElement("span");
     vsSpan.className = "mx-3";
     
-    // Adapter les couleurs du VS en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             vsSpan.classList.add("text-green-300");
@@ -176,7 +167,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     const aiName = difficulty === 'easy' ? translatedNoviceBot : (difficulty === 'hard' ? translatedMasterBot : translatedAdvancedBot);
     player2Span.innerHTML = aiName;
     
-    // Adapter les couleurs du nom de l'IA en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             player2Span.classList.add("from-green-400", "to-green-600");
@@ -191,11 +181,9 @@ export default async function GameAI(): Promise<HTMLElement> {
     subtitle.append(player1Span, vsSpan, player2Span);
     header.append(title, subtitle);
 
-    // Conteneur du jeu avec effet glassmorphism comme dans gameTournament.ts
     const gameContainer = document.createElement("div");
     gameContainer.className = "bg-black bg-opacity-30 backdrop-blur-sm p-6 rounded-2xl shadow-xl border";
     
-    // Adapter les couleurs du conteneur en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             gameContainer.classList.add("border-green-500/30");
@@ -207,13 +195,11 @@ export default async function GameAI(): Promise<HTMLElement> {
             gameContainer.classList.add("border-yellow-500/30");
     }
 
-    // Canvas du jeu
     gameCanvas = document.createElement("canvas");
     gameCanvas.width = 1000;
     gameCanvas.height = 500;
     gameCanvas.className = "border-4 rounded-xl shadow-lg";
     
-    // Adapter les couleurs du canvas en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             gameCanvas.classList.add("border-green-500/30");
@@ -225,20 +211,16 @@ export default async function GameAI(): Promise<HTMLElement> {
             gameCanvas.classList.add("border-yellow-500/30");
     }
     
-    // Créer un conteneur pour le canvas qui permettra un positionnement relatif
     const canvasContainer = document.createElement("div");
     canvasContainer.className = "relative";
     canvasContainer.appendChild(gameCanvas);
     
-    // Message de victoire (placé dans le conteneur du canvas)
     const endMessage = document.createElement("div");
     endMessage.className = "hidden absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm rounded-xl z-10";
     
-    // Contenu du message de victoire
     const victoryContent = document.createElement("div");
     victoryContent.className = "bg-black/60 p-8 rounded-xl border shadow-2xl text-center";
     
-    // Adapter les couleurs du message en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             victoryContent.classList.add("border-green-500/50");
@@ -253,11 +235,9 @@ export default async function GameAI(): Promise<HTMLElement> {
     endMessage.appendChild(victoryContent);
     canvasContainer.appendChild(endMessage);
 
-    // Tableau de scores stylisé
     const scoreBoard = document.createElement("div");
     scoreBoard.className = "text-3xl font-bold mt-6 p-6 rounded-xl bg-opacity-80 shadow-lg border flex justify-center items-center space-x-8";
     
-    // Adapter les couleurs du tableau de scores en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             scoreBoard.classList.add("bg-gradient-to-r", "from-green-900/80", "to-emerald-900/80", "border-green-500/30");
@@ -276,7 +256,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     player1Name.className = "text-transparent bg-clip-text bg-gradient-to-r font-medium mb-2";
     player1Name.innerHTML = translatedYou;
     
-    // Adapter les couleurs du nom du joueur en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             player1Name.classList.add("from-green-400", "to-green-600");
@@ -291,7 +270,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     const player1ScoreDisplay = document.createElement("div");
     player1ScoreDisplay.className = "text-4xl font-bold bg-black/50 w-16 h-16 flex items-center justify-center rounded-xl border";
     
-    // Adapter les couleurs du score en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             player1ScoreDisplay.classList.add("border-green-500/30");
@@ -312,7 +290,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     versus.className = "text-transparent bg-clip-text bg-gradient-to-r font-bold";
     versus.innerHTML = "VS";
     
-    // Adapter les couleurs du VS en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             versus.classList.add("from-green-400", "to-emerald-400");
@@ -331,7 +308,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     player2Name.className = "text-transparent bg-clip-text bg-gradient-to-r font-medium mb-2";
     player2Name.innerHTML = aiName;
     
-    // Adapter les couleurs du nom de l'IA en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             player2Name.classList.add("from-green-400", "to-green-600");
@@ -348,7 +324,6 @@ export default async function GameAI(): Promise<HTMLElement> {
     player2ScoreDisplay.innerHTML = "0";
     player2ScoreDisplay.id = "player2-score";
     
-    // Adapter les couleurs du score de l'IA en fonction de la difficulté
     switch(difficulty) {
         case 'easy':
             player2ScoreDisplay.classList.add("border-green-500/30");
@@ -380,7 +355,6 @@ export default async function GameAI(): Promise<HTMLElement> {
             timestamp: Date.now()
         }));
         
-        // Vérifier si un joueur a gagné (5 points)
         if (score1 >= 5) {
             endMatch(translatedYou);
         } else if (score2 >= 5) {
@@ -388,14 +362,12 @@ export default async function GameAI(): Promise<HTMLElement> {
         }
     }
 
-    // Fonction pour gérer la fin du match
     let matchEnded = false;
     
     function endMatch(winner: string) {
         if (matchEnded) return;
         matchEnded = true;
         
-        // Arrêter le jeu proprement
         stopGame();
         if (animationId) {
             cancelAnimationFrame(animationId);
@@ -407,16 +379,12 @@ export default async function GameAI(): Promise<HTMLElement> {
             localStorage.removeItem('aiGameState');
         }, 1000);
         
-        // Adapter l'IA si elle a perdu
         if (winner === translatedYou) {
-            // L'IA a perdu, on l'améliore
             onAILoss();
         } else {
-            // L'IA a gagné, on réinitialise le compteur de défaites
             onAIWin();
         }
         
-        // Préparer les classes CSS pour le texte du gagnant selon la difficulté
         let gradientClasses = "";
         if (winner === translatedYou) {
             gradientClasses = "from-green-400 to-emerald-500";
@@ -493,24 +461,16 @@ export default async function GameAI(): Promise<HTMLElement> {
                 localStorage.removeItem('aiGameState');
             }
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration de l'état du jeu contre IA:", error);
+            console.error("Erreur lors de la restauration de l'état du jeu contre IA:", error);
         }
     }
 
     function startGameWithAI() {
         gameStarted = true;
         
-        // Réinitialiser les vitesses des raquettes
         resetPaddleSpeeds();
-        
-        // Définir explicitement les vitesses des paddles pour éviter l'accumulation
         paddle1.speed = PLAYER_PADDLE_SPEED;
-        // La vitesse de paddle2 sera définie par setAIDifficulty, donc on ne la réinitialise pas ici
-        
-        // Réinitialiser l'IA
         resetAI();
-        
-        // Setup des contrôles pour le joueur
         setupControls(paddle1, paddle2, canvasHeight);
         
         const originalStartGame = startGame;
@@ -518,7 +478,6 @@ export default async function GameAI(): Promise<HTMLElement> {
         window.startGame = (canvas, onScoreCallback) => {
             const result = originalStartGame(canvas, onScoreCallback);
             
-            // Ajouter notre sauvegarde d'état à la boucle de jeu
             // @ts-ignore - On étend l'interface window
             const originalGameLoop = window.gameLoop;
             // @ts-ignore - On étend l'interface window
@@ -531,7 +490,6 @@ export default async function GameAI(): Promise<HTMLElement> {
             return result;
         };
         
-        // Démarrer le jeu avec le callback pour les scores
         startGame(gameCanvas, (scorer) => {
             if (scorer === "left") {
                 incrementScore(1);
@@ -541,22 +499,17 @@ export default async function GameAI(): Promise<HTMLElement> {
             updateScoreDisplay();
         });
         
-        // Animation loop pour l'IA
         function aiLoop(timestamp: number) {
             updateAI(timestamp);
             animationId = requestAnimationFrame(aiLoop);
         }
         
         animationId = requestAnimationFrame(aiLoop);
-        
-        // Mettre à jour l'affichage des scores régulièrement
         scoreInterval = window.setInterval(updateScoreDisplay, 100);
     }
 
     // Démarrer le jeu au chargement de la page
     window.setTimeout(startGameWithAI, 500);
-
-    // Ajouter les éléments au conteneur du jeu
     gameContainer.append(canvasContainer, scoreBoard);
     container.append(header, gameContainer);
 

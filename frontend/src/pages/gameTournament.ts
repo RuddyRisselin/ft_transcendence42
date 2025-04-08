@@ -6,7 +6,7 @@ import { setupControls, cleanupControls } from "../game/controls";
 import { paddle1, paddle2, resetPaddleSpeeds, PLAYER_PADDLE_SPEED, getScores, ball } from "../game/objects";
 import { drawBracket } from "./tournamentBracket";
 import { translateText } from "../translate";
-import { GameMode, GameOptions, startGameWithOptions } from "../game/multiplayers";
+import { GameMode, GameOptions } from "../game/multiplayers";
 import { tournamentTheme, setTheme } from "../game/objects";
 import API_CONFIG from "../config/apiConfig";
 
@@ -67,23 +67,16 @@ async function saveTournamentToHistory() {
             }
         }
 
-        // Ajuster les positions des demi-finalistes
         if (semifinalists.length > 0) {
-            // Assigner la position 3 au demi-finaliste qui a perdu contre le gagnant final
-            // et la position 4 au demi-finaliste qui a perdu contre le finaliste (2ème place)
             semifinalistsMatches.forEach(({ player, winner: matchWinner }) => {
-                if (matchWinner === winner) { // Celui qui a perdu contre le champion
-                    // Ce joueur a perdu contre le gagnant final, il est donc 3ème
-                    eliminatedInRound[player] = semiFinalsRound + 0.6; // 3ème place (valeur plus haute)
-                } else if (matchWinner === runnerUp) { // Celui qui a perdu contre le finaliste
-                    // Ce joueur a perdu contre le finaliste, il est donc 4ème
-                    eliminatedInRound[player] = semiFinalsRound + 0.5; // 4ème place (valeur plus basse)
-                }
+                if (matchWinner === winner)
+                    eliminatedInRound[player] = semiFinalsRound + 0.6;
+                else if (matchWinner === runnerUp)
+                    eliminatedInRound[player] = semiFinalsRound + 0.5;
             });
         }
     }
 
-    // Étape 4 - Grouper les joueurs par round d'élimination
     const roundGroups: Record<number, string[]> = {};
     for (const [player, round] of Object.entries(eliminatedInRound)) {
         if (!roundGroups[round]) {
@@ -92,10 +85,9 @@ async function saveTournamentToHistory() {
         roundGroups[round].push(player);
     }
 
-    // Étape 5 - Attribuer un classement égal aux joueurs éliminés au même round
     const sortedRounds: number[] = Object.keys(roundGroups)
         .map(Number)
-        .sort((a, b) => b - a); // Du gagnant (plus haut round) au premier éliminé
+        .sort((a, b) => b - a);
 
     const finalRanking: string[] = [];
 
@@ -110,7 +102,6 @@ async function saveTournamentToHistory() {
         }
     }
 
-    // Étape 6 - Envoi à l'API
     const body = {
         players,
         ranking: finalRanking
@@ -174,7 +165,6 @@ export default async function GameTournament() {
     let matchEnded = false;
     let lastStateSave = Date.now();
 
-    // Restaurer les scores depuis localStorage s'ils existent
     if (localStorage.getItem('tournamentGameScores')) {
         try {
             const savedScores = JSON.parse(localStorage.getItem('tournamentGameScores')!);
@@ -255,17 +245,14 @@ export default async function GameTournament() {
     canvasContainer.className = "relative";
     canvasContainer.appendChild(gameCanvas);
     
-    // Message de victoire (placé dans le conteneur du canvas)
     const endMessage = document.createElement("div");
     endMessage.className = "hidden absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm rounded-xl z-10";
     
-    // Contenu du message de victoire
     const victoryContent = document.createElement("div");
     victoryContent.className = "bg-black/60 p-8 rounded-xl border border-indigo-500/50 shadow-2xl text-center";
     endMessage.appendChild(victoryContent);
     canvasContainer.appendChild(endMessage);
 
-    // Tableau de scores stylisé
     const scoreBoard = document.createElement("div");
     scoreBoard.className = "text-3xl font-bold mt-6 p-6 rounded-xl bg-gradient-to-r from-indigo-900/80 to-purple-900/80 shadow-lg border border-indigo-500/30 flex justify-center items-center space-x-8";
     
@@ -327,7 +314,6 @@ export default async function GameTournament() {
             localStorage.removeItem('tournamentGameState');
         }, 1000);
 
-        // Création d'un message de victoire
         victoryContent.innerHTML = `
             <div class="text-7xl mb-6">🏆</div>
             <h2 class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent mb-4">${winner}</h2>
@@ -335,10 +321,8 @@ export default async function GameTournament() {
             <div class="mt-6 text-indigo-300/80 text-sm">${translatedUpdateBracket}</div>
         `;
 
-        // Afficher le message avec une animation
         endMessage.classList.remove("hidden");
         
-        // Ajouter une animation personnalisée au contenu
         victoryContent.style.animation = "scale-up 0.5s ease-out forwards";
         const styleElement = document.createElement('style');
         styleElement.textContent = `
@@ -354,7 +338,6 @@ export default async function GameTournament() {
         }, 100);
     }
 
-    // Utilisation du nouveau système de jeu avec thèmes
     const gameOptions: GameOptions = {
         mode: GameMode.TOURNAMENT,
         scoreLimit: state.tournament.target,
@@ -369,22 +352,16 @@ export default async function GameTournament() {
         }
     };
 
-    // Mode "nombre de points" (seul mode disponible)
     startGame(gameCanvas, (scorer: "left" | "right") => {
         if (matchEnded) return;
         
-        // Mettre à jour les scores locaux
         if (scorer === "left") {
             player1Score += 1;
         } else {
             player2Score += 1;
         }
-        
-        // Mettre à jour l'affichage
         updateScoreBoard();
-        
-        // Vérifier si un joueur a gagné
-        if (!state.tournament) return; // Vérification pour éviter l'erreur
+        if (!state.tournament) return;
         
         if (player1Score >= state.tournament.target) {
             endMatch(player1);
@@ -428,7 +405,7 @@ export default async function GameTournament() {
                 localStorage.removeItem('tournamentGameState');
             }
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration de l'état du jeu de tournoi:", error);
+            console.error("Erreur lors de la restauration de l'état du jeu de tournoi:", error);
         }
     }
 
@@ -450,14 +427,12 @@ export default async function GameTournament() {
         return result;
     };
 
-    // Mettre à jour l'affichage des scores au démarrage pour refléter les scores restaurés
     updateScoreBoard();
     setupControls(paddle1, paddle2, gameCanvas.height);
     return Layout(container);
 }
 
 async function finishMatch(winner: string) {
-    // Éviter les doubles redirections
     if (redirectionInProgress) return;
     redirectionInProgress = true;
 
@@ -473,10 +448,9 @@ async function finishMatch(winner: string) {
                 match.winner = winner;
                 
                 localStorage.setItem('tournamentData', JSON.stringify(state.tournament));
-                localStorage.removeItem('currentMatchData'); // Effacer le match actuel
+                localStorage.removeItem('currentMatchData');
 
                 if (state.tournament.bracket.length === roundIndex + 1 && round.matchups.length === 1) {
-                    console.log("🏆 TOURNOI TERMINÉ - Gagnant :", winner);
                     state.tournament.winner = winner;
                     localStorage.setItem('tournamentData', JSON.stringify(state.tournament));
                     saveTournamentToHistory();
@@ -533,10 +507,10 @@ async function finishMatch(winner: string) {
                         if (ctx) {
                             drawBracket(ctx, canvas.width, canvas.height);
                         } else {
-                            console.error("❌ Erreur : Impossible d'obtenir le contexte 2D du canvas.");
+                            console.error("Erreur : Impossible d'obtenir le contexte 2D du canvas.");
                         }
                     } else {
-                        console.error("❌ Erreur : Canvas non trouvé dans le DOM.");
+                        console.error("Erreur : Canvas non trouvé dans le DOM.");
                     }
                 }, 500);
                 setTimeout(() => {

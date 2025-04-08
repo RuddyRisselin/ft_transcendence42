@@ -1,5 +1,4 @@
 import { state } from "../state";
-import { connectToWebSocket } from "../services/auth";
 import { navigateTo } from "../router";
 import Sidebar from "../components/sidebar";
 import { translateText } from "../translate";
@@ -68,7 +67,6 @@ export default async function Matches() : Promise<HTMLDivElement> {
     const mainSection: HTMLDivElement = document.createElement("div");
     mainSection.className = "relative z-10 flex w-full h-screen pl-[250px]";
 
-    // Section centrale (modes de jeu)
     const gameSection: HTMLDivElement = document.createElement("div");
     gameSection.className = "flex-1 p-8 overflow-y-auto custom-scrollbar";
 
@@ -76,7 +74,6 @@ export default async function Matches() : Promise<HTMLDivElement> {
     gameSectionTitle.className = "text-4xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text mb-12";
     gameSectionTitle.innerHTML = "🎮 " + `<span class="text-transparent">${translatedTitle}</span>`;
 
-    // Conteneur pour les cartes de jeu
     const gameCardsContainer: HTMLDivElement = document.createElement("div");
     gameCardsContainer.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto";
 
@@ -161,7 +158,6 @@ export default async function Matches() : Promise<HTMLDivElement> {
     mainSection.appendChild(gameSection);
     container.appendChild(mainSection);
 
-    // Gestionnaires de clic pour les boutons
     const localPlayButton = localGameCard.querySelector('button');
     if (localPlayButton) {
         localPlayButton.onclick = (e) => navigateTo(e, "/local-match");
@@ -180,7 +176,6 @@ export default async function Matches() : Promise<HTMLDivElement> {
         tournamentButton.onclick = (e) => navigateTo(e, "/tournament");
     }
 
-    // Gestionnaires d'événements pour le menu de difficulté
     const closeMenuButton: HTMLButtonElement = difficultyMenu.querySelector('.close-menu') as HTMLButtonElement;
     if (closeMenuButton) {
         closeMenuButton.onclick = () => {
@@ -196,7 +191,6 @@ export default async function Matches() : Promise<HTMLDivElement> {
     difficultyButtons.forEach(button => {
         (button as HTMLButtonElement).onclick = (e: Event) => {
             const difficulty = (e.currentTarget as HTMLElement).dataset.difficulty;
-            // Cacher le menu avant de naviguer
             difficultyMenu.classList.add('fade-out');
             setTimeout(() => {
                 difficultyMenu.classList.add('hidden');
@@ -206,7 +200,6 @@ export default async function Matches() : Promise<HTMLDivElement> {
         };
     });
 
-    // Fermer le menu en cliquant en dehors
     difficultyMenu.onclick = (e: MouseEvent) => {
         if (e.target === difficultyMenu) {
             difficultyMenu.classList.add('fade-out');

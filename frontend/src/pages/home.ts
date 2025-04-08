@@ -8,9 +8,7 @@ export default function Home(): HTMLElement {
         return document.createElement("div");
     }
     else
-    {
         navigateTo(new Event("click"), "/login");
-    }
 
     const container: HTMLDivElement = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-black text-white p-8";
@@ -29,6 +27,5 @@ export default function Home(): HTMLElement {
     loginButton.onclick = (e) => navigateTo(e, "/login");
 
     container.append(title, loginButton);
-
     return container;
 }

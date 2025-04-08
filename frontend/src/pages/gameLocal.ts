@@ -45,7 +45,7 @@ async function saveMatch(winner: string) {
 
         const result = await response.json();
     } catch (error) {
-        console.error("❌ Erreur serveur lors de l'enregistrement du match :", error);
+        console.error("Erreur serveur lors de l'enregistrement du match :", error);
     }
 }
 
@@ -79,7 +79,7 @@ export default async function GameLocal() {
         try {
             state.localMatch = JSON.parse(localStorage.getItem('localMatchData')!);
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration des données:", error);
+            console.error("Erreur lors de la restauration des données:", error);
         }
     }
     
@@ -117,7 +117,7 @@ export default async function GameLocal() {
                 localStorage.removeItem('localGameScores');
             }
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration des scores:", error);
+            console.error("Erreur lors de la restauration des scores:", error);
         }
     }
     
@@ -338,7 +338,7 @@ export default async function GameLocal() {
                 localStorage.removeItem('gameState');
             }
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration de l'état du jeu:", error);
+            console.error("Erreur lors de la restauration de l'état du jeu:", error);
         }
     }
 

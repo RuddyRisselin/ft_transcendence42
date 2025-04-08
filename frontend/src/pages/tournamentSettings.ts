@@ -13,9 +13,6 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         "Suivant",
         "Se connecter",
         "connecté",
-        "Match à durée limitée",
-        "Match en nombre de points",
-        "min",
         "points",
         "Lancer le tournoi",
         "Connexion échouée !",
@@ -23,10 +20,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         "Ce joueur est déjà connecté !",
         "Hôte du tournoi",
         "Option de jeu",
-        "Mode de jeu",
-        "Objectif",
-        "temps",
-        "points"
+        "Objectif"
     ];
     const [
         translatedParam,
@@ -35,9 +29,6 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         translatedNext,
         translatedConnexion,
         translatedConnected,
-        translatedMatchTime,
-        translatedMatchPoint,
-        translatedMin,
         translatedPoint,
         translatedStartTournament,
         translatedFailedConnexion,
@@ -45,10 +36,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         translatedAlertUserConnected,
         translatedHoteTournament,
         translatedGameOption,
-        translatedGameMode,
-        translatedObjectif,
-        translatedTime,
-        translatedPoints
+        translatedObjectif
     ] = await Promise.all(textToTranslate.map(text => translateText(text)));
     
     if (!state.user) {
@@ -198,12 +186,12 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
                 const password: string = passwordInput.value.trim();
 
                 if (!username || !password) {
-                    alert("⚠️ " + translatedAlertFillUpForm);
+                    alert(translatedAlertFillUpForm);
                     return;
                 }
 
                 if (connectedPlayers.has(username)) {
-                    alert("⚠️ " + translatedAlertUserConnected);
+                    alert(translatedAlertUserConnected);
                     return;
                 }
 
@@ -221,7 +209,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
                     connectedPlayers.add(username);
                     updateNextStepButtonVisibility();
                 } catch (error) {
-                    alert("❌ " + translatedFailedConnexion);
+                    alert(translatedFailedConnexion);
                 }
             };
 

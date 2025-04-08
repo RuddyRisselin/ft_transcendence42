@@ -420,10 +420,7 @@ export async function drawBracket(ctx: CanvasRenderingContext2D, width: number, 
 
     let positions: { x: number; y: number }[][] = [];
 
-    // Calculer le nombre total de matchs dans le premier tour pour espacer verticalement
     const firstRoundMatches = bracket[0] ? bracket[0].matchups.length : 0;
-    
-    // Pour les tournois plus grands, il faut ajuster l'espacement vertical
     let verticalSpacing;
     if (totalPlayers >= 16) {
         verticalSpacing = 24;

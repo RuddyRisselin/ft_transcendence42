@@ -5,7 +5,6 @@ import { getUsers } from "../services/userService";
 import { translateText } from "../translate";
 
 export default async function LocalMatch(): Promise<HTMLElement> {
-     /*          TRANSLATE TAB       */
      const textToTranslate = [
         "Match Local 1v1",
         "Match à durée limitée",
@@ -48,9 +47,7 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
     localStorage.setItem('currentPage', 'local-match');
 
-    console.log("Chargement des utilisateurs...");
     const users = await getUsers();
-    console.log("Utilisateurs récupérés :", users);
 
     const container = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-950 via-blue-700 to-blue-950 text-white p-8 space-y-6";
@@ -129,7 +126,6 @@ export default async function LocalMatch(): Promise<HTMLElement> {
     startGameButton.className = "w-full px-6 py-4 bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-600 hover:to-blue-400 text-white rounded-lg shadow-lg transition-all transform hover:scale-105 font-bold text-xl";
 
     function showLoginFields() {
-        console.log(`Joueur 2 sélectionné : ${player2Select.value}`);
         passwordContainer.classList.remove("hidden");
         connectButton.classList.remove("hidden");
     }
@@ -148,11 +144,8 @@ export default async function LocalMatch(): Promise<HTMLElement> {
             return;
         }
 
-        console.log(`Tentative de connexion temporaire pour ${player2Username}...`);
-
         try {
             const player2Auth = await loginWithoutSession(player2Username, password);
-            console.log(`Connexion réussie pour ${player2Username}`, player2Auth);
 
             if (!state.localMatch) {
                 state.localMatch = {
@@ -171,14 +164,12 @@ export default async function LocalMatch(): Promise<HTMLElement> {
 
             matchSettingsContainer.classList.remove("hidden");
         } catch (error) {
-            console.error("Échec de l'authentification :", error);
-            alert("❌ " + translatedAlertFailed);
+            alert(translatedAlertFailed);
         }
     };
 
     startGameButton.onclick = () => {
         if (!state.localMatch) {
-            console.error("Erreur : `state.localMatch` est null !");
             return;
         }
     
