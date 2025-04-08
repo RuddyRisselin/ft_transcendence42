@@ -107,7 +107,6 @@ export default async function Leaderboard(): Promise<HTMLElement> {
                 leadersContainer.appendChild(listItem);
             });
         } catch (error) {
-            console.error("Error fetching leaderboard:", error);
             podiumContainer.innerHTML = `<p class='text-red-500'>${translatedError}</p>`;
         }
     }
