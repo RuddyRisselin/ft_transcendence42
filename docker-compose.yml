@@ -22,9 +22,6 @@ services:
     container_name: fastify_backend
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
     volumes:
       - ./backend/srcs:/app/srcs
       - ./backend/database:/app/database
