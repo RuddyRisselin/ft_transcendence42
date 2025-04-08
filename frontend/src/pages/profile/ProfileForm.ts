@@ -203,7 +203,6 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
                 window.location.reload();
             }
         } catch (error) {
-            console.error("❌ Erreur inattendue :", error);
             alert(translatedError);
         }
     };
@@ -223,7 +222,6 @@ export default async function ProfileForm(): Promise<HTMLDivElement> {
                 }
             }
         } catch (error) {
-            console.error("❌ Erreur inattendue :", error);
             alert(translatedError);
         }
     };

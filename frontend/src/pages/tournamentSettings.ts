@@ -56,12 +56,9 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         return document.createElement("div");
     }
     
-    // ✅ NOUVEAU: Stocker la page actuelle dans localStorage
     localStorage.setItem('currentPage', 'tournament-settings');
 
-    console.log("🔍 Chargement des utilisateurs...");
     const users = await getUsers();
-    console.log("✅ Utilisateurs récupérés :", users);
 
     const container = document.createElement("div");
     container.className = "flex flex-col items-center min-h-screen bg-gradient-to-r from-indigo-950 via-purple-900 to-indigo-950 text-white p-8 space-y-8";
@@ -75,7 +72,6 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     
     header.appendChild(title);
 
-    // ✅ Étape 1 : Sélection du nombre de joueurs
     const step1 = document.createElement("div");
     step1.className = "w-full max-w-2xl bg-black bg-opacity-30 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-indigo-500/30 space-y-6";
 
@@ -103,7 +99,6 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
 
     step1.append(playersCountLabel, playersCountSelect, nextStepButton1);
 
-    // ✅ Étape 2 : Connexion des joueurs
     const step2 = document.createElement("div");
     step2.className = "w-full max-w-2xl bg-black bg-opacity-30 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-indigo-500/30 space-y-6 hidden";
 
@@ -135,7 +130,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
     playersListContainer.classList.add("players-scroll");
 
     let connectedPlayers = new Set<string>();
-    connectedPlayers.add(state.user.username); // ✅ Créateur automatiquement inclus
+    connectedPlayers.add(state.user.username);
 
     const hostPlayerCard = document.createElement("div");
     hostPlayerCard.className = "bg-gradient-to-r from-green-900/40 to-emerald-900/40 p-4 rounded-xl border border-green-500/40";
@@ -214,7 +209,6 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
 
                 try {
                     await loginWithoutSession(username, password);
-                    console.log(`✅ Connexion réussie pour ${username}`);
                     loginButton.innerHTML = "";
                     const checkmarkIcon = document.createElement("span");
                     checkmarkIcon.innerText = "✓";
@@ -262,7 +256,7 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         generatePlayerInputs();
     };
 
-    // ✅ Étape 3 : Paramètres du tournoi
+    // Paramètres du tournoi
     const step3 = document.createElement("div");
     step3.className = "w-full max-w-2xl bg-black bg-opacity-30 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-indigo-500/30 space-y-6 hidden";
 
@@ -309,15 +303,11 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         state.tournament = {
             players: Array.from(connectedPlayers),
             matchs: Array.from(connectedPlayers).length - 1,
-            mode: "points", // Toujours en mode points
+            mode: "points",
             target: parseInt(targetSelect.value),
             bracket: [],
         };
-        
-        // ✅ NOUVEAU: Stocker les données du tournoi dans localStorage
         localStorage.setItem('tournamentData', JSON.stringify(state.tournament));
-        
-        console.log("✅ Tournoi configuré :", state.tournament);
         navigateTo(new Event("click"), "/tournament-bracket");
     };
 
@@ -326,8 +316,6 @@ export default async function TournamentSettings(): Promise<HTMLElement> {
         step2.classList.add("hidden");
         step3.classList.remove("hidden");
     };
-
-    // Indicateur d'étapes
     const stepsIndicator = document.createElement("div");
     stepsIndicator.className = "flex justify-center space-x-2 my-4";
     

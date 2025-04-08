@@ -108,7 +108,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                         profileUsername = userData.username;
                     }
                 } catch (e) {
-                    console.error("Impossible de récupérer le nom d'utilisateur:", e);
                     profileUsername = "Joueur";
                 }
             } else {
@@ -126,7 +125,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             }
 
             matches.forEach(match => {
-                // Déterminer si le profil affiché est le gagnant (pas l'utilisateur qui consulte)
                 const profileIsWinner = match.winner_id == targetUserId || match.winner_name === profileUsername;
                 
                 const matchItem: HTMLDivElement = document.createElement("div");
@@ -142,7 +140,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 dateSpan.className = "text-xs text-white opacity-80";
                 
                 const matchResult: HTMLSpanElement = document.createElement("span");
-                // Indiquer le nom du gagnant
                 matchResult.innerHTML = `${translatedWin}: ${match.winner_name}`;
                 matchResult.className = "text-xs font-semibold";
                 
@@ -161,8 +158,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
     }
 
     async function fetchTournamentHistory(): Promise<void> {
-        console.log("🏆 Début du chargement de l'historique des tournois...");
-        console.log("🎯 ID utilisateur cible:", targetUserId);
         try {
             historyContainer.innerHTML = `<p class='text-white'>${translatedLoading}</p>`;
             
@@ -170,59 +165,45 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             let profileUsername = "";
             if (userId && userId !== state.user?.id) {
                 try {
-                    console.log("🔍 Récupération du nom d'utilisateur pour l'ID:", targetUserId);
                     const userResponse = await fetch(`/api/users/${targetUserId}`);
                     if (userResponse.ok) {
                         const userData = await userResponse.json();
                         profileUsername = userData.username;
-                        console.log("✅ Nom d'utilisateur récupéré:", profileUsername);
                     } else {
-                        console.error("❌ Erreur API lors de la récupération de l'utilisateur:", await userResponse.text());
+                        console.error("Erreur API lors de la récupération de l'utilisateur:", await userResponse.text());
                     }
                 } catch (e) {
-                    console.error("❌ Exception lors de la récupération du nom d'utilisateur:", e);
                     profileUsername = "Joueur";
                 }
             } else {
                 profileUsername = state.user.username;
-                console.log("👤 Utilisation du nom d'utilisateur connecté:", profileUsername);
             }
             
-            // CHANGEMENT IMPORTANT: Utiliser le endpoint avec userId comme pour les matchs
-            // au lieu de récupérer tous les tournois et filtrer côté client
-            console.log("📊 Récupération des tournois de l'utilisateur avec ID:", targetUserId);
+            // Utiliser le endpoint avec userId comme pour les matchs
             const response: Response = await fetch(`/api/tournaments?userId=${targetUserId}`);
             if (!response.ok) {
-                console.error("❌ Erreur API lors de la récupération des tournois:", await response.text());
+                console.error("Erreur API lors de la récupération des tournois:", await response.text());
                 throw new Error("Erreur API");
             }
     
             const tournaments = await response.json();
-            console.log(`📋 ${tournaments.length} tournois récupérés pour l'utilisateur:`, tournaments);
             
             historyContainer.innerHTML = "";
             if (!Array.isArray(tournaments) || tournaments.length === 0) {
                 historyContainer.innerHTML = `<p class='text-white'>${translatedTournamentNotFound}</p>`;
-                console.log("ℹ️ Aucun tournoi trouvé");
                 return;
             }
     
-            // Collecter tous les IDs des joueurs
             const allPlayerIds = new Set<number>();
-            // Garder aussi un mappage inversé des usernames vers IDs
             const usernameToIdMap = new Map<string, number>();
             
-            if (userId) {
-                // Ajouter l'ID de l'utilisateur consulté au mappage
+            if (userId)
                 usernameToIdMap.set(profileUsername, Number(userId));
-            }
             
             tournaments.forEach(tournament => {
                 const players = typeof tournament.players === "string" 
                     ? JSON.parse(tournament.players) 
                     : tournament.players;
-                
-                console.log(`🏟️ Tournoi #${tournament.id} - Joueurs:`, players);
                 
                 players.forEach((player: any) => {
                     if (typeof player === "number") {
@@ -235,28 +216,24 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
             const userMap = new Map<number, string>();
             if (allPlayerIds.size > 0) {
                 try {
-                    console.log("👥 Récupération des noms pour", allPlayerIds.size, "joueurs");
                     const userResponse: Response = await fetch(`/api/users?ids=${Array.from(allPlayerIds).join(",")}`);
                     if (userResponse.ok) {
                         const users: { id: number; username: string }[] = await userResponse.json();
                         users.forEach(user => {
                             userMap.set(user.id, user.username);
-                            // Mettre à jour aussi le mappage inversé
                             usernameToIdMap.set(user.username, user.id);
                         });
-                        console.log("✅ Noms d'utilisateurs récupérés:", userMap);
                     } else {
-                        console.error("❌ Erreur API lors de la récupération des utilisateurs:", await userResponse.text());
+                        console.error("Erreur API lors de la récupération des utilisateurs:", await userResponse.text());
                     }
                 } catch (error) {
-                    console.error("❌ Exception lors de la récupération des noms des joueurs:", error);
+                    console.error("Exception lors de la récupération des noms des joueurs:", error);
                 }
             }
             
             // Utiliser les tournois directement sans filtrage supplémentaire
             // puisque l'API a déjà filtré les tournois pour cet utilisateur
             tournaments.forEach(tournament => {
-                console.log(`\n🏆 Préparation de l'affichage du tournoi #${tournament.id}`);
                 
                 const tournamentItem: HTMLDivElement = document.createElement("div");
                 tournamentItem.className = "p-3 rounded-lg text-white text-sm flex flex-col bg-gray-900 border border-gray-700 shadow-lg";
@@ -290,18 +267,12 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                     // et contient généralement l'emoji 🏆
                     if (ranking.length > 0) {
                         const winnerEntry = String(ranking[0]);
-                        // Enlever l'emoji du nom si présent
                         tournamentWinner = winnerEntry.replace(/🏆\s*/, '').trim();
                         
-                        // Si le gagnant est un ID numérique, essayer de le convertir en nom
-                        if (!isNaN(Number(tournamentWinner)) && userMap.has(Number(tournamentWinner))) {
+                        if (!isNaN(Number(tournamentWinner)) && userMap.has(Number(tournamentWinner)))
                             tournamentWinner = userMap.get(Number(tournamentWinner)) || tournamentWinner;
-                        }
-                        
-                        console.log(`👑 Gagnant du tournoi: ${tournamentWinner}`);
                     }
                     
-                    // Indiquer si le joueur affiché est le gagnant
                     if (tournamentWinner === profileUsername) {
                         positionText = `🏆 ${translatedWin}`;
                         positionColor = "bg-yellow-500";
@@ -322,7 +293,6 @@ export default async function MatchHistory(userId?: number): Promise<HTMLElement
                 historyContainer.appendChild(tournamentItem);
             });
         } catch (error) {
-            console.error("❌ Erreur lors de la récupération des tournois :", error);
             historyContainer.innerHTML = `<p class='text-red-500'>${translatedErrorLoadingTournament}</p>`;
         }
     }

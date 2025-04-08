@@ -1,4 +1,3 @@
-import { state } from "../../state";
 import MatchHistory from "./MatchHistory";
 import Leaderboard from "./Leaderboard";
 import StarsBackground from "./StarsBackground";
@@ -10,9 +9,7 @@ import { translateText } from "../../translate";
 import API_CONFIG from "../../config/apiConfig";
 
 export default async function UserProfile(userId: number): Promise<HTMLElement> {
-    console.log("🧩 Démarrage du rendu du profil utilisateur, userId:", userId);
     
-    // Textes à traduire
     const textsToTranslate: string[] = [
         "Chargement...",
         "Profil non disponible",
@@ -47,7 +44,6 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
     backButtonContainer.appendChild(BackButton());
     profileWrapper.appendChild(backButtonContainer);
 
-    // Rangée supérieure avec Profile Management et Leaderboard
     const topRow: HTMLDivElement = document.createElement("div");
     topRow.className = "lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6";
 
@@ -59,13 +55,11 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
     const avatarCircle: HTMLDivElement = document.createElement("div");
     avatarCircle.className = "w-32 h-32 rounded-full border-2 border-blue-400/50 flex items-center justify-center mb-4";
 
-    // Avatar
     const avatar: HTMLImageElement = document.createElement("img");
     avatar.src = `${API_CONFIG.API_BASE_URL}/images/default.jpg`;
     avatar.className = "w-24 h-24 rounded-full";
     avatarCircle.appendChild(avatar);
 
-    // Nom d'utilisateur
     const username: HTMLHeadingElement = document.createElement("h2");
     username.className = "text-xl font-bold text-white/90 mb-3";
     username.innerHTML = translatedLoading;
@@ -137,16 +131,11 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
 
     // Charger les informations de l'utilisateur
     async function loadUserInfo() {
-        console.log("🔍 Chargement des informations utilisateur, userId:", userId);
         try {
             const friend = await getFriendDetails(userId);
             
-            if (!friend) {
-                console.error("❌ Utilisateur non trouvé");
+            if (!friend)
                 throw new Error("Utilisateur non trouvé");
-            }
-
-            console.log("✅ Informations utilisateur récupérées:", friend.username);
             
             avatar.src = `${API_CONFIG.API_BASE_URL}/images/${friend.avatar || "default.jpg"}`;
             username.innerHTML = friend.username;
@@ -162,14 +151,11 @@ export default async function UserProfile(userId: number): Promise<HTMLElement> 
                 avatarCircle.className = "w-32 h-32 rounded-full border-2 border-red-400/50 flex items-center justify-center mb-4";
             }
         } catch (error) {
-            console.error("❌ Erreur lors du chargement des informations utilisateur:", error);
             username.innerHTML = translatedProfileNotFound;
             statusText.innerHTML = translatedUnknownStatus;
         }
     }
 
     loadUserInfo();
-    console.log("✅ Rendu du profil utilisateur terminé");
-    
     return mainContainer;
 } 
