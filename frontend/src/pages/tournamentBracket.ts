@@ -100,9 +100,8 @@ const [
     if (!state.tournament && localStorage.getItem('tournamentData')) {
         try {
             state.tournament = JSON.parse(localStorage.getItem('tournamentData')!);
-            console.log("✅ Données de tournoi restaurées depuis localStorage");
         } catch (error) {
-            console.error("❌ Erreur lors de la restauration des données:", error);
+            console.error("Erreur lors de la restauration des données:", error);
         }
     }
 
