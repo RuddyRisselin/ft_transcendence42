@@ -13,19 +13,15 @@ const fastifyStatic = require("@fastify/static");
 const twoFaRoutes = require('./routes/2FA');
 
 async function startServer() {
-  // Configuration simple en HTTP - Nginx s'occupe du HTTPS
   const fastify = Fastify({ 
     logger: true,
-    trustProxy: true  // Important pour que le backend sache qu'il est derrière un proxy
+    trustProxy: true
   });
 
-  // ✅ Attendre que Fastify soit bien configuré
   await configureServer(fastify);
 
-  // 🔹 Ajouter les WebSockets
   await fastify.register(websocket);
 
-  // 🔹 Ajouter les routes API
   await fastify.register(authRoutes);
   await fastify.register(userRoutes);
   await fastify.register(uploadFileRoutes);
@@ -39,7 +35,6 @@ async function startServer() {
   });
   await fastify.register(twoFaRoutes, { prefix: '/2FA' });
 
-  // ✅ Démarrer le serveur après configuration complète
   try {
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
     fastify.log.info(`🚀 Serveur backend en cours d'exécution sur http://localhost:3000`);
@@ -49,7 +44,6 @@ async function startServer() {
   }
 }
 
-// 🔹 Lancer le serveur Fastify
 startServer();
 
 

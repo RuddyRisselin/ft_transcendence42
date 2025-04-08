@@ -11,12 +11,12 @@ export default defineConfig({
   },
 
   server: {
-    port: 5173, // ✅ Frontend tourne sur ce port
-    strictPort: true, // ✅ Bloque si 5173 est déjà pris
-    host: "0.0.0.0", // ✅ Nécessaire pour Docker
+    port: 5173, 
+    strictPort: true,
+    host: "0.0.0.0",
     proxy: {
       "/api": {
-        target: "http://fastify_backend:3000", // ✅ Nom du service dans docker-compose
+        target: "http://fastify_backend:3000",
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
@@ -31,7 +31,6 @@ export default defineConfig({
           });
         },
       },
-      // Configuration plus simple et directe du WebSocket
       "/ws": {
         target: "http://fastify_backend:3000",
         ws: true,
