@@ -1,6 +1,6 @@
 🚀 ft_transcendence — The Final Boss of 42's Common Core
 ft_transcendence is the ultimate web development project at the end of the 42 Common Core. It challenges students to build a real-time, multiplayer Pong web application — and go way beyond.
-You’ll touch every layer of modern fullstack development: frontend, backend, security, DevOps, AI, blockchain, and more. All while building a product that’s complex, beautiful, and fun to use.
+You’ll touch every layer of modern fullstack development: frontend, backend, security, DevOps, AI, and more. All while building a product that’s complex, beautiful, and fun to use.
 
 ![ezgif com-video-to-gif-converter (5)](https://github.com/user-attachments/assets/74b4fcc7-74ac-4edf-acce-44be3f281b41)
 
