@@ -75,7 +75,7 @@ DevOps: .env-based config, multi-service architecture
 How to Run :
 
 docker-compose up --build
-Then visit: https://localhost 
+Then visit: https://localhost:4430
 
 Why it Matters
   ft_transcendence is the capstone project of the 42 Common Core.
