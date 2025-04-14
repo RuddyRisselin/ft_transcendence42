@@ -16,7 +16,7 @@ Implement production-ready practices: Docker, HTTPS, authentication, modular arc
 Mandatory Stack
  Frontend: Typescript SPA
 
- Backend (optional): PHP (unless overridden)
+ Backend: Node.js
 
  Dockerized setup
 
