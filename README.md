@@ -7,7 +7,7 @@ You’ll touch every layer of modern fullstack development: frontend, backend, s
 🎯 Objectives
 Build a single-page web app playable in the browser
 
-Integrate real-time Pong gameplay, live matchmaking & tournament system
+Integrate real-time Pong gameplay & tournament system
 
 Learn to work with new, unknown technologies
 
