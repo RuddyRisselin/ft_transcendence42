@@ -74,7 +74,7 @@ DevOps: .env-based config, multi-service architecture
 
 How to Run :
 
-docker-compose up --build
+make init && make
 Then visit: https://localhost:4430
 
 Why it Matters
